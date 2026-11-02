@@ -78,3 +78,4 @@ In Figure 10, the supporting domain manages the catalog of course syllabi and pr
 * **`AcademicEquivalenceRepo`:** Domain repository interface defining queries by partner university and course codes.
 * **`AcademicEquivalenceRepoJPA`:** Infrastructure adapter providing database persistence.
 * **`AuditLogServiceJPA`:** Infrastructure adapter writing immutable audit records directly to the `AUDIT_TRAIL` ledger table.
+
