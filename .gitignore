@@ -1,0 +1,27 @@
+# Enterprise Architect lock files and temporary caches
+~$*.qea
+~$*.qeax
+*.ldb
+*.eap.lock
+*.qea.lock
+*.qeax.lock
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# Java & Build tools
+target/
+build/
+*.class
+*.jar
+*.war
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+out/
+
+# Visual Studio Code
+.vscode/
