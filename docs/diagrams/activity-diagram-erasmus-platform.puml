@@ -1,0 +1,127 @@
+@startuml
+title Figure 2. End-to-End Business Process Activity Diagram across Bounded Contexts - Erasmus Mobility Platform (EMP)
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 11
+skinparam roundCorner 12
+
+skinparam activity {
+  BackgroundColor #FFF8EE
+  BorderColor #8D5B4C
+  FontColor #000000
+  FontSize 12
+  ArrowColor #333333
+  ArrowFontSize 11
+  ArrowFontStyle bold
+}
+
+skinparam diamond {
+  BackgroundColor #FFF2DF
+  BorderColor #8D5B4C
+  FontSize 11
+}
+
+skinparam partition {
+  BorderColor #555555
+  BorderThickness 1.5
+  BackgroundColor #FAFAFA
+  FontSize 13
+  FontStyle bold
+}
+
+skinparam note {
+  BackgroundColor #FEFFDD
+  BorderColor #C4B94C
+  FontSize 10
+}
+
+|#EFF6FF|Mobility Preparation (Supporting)|
+|#FFF7ED|Equivalence Management (Supporting)|
+|#F0FDF4|Learning Agreement Management (Core Domain)|
+
+|Mobility Preparation (Supporting)|
+start
+:Confirm Student Nomination;
+:Generate Administrative Checklist;
+
+note right
+  AcceptEventAction without incoming flow:
+  active as long as mobility preparation is active.
+  The interrupting edge leaves the region,
+  aborts all parallel tokens, and initiates
+  cascading cancellation and grant fund release.
+end note
+
+group #FEF9F5 <<interruptible activity region>>
+
+fork
+  |Mobility Preparation (Supporting)|
+  :Complete Health & Linguistic Tasks\n(EHIC Card, OLS Assessment);
+  :Sign Erasmus+ Grant Agreement\n(Monthly Financial Scholarship);
+  :Upload Supporting Documents\n(Private Insurance, Official Acceptance);
+  :Monitor Checklist Progress & Deadlines;
+
+fork again
+  |Equivalence Management (Supporting)|
+  :Search Course Equivalences in Catalog;
+  if (Equivalence found in catalog?) then ([No: New Course])
+    :Propose New Equivalence by Student;
+    :Evaluate Course Syllabus & Learning Outcomes;
+    :Register & Validate ECTS Parity;
+  else ([Yes: In Catalog])
+    :Select Pre-Approved Course Mappings;
+  endif
+
+  |Learning Agreement Management (Core Domain)|
+  :Create Draft Learning Agreement;
+  repeat
+    :Manage Course Lines (Table A & Table B);
+    :Validate ECTS Credit Balance;
+    if (ECTS Invariant Satisfied (Σ A == Σ B >= 30)?) then ([Yes: Invariant Valid])
+      :Submit Learning Agreement;
+      break
+    else ([No: Credit Deficit])
+      :Adjust Course Lines;
+    endif
+  repeat while (Retry Validation)
+
+  :Conduct Home Academic Coordinator Review;
+  if (Coordinator Decision?) then ([Approved])
+    :Approve Contract (Status: APPROVED_BY_FACULTY);
+    :Transmit via EWP Network & Sign at Host Partner;
+    :Emit LearningAgreementApprovedEvent (Outbox);
+    |Mobility Preparation (Supporting)|
+    :Mark "Learning Agreement" Task Completed;
+  else ([Changes Requested])
+    :Request Amendment (Status: UNDER_REVIEW);
+    :Notify Student & Return for Revision;
+    stop
+  endif
+
+end fork
+
+end group
+
+|Mobility Preparation (Supporting)|
+:Validate Complete Mobility Dossier & Issue Departure Certificate;
+:Finalize Mobility Preparation Phase;
+:Publish MobilityPreparedEvent;
+:Activate "Student Abroad" Academic Status;
+stop
+
+' Cancellation Flow (Interrupting Edge)
+|Learning Agreement Management (Core Domain)|
+floating note
+  ⚡ <<interrupting edge>>
+  Triggered on: Receive Mobility Cancellation Request
+  (Student Withdrawal / Force Majeure Signal)
+end note
+
+:Cancel Mobility Dossier (Status: CANCELLED);
+:Cascade Cancel Learning Agreement (Status: CANCELLED);
+:Abort Active Checklist Tasks (Freeze Document Uploads);
+:Publish MobilityCancelledEvent (Notify Host Partner);
+:Deallocate Erasmus Grant Funds & DRI Reconciliation;
+stop
+
+@enduml

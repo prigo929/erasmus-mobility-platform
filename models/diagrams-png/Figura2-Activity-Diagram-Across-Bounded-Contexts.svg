@@ -1,0 +1,298 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1480 1460" width="100%" height="100%" style="background-color: #FFFFFF; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#2D3748" />
+    </marker>
+    <marker id="red-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#C53030" />
+    </marker>
+    <marker id="blue-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#2B6CB0" />
+    </marker>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="2" dy="3" stdDeviation="3" flood-opacity="0.12" />
+    </filter>
+  </defs>
+
+  <!-- Title & Subtitle -->
+  <text x="740" y="38" text-anchor="middle" font-size="21" font-weight="bold" fill="#1A202C">Figure 2. End-to-End Business Process Activity Diagram across Bounded Contexts</text>
+  <text x="740" y="62" text-anchor="middle" font-size="13.5" fill="#4A5568">Erasmus Mobility Platform (EMP) — Tactical DDD Decomposition with 3 Swimlanes and InterruptibleActivityRegion</text>
+
+  <!-- Initial Node -->
+  <circle cx="220" cy="95" r="12" fill="#1A202C" />
+  <line x1="220" y1="107" x2="220" y2="130" stroke="#2D3748" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- Action 1: Confirm Student Nomination -->
+  <rect x="90" y="130" width="260" height="44" rx="10" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1.8" filter="url(#shadow)" />
+  <text x="220" y="157" text-anchor="middle" font-size="12" font-weight="600" fill="#2D3748">Confirm Student Nomination</text>
+
+  <line x1="220" y1="174" x2="220" y2="200" stroke="#2D3748" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- Action 2: Generate Administrative Checklist -->
+  <rect x="90" y="200" width="260" height="44" rx="10" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1.8" filter="url(#shadow)" />
+  <text x="220" y="227" text-anchor="middle" font-size="12" font-weight="600" fill="#2D3748">Generate Administrative Checklist</text>
+
+  <!-- Control flow enters Fork Bar -->
+  <line x1="220" y1="244" x2="220" y2="345" stroke="#2D3748" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- ========================================== -->
+  <!-- INTERRUPTIBLE ACTIVITY REGION BOUNDARY     -->
+  <!-- ========================================== -->
+  <rect x="40" y="275" width="1045" height="725" rx="16" fill="none" stroke="#B7791F" stroke-width="2" stroke-dasharray="8,6" />
+  <text x="60" y="300" font-size="13.5" font-style="italic" font-weight="bold" fill="#B7791F">«interruptible activity region»</text>
+
+  <!-- AcceptEventAction (Concave Pentagon) with NO incoming flow -->
+  <polygon points="730,280 1000,280 1030,305 1000,330 730,330 745,305" fill="#FFEDD5" stroke="#C05621" stroke-width="2" filter="url(#shadow)" />
+  <text x="880" y="300" text-anchor="middle" font-size="11" font-weight="bold" fill="#7B341E">Receive Mobility Cancellation Request</text>
+  <text x="880" y="317" text-anchor="middle" font-size="10" fill="#9C4221">(Student / Force Majeure Signal)</text>
+
+  <!-- Explanatory Note for AcceptEventAction -->
+  <rect x="745" y="185" width="285" height="68" rx="4" fill="#FEFCBF" stroke="#D69E2E" stroke-width="1" />
+  <path d="M 1020 185 L 1030 195 L 1020 195 Z" fill="#B7791F" />
+  <text x="755" y="202" font-size="9.5" fill="#744210">AcceptEventAction without incoming flow: active as</text>
+  <text x="755" y="216" font-size="9.5" fill="#744210">long as mobility preparation is in progress. The</text>
+  <text x="755" y="230" font-size="9.5" fill="#744210">interrupting edge exits the region, aborts all parallel</text>
+  <text x="755" y="244" font-size="9.5" fill="#744210">tokens, and triggers cascading cancellation.</text>
+  <line x1="885" y1="253" x2="885" y2="280" stroke="#D69E2E" stroke-width="1" stroke-dasharray="3,3" />
+
+  <!-- Interrupting Edge (Red Dashed Line with Lightning) -->
+  <path d="M 1030 305 L 1095 305 L 1095 415 L 1180 415" stroke="#C53030" stroke-width="2.5" stroke-dasharray="6,4" fill="none" marker-end="url(#red-arrow)" />
+  <text x="1105" y="365" font-size="11.5" font-weight="bold" fill="#C53030">⚡ «interrupting edge»</text>
+
+  <!-- ========================================== -->
+  <!-- FORK SYNCHRONIZATION BAR                   -->
+  <!-- ========================================== -->
+  <line x1="80" y1="350" x2="1025" y2="350" stroke="#1A202C" stroke-width="7" stroke-linecap="round" />
+
+  <!-- ========================================== -->
+  <!-- SWIMLANES (Vertical Partitions)            -->
+  <!-- ========================================== -->
+  <!-- Lane 1: Mobility Preparation -->
+  <rect x="55" y="370" width="325" height="575" rx="8" fill="#F7FAFC" stroke="#CBD5E0" stroke-width="1.5" />
+  <rect x="55" y="370" width="325" height="32" rx="8" fill="#EBF8FF" stroke="#BEE3F8" stroke-width="1.5" />
+  <text x="217" y="392" text-anchor="middle" font-size="12" font-weight="bold" fill="#2B6CB0">Mobility Preparation (Supporting)</text>
+
+  <!-- Lane 2: Equivalence Management -->
+  <rect x="395" y="370" width="325" height="575" rx="8" fill="#F7FAFC" stroke="#CBD5E0" stroke-width="1.5" />
+  <rect x="395" y="370" width="325" height="32" rx="8" fill="#FFFAF0" stroke="#FEEBC8" stroke-width="1.5" />
+  <text x="557" y="392" text-anchor="middle" font-size="12" font-weight="bold" fill="#C05621">Equivalence Management (Supporting)</text>
+
+  <!-- Lane 3: Learning Agreement Management -->
+  <rect x="735" y="370" width="335" height="575" rx="8" fill="#F7FAFC" stroke="#CBD5E0" stroke-width="1.5" />
+  <rect x="735" y="370" width="335" height="32" rx="8" fill="#F0FFF4" stroke="#C6F6D5" stroke-width="1.5" />
+  <text x="902" y="392" text-anchor="middle" font-size="12" font-weight="bold" fill="#22543D">Learning Agreement (Core Domain)</text>
+
+  <!-- ========================================== -->
+  <!-- STREAM 1: MOBILITY PREPARATION             -->
+  <!-- ========================================== -->
+  <line x1="217" y1="354" x2="217" y2="420" stroke="#2D3748" stroke-width="2" marker-end="url(#arrow)" />
+
+  <rect x="85" y="420" width="265" height="44" rx="8" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1.6" filter="url(#shadow)" />
+  <text x="217" y="440" text-anchor="middle" font-size="11" font-weight="600" fill="#2D3748">Complete Health &amp; Linguistic Tasks</text>
+  <text x="217" y="454" text-anchor="middle" font-size="9.5" fill="#4A5568">(EHIC Card, OLS Language Assessment)</text>
+
+  <line x1="217" y1="464" x2="217" y2="490" stroke="#2D3748" stroke-width="2" marker-end="url(#arrow)" />
+
+  <rect x="85" y="490" width="265" height="44" rx="8" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1.6" filter="url(#shadow)" />
+  <text x="217" y="510" text-anchor="middle" font-size="11" font-weight="600" fill="#2D3748">Sign Erasmus+ Grant Agreement</text>
+  <text x="217" y="524" text-anchor="middle" font-size="9.5" fill="#4A5568">(Monthly Financial Scholarship Contract)</text>
+
+  <line x1="217" y1="534" x2="217" y2="560" stroke="#2D3748" stroke-width="2" marker-end="url(#arrow)" />
+
+  <rect x="85" y="560" width="265" height="44" rx="8" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1.6" filter="url(#shadow)" />
+  <text x="217" y="580" text-anchor="middle" font-size="11" font-weight="600" fill="#2D3748">Upload Supporting Documents</text>
+  <text x="217" y="594" text-anchor="middle" font-size="9.5" fill="#4A5568">(Private Insurance, Official Acceptance)</text>
+
+  <line x1="217" y1="604" x2="217" y2="630" stroke="#2D3748" stroke-width="2" marker-end="url(#arrow)" />
+
+  <rect x="85" y="630" width="265" height="44" rx="8" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1.6" filter="url(#shadow)" />
+  <text x="217" y="650" text-anchor="middle" font-size="11" font-weight="600" fill="#2D3748">Monitor Checklist Progress</text>
+  <text x="217" y="664" text-anchor="middle" font-size="9.5" fill="#4A5568">(Scheduler Deadline Tracking)</text>
+
+  <!-- Flow in Lane 1 down to Join -->
+  <line x1="217" y1="674" x2="217" y2="960" stroke="#2D3748" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- ========================================== -->
+  <!-- STREAM 2: EQUIVALENCE MANAGEMENT           -->
+  <!-- ========================================== -->
+  <line x1="557" y1="354" x2="557" y2="420" stroke="#2D3748" stroke-width="2" marker-end="url(#arrow)" />
+
+  <rect x="425" y="420" width="265" height="44" rx="8" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1.6" filter="url(#shadow)" />
+  <text x="557" y="440" text-anchor="middle" font-size="11" font-weight="600" fill="#2D3748">Search Course Equivalences</text>
+  <text x="557" y="454" text-anchor="middle" font-size="9.5" fill="#4A5568">(Partner University &amp; Syllabus Catalog)</text>
+
+  <line x1="557" y1="464" x2="557" y2="490" stroke="#2D3748" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- Decision: Equivalence found in catalog? -->
+  <polygon points="557,490 597,510 557,530 517,510" fill="#FFF2DF" stroke="#8D5B4C" stroke-width="1.8" />
+  <text x="610" y="505" font-size="9.5" font-weight="bold" fill="#2B6CB0">[In catalog]</text>
+  <text x="500" y="505" text-anchor="end" font-size="9.5" font-weight="bold" fill="#C53030">[New course]</text>
+
+  <!-- Branch Left: Propose new equivalence -->
+  <line x1="517" y1="510" x2="455" y2="510" stroke="#2D3748" stroke-width="2" />
+  <line x1="455" y1="510" x2="455" y2="545" stroke="#2D3748" stroke-width="2" marker-end="url(#arrow)" />
+
+  <rect x="410" y="545" width="135" height="45" rx="6" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1.5" />
+  <text x="477" y="563" text-anchor="middle" font-size="9" font-weight="600" fill="#2D3748">Propose Equivalence &amp;</text>
+  <text x="477" y="577" text-anchor="middle" font-size="9" font-weight="600" fill="#2D3748">Evaluate Syllabus</text>
+
+  <line x1="477" y1="590" x2="477" y2="610" stroke="#2D3748" stroke-width="2" />
+  <line x1="477" y1="610" x2="557" y2="610" stroke="#2D3748" stroke-width="2" />
+
+  <!-- Branch Right: Select pre-approved -->
+  <line x1="597" y1="510" x2="635" y2="510" stroke="#2D3748" stroke-width="2" />
+  <line x1="635" y1="510" x2="635" y2="545" stroke="#2D3748" stroke-width="2" marker-end="url(#arrow)" />
+
+  <rect x="570" y="545" width="135" height="45" rx="6" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1.5" />
+  <text x="637" y="563" text-anchor="middle" font-size="9" font-weight="600" fill="#2D3748">Select Pre-Approved</text>
+  <text x="637" y="577" text-anchor="middle" font-size="9" font-weight="600" fill="#2D3748">Course Mappings</text>
+
+  <line x1="637" y1="590" x2="637" y2="610" stroke="#2D3748" stroke-width="2" />
+  <line x1="637" y1="610" x2="557" y2="610" stroke="#2D3748" stroke-width="2" />
+
+  <!-- Merge node and transition into Lane 3 -->
+  <polygon points="557,610 567,618 557,626 547,618" fill="#1A202C" />
+  <line x1="567" y1="618" x2="760" y2="618" stroke="#2D3748" stroke-width="2" />
+  <line x1="760" y1="618" x2="760" y2="460" stroke="#2D3748" stroke-width="2" />
+  <line x1="760" y1="460" x2="885" y2="460" stroke="#2D3748" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- ========================================== -->
+  <!-- STREAM 3: LEARNING AGREEMENT MANAGEMENT    -->
+  <!-- ========================================== -->
+  <!-- Initial entry into Draft LA from Fork Bar -->
+  <line x1="902" y1="354" x2="902" y2="415" stroke="#2D3748" stroke-width="2" marker-end="url(#arrow)" />
+
+  <rect x="765" y="415" width="275" height="40" rx="8" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1.6" filter="url(#shadow)" />
+  <text x="902" y="439" text-anchor="middle" font-size="11" font-weight="600" fill="#2D3748">Create Draft Learning Agreement</text>
+
+  <!-- Merge Diamond for course entry & revision loopbacks -->
+  <line x1="902" y1="455" x2="902" y2="475" stroke="#2D3748" stroke-width="2" marker-end="url(#arrow)" />
+  <polygon points="902,475 914,485 902,495 890,485" fill="#FFF2DF" stroke="#8D5B4C" stroke-width="1.5" />
+
+  <line x1="902" y1="495" x2="902" y2="515" stroke="#2D3748" stroke-width="2" marker-end="url(#arrow)" />
+
+  <rect x="765" y="515" width="275" height="42" rx="8" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1.6" filter="url(#shadow)" />
+  <text x="902" y="533" text-anchor="middle" font-size="11" font-weight="600" fill="#2D3748">Manage Course Lines</text>
+  <text x="902" y="547" text-anchor="middle" font-size="9" fill="#4A5568">(Map Table A Host &amp; Table B Home)</text>
+
+  <line x1="902" y1="557" x2="902" y2="580" stroke="#2D3748" stroke-width="2" marker-end="url(#arrow)" />
+
+  <rect x="765" y="580" width="275" height="42" rx="8" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1.6" filter="url(#shadow)" />
+  <text x="902" y="598" text-anchor="middle" font-size="11" font-weight="600" fill="#2D3748">Validate ECTS Credit Balance</text>
+  <text x="902" y="612" text-anchor="middle" font-size="9" fill="#4A5568">(Check ECTS Invariant: Σ A == Σ B ≥ 30)</text>
+
+  <line x1="902" y1="622" x2="902" y2="645" stroke="#2D3748" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- Decision: ECTS Balance Valid? -->
+  <polygon points="902,645 937,660 902,675 867,660" fill="#FFF2DF" stroke="#8D5B4C" stroke-width="1.8" />
+  <text x="947" y="655" font-size="9.5" font-weight="bold" fill="#C53030">[Credit deficit]</text>
+  <text x="908" y="690" font-size="9.5" font-weight="bold" fill="#2B6CB0">[Valid balance]</text>
+
+  <!-- Clean Loopback to Merge Diamond (via outside margin) -->
+  <path d="M 937 660 L 1055 660 L 1055 485 L 914 485" stroke="#C53030" stroke-width="1.8" stroke-dasharray="4,3" fill="none" marker-end="url(#red-arrow)" />
+
+  <!-- Valid balance -> Submit LA -->
+  <line x1="902" y1="675" x2="902" y2="705" stroke="#2D3748" stroke-width="2" marker-end="url(#arrow)" />
+
+  <rect x="765" y="705" width="275" height="38" rx="8" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1.6" filter="url(#shadow)" />
+  <text x="902" y="728" text-anchor="middle" font-size="11" font-weight="600" fill="#2D3748">Submit Learning Agreement</text>
+
+  <line x1="902" y1="743" x2="902" y2="765" stroke="#2D3748" stroke-width="2" marker-end="url(#arrow)" />
+
+  <rect x="765" y="765" width="275" height="38" rx="8" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1.6" filter="url(#shadow)" />
+  <text x="902" y="788" text-anchor="middle" font-size="11" font-weight="600" fill="#2D3748">Review by Home Academic Coordinator</text>
+
+  <line x1="902" y1="803" x2="902" y2="825" stroke="#2D3748" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- Decision: Coordinator Approval? -->
+  <polygon points="902,825 937,840 902,855 867,840" fill="#FFF2DF" stroke="#8D5B4C" stroke-width="1.8" />
+  <text x="947" y="835" font-size="9.5" font-weight="bold" fill="#C53030">[Changes requested]</text>
+  <text x="908" y="870" font-size="9.5" font-weight="bold" fill="#2B6CB0">[Approved]</text>
+
+  <!-- Clean Loopback for Changes Requested to Merge Diamond -->
+  <path d="M 937 840 L 1065 840 L 1065 485 L 914 485" stroke="#C53030" stroke-width="1.8" stroke-dasharray="4,3" fill="none" marker-end="url(#red-arrow)" />
+
+  <!-- Approved -> Confirm with Host Partner via EWP -->
+  <line x1="902" y1="855" x2="902" y2="880" stroke="#2D3748" stroke-width="2" marker-end="url(#arrow)" />
+
+  <rect x="765" y="880" width="275" height="44" rx="8" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1.6" filter="url(#shadow)" />
+  <text x="902" y="899" text-anchor="middle" font-size="11" font-weight="600" fill="#2D3748">Transmit via EWP &amp; Sign at Host</text>
+  <text x="902" y="913" text-anchor="middle" font-size="9" fill="#4A5568">(Tripartite Digital Signature Confirmation)</text>
+
+  <line x1="902" y1="924" x2="902" y2="960" stroke="#2D3748" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- ========================================== -->
+  <!-- JOIN SYNCHRONIZATION BAR                   -->
+  <!-- ========================================== -->
+  <line x1="80" y1="960" x2="1025" y2="960" stroke="#1A202C" stroke-width="7" stroke-linecap="round" />
+
+  <!-- Outbox Event Propagation notation -->
+  <text x="550" y="950" text-anchor="middle" font-size="10" font-weight="bold" fill="#2B6CB0">Domain Event: LearningAgreementApprovedEvent (Outbox Synchronized)</text>
+
+  <!-- ========================================== -->
+  <!-- SUCCESSFUL FLOW AFTER JOIN                 -->
+  <!-- ========================================== -->
+  <line x1="220" y1="964" x2="220" y2="1030" stroke="#2D3748" stroke-width="2" marker-end="url(#arrow)" />
+
+  <rect x="90" y="1030" width="260" height="44" rx="10" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1.8" filter="url(#shadow)" />
+  <text x="220" y="1050" text-anchor="middle" font-size="11.5" font-weight="600" fill="#2D3748">Validate Complete Mobility Dossier</text>
+  <text x="220" y="1065" text-anchor="middle" font-size="9.5" fill="#4A5568">&amp; Issue Departure Certificate</text>
+
+  <line x1="220" y1="1074" x2="220" y2="1105" stroke="#2D3748" stroke-width="2" marker-end="url(#arrow)" />
+
+  <rect x="90" y="1105" width="260" height="40" rx="10" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1.8" filter="url(#shadow)" />
+  <text x="220" y="1130" text-anchor="middle" font-size="11.5" font-weight="600" fill="#2D3748">Finalize Mobility Preparation Phase</text>
+
+  <line x1="220" y1="1145" x2="220" y2="1175" stroke="#2D3748" stroke-width="2" marker-end="url(#arrow)" />
+
+  <rect x="90" y="1175" width="260" height="40" rx="10" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1.8" filter="url(#shadow)" />
+  <text x="220" y="1200" text-anchor="middle" font-size="11.5" font-weight="600" fill="#2D3748">Publish MobilityPreparedEvent</text>
+
+  <line x1="220" y1="1215" x2="220" y2="1245" stroke="#2D3748" stroke-width="2" marker-end="url(#arrow)" />
+
+  <rect x="90" y="1245" width="260" height="40" rx="10" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1.8" filter="url(#shadow)" />
+  <text x="220" y="1270" text-anchor="middle" font-size="11.5" font-weight="600" fill="#2D3748">Activate Student Abroad Status</text>
+
+  <line x1="220" y1="1285" x2="220" y2="1320" stroke="#2D3748" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- Success Activity Final Node (Bullseye) -->
+  <circle cx="220" cy="1335" r="15" fill="none" stroke="#1A202C" stroke-width="2.5" />
+  <circle cx="220" cy="1335" r="9" fill="#1A202C" />
+
+  <!-- ========================================== -->
+  <!-- CANCELLATION FLOW (Right Side Cascade)     -->
+  <!-- ========================================== -->
+  <rect x="1140" y="415" width="280" height="42" rx="8" fill="#FFF5F5" stroke="#C53030" stroke-width="1.6" filter="url(#shadow)" />
+  <text x="1280" y="440" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#9B2C2C">Cancel Mobility Dossier</text>
+
+  <line x1="1280" y1="457" x2="1280" y2="490" stroke="#C53030" stroke-width="2" marker-end="url(#red-arrow)" />
+
+  <rect x="1140" y="490" width="280" height="42" rx="8" fill="#FFF5F5" stroke="#C53030" stroke-width="1.6" filter="url(#shadow)" />
+  <text x="1280" y="509" text-anchor="middle" font-size="11" font-weight="600" fill="#9B2C2C">Cascade Cancel Learning Agreement</text>
+  <text x="1280" y="523" text-anchor="middle" font-size="9.5" fill="#9B2C2C">(Atomic State Transition: CANCELLED)</text>
+
+  <line x1="1280" y1="532" x2="1280" y2="565" stroke="#C53030" stroke-width="2" marker-end="url(#red-arrow)" />
+
+  <rect x="1140" y="565" width="280" height="42" rx="8" fill="#FFF5F5" stroke="#C53030" stroke-width="1.6" filter="url(#shadow)" />
+  <text x="1280" y="584" text-anchor="middle" font-size="11" font-weight="600" fill="#9B2C2C">Abort Active Checklist Tasks</text>
+  <text x="1280" y="598" text-anchor="middle" font-size="9.5" fill="#9B2C2C">(Lock Document Upload Portals)</text>
+
+  <line x1="1280" y1="607" x2="1280" y2="640" stroke="#C53030" stroke-width="2" marker-end="url(#red-arrow)" />
+
+  <rect x="1140" y="640" width="280" height="42" rx="8" fill="#FFF5F5" stroke="#C53030" stroke-width="1.6" filter="url(#shadow)" />
+  <text x="1280" y="659" text-anchor="middle" font-size="11" font-weight="600" fill="#9B2C2C">Publish MobilityCancelledEvent</text>
+  <text x="1280" y="673" text-anchor="middle" font-size="9.5" fill="#9B2C2C">(Notify Host Partner &amp; EWP Service)</text>
+
+  <line x1="1280" y1="682" x2="1280" y2="715" stroke="#C53030" stroke-width="2" marker-end="url(#red-arrow)" />
+
+  <rect x="1140" y="715" width="280" height="42" rx="8" fill="#FFF5F5" stroke="#C53030" stroke-width="1.6" filter="url(#shadow)" />
+  <text x="1280" y="734" text-anchor="middle" font-size="11" font-weight="600" fill="#9B2C2C">Deallocate Erasmus Grant Funds</text>
+  <text x="1280" y="748" text-anchor="middle" font-size="9.5" fill="#9B2C2C">&amp; DRI Financial Reconciliation</text>
+
+  <line x1="1280" y1="757" x2="1280" y2="795" stroke="#C53030" stroke-width="2" marker-end="url(#red-arrow)" />
+
+  <!-- Cancellation Activity Final Node (Bullseye) -->
+  <circle cx="1280" cy="810" r="15" fill="none" stroke="#C53030" stroke-width="2.5" />
+  <circle cx="1280" cy="810" r="9" fill="#C53030" />
+
+</svg>
