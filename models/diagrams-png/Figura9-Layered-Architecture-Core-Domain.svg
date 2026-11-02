@@ -1,0 +1,267 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1480 1100" width="100%" height="100%" style="background-color: #FBF8F1; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#2D3748" />
+    </marker>
+    <marker id="impl-arrow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <polygon points="0,1 11,6 0,11" fill="#FFFFFF" stroke="#2D3748" stroke-width="1.5" />
+    </marker>
+    <marker id="diamond" viewBox="0 0 16 10" refX="0" refY="5" markerWidth="12" markerHeight="8" orient="auto-start-reverse">
+      <polygon points="0,5 8,1 16,5 8,9" fill="#1A202C" />
+    </marker>
+    <filter id="shadow" x="-3%" y="-3%" width="106%" height="106%">
+      <feDropShadow dx="2" dy="3" stdDeviation="3" flood-opacity="0.10" />
+    </filter>
+  </defs>
+
+  <!-- Title -->
+  <text x="30" y="38" font-size="20" font-weight="bold" fill="#1A202C">Figure 9. Four-Layer Architecture for Core Domain (Learning Agreement Management)</text>
+  <text x="30" y="58" font-size="12.5" fill="#5A4A3E">Separation of Concerns: Presentation (UI), Application Orchestration, Domain Model, and Infrastructure Adapters</text>
+
+  <!-- Outer Bounded Context Box -->
+  <g transform="translate(25, 75)">
+    <rect x="0" y="0" width="1430" height="1000" rx="6" fill="#FBF6ED" stroke="#8D5B4C" stroke-width="1.8" filter="url(#shadow)" />
+    <path d="M 0 0 L 390 0 L 390 26 L 375 34 L 0 34 Z" fill="#EFE5D5" stroke="#8D5B4C" stroke-width="1.2" />
+    <text x="15" y="22" font-size="12" font-weight="bold" fill="#4A3728">Learning Agreement Management Bounded Context</text>
+
+    <!-- 1. USER INTERFACE LAYER -->
+    <g transform="translate(280, 45)">
+      <rect x="0" y="0" width="380" height="155" rx="6" fill="#FDFBF7" stroke="#8D5B4C" stroke-width="1.4" />
+      <path d="M 0 0 L 170 0 L 170 20 L 160 26 L 0 26 Z" fill="#EFE5D5" stroke="#8D5B4C" stroke-width="1" />
+      <text x="10" y="16" font-size="10" font-weight="bold" fill="#4A3728">User Interface Layer</text>
+
+      <!-- Controller -->
+      <g transform="translate(20, 35)">
+        <rect x="0" y="0" width="340" height="105" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.2" />
+        <circle cx="16" cy="16" r="6" fill="#84CC16" />
+        <text x="16" y="19" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#FFFFFF">C</text>
+        <text x="170" y="14" text-anchor="middle" font-size="8.5" font-style="italic" fill="#7A583A">«Controller»</text>
+        <text x="170" y="26" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">LearningAgreementCtrl</text>
+        <line x1="0" y1="32" x2="340" y2="32" stroke="#8D5B4C" stroke-width="0.8" />
+        <text x="10" y="46" font-size="8.5" fill="#2D3748">- appService: LearningAgreementApplicationService</text>
+        <line x1="0" y1="52" x2="340" y2="52" stroke="#8D5B4C" stroke-width="0.8" />
+        <text x="10" y="66" font-size="8.5" fill="#2D3748">+ createDraft(req: CreateDraftDTO): ResponseEntity</text>
+        <text x="10" y="79" font-size="8.5" fill="#2D3748">+ submitAgreement(id: UUID): ResponseEntity</text>
+        <text x="10" y="92" font-size="8.5" fill="#2D3748">+ reviewAgreement(id: UUID, req: ReviewDTO): ResponseEntity</text>
+      </g>
+    </g>
+
+    <!-- Arrow from UI Layer down to Application Layer -->
+    <line x1="470" y1="200" x2="470" y2="255" stroke="#2D3748" stroke-width="1.5" marker-end="url(#arrow)" />
+    <text x="480" y="230" font-size="9.5" font-style="italic" fill="#7A583A">delegates</text>
+
+    <!-- 2. APPLICATION LAYER -->
+    <g transform="translate(30, 255)">
+      <rect x="0" y="0" width="540" height="360" rx="6" fill="#FDFBF7" stroke="#8D5B4C" stroke-width="1.4" />
+      <path d="M 0 0 L 150 0 L 150 20 L 140 26 L 0 26 Z" fill="#EFE5D5" stroke="#8D5B4C" stroke-width="1" />
+      <text x="10" y="16" font-size="10" font-weight="bold" fill="#4A3728">Application Layer</text>
+
+      <!-- Application Service -->
+      <g transform="translate(20, 35)">
+        <rect x="0" y="0" width="500" height="155" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.4" />
+        <circle cx="18" cy="18" r="7" fill="#84CC16" />
+        <text x="18" y="22" text-anchor="middle" font-size="9" font-weight="bold" fill="#FFFFFF">C</text>
+        <text x="250" y="16" text-anchor="middle" font-size="9" font-style="italic" fill="#7A583A">«Application Service»</text>
+        <text x="250" y="29" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#1A202C">LearningAgreementApplicationService</text>
+        <line x1="0" y1="36" x2="500" y2="36" stroke="#8D5B4C" stroke-width="0.8" />
+        <text x="12" y="50" font-size="8.5" fill="#2D3748">- laRepo: LearningAgreementRepo</text>
+        <text x="12" y="63" font-size="8.5" fill="#2D3748">- outboxPublisher: OutboxEventPublisher</text>
+        <text x="12" y="76" font-size="8.5" fill="#2D3748">- equivalencePort: EquivalenceQueryPort</text>
+        <line x1="0" y1="83" x2="500" y2="83" stroke="#8D5B4C" stroke-width="0.8" />
+        <text x="12" y="97" font-size="8.5" fill="#2D3748">+ createDraft(cmd: CreateDraftCommand): UUID</text>
+        <text x="12" y="110" font-size="8.5" fill="#2D3748">+ submitAgreement(cmd: SubmitLACommand): void</text>
+        <text x="12" y="123" font-size="8.5" fill="#2D3748">+ reviewAgreement(cmd: ReviewLACommand): void</text>
+        <text x="12" y="136" font-size="8.5" fill="#2D3748">+ cancelAgreement(cmd: CancelLACommand): void</text>
+        <text x="12" y="148" font-size="8" font-style="italic" fill="#7A583A">[Orchestrates: 1. Load -&gt; 2. Verify Port -&gt; 3. Execute Domain -&gt; 4. Save -&gt; 5. Publish Outbox]</text>
+      </g>
+
+      <!-- Port: OutboxEventPublisher -->
+      <g transform="translate(20, 250)">
+        <rect x="0" y="0" width="235" height="65" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.2" />
+        <circle cx="14" cy="15" r="6" fill="#3B82F6" />
+        <text x="14" y="18" text-anchor="middle" font-size="8" font-weight="bold" fill="#FFFFFF">I</text>
+        <text x="125" y="14" text-anchor="middle" font-size="8.5" font-style="italic" fill="#7A583A">«Port»</text>
+        <text x="125" y="26" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#1A202C">OutboxEventPublisher</text>
+        <line x1="0" y1="32" x2="235" y2="32" stroke="#8D5B4C" stroke-width="0.8" />
+        <text x="10" y="46" font-size="8.5" fill="#2D3748">+ publish(event: DomainEvent): void</text>
+      </g>
+
+      <!-- Port: EquivalenceQueryPort -->
+      <g transform="translate(285, 250)">
+        <rect x="0" y="0" width="235" height="65" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.2" />
+        <circle cx="14" cy="15" r="6" fill="#3B82F6" />
+        <text x="14" y="18" text-anchor="middle" font-size="8" font-weight="bold" fill="#FFFFFF">I</text>
+        <text x="125" y="14" text-anchor="middle" font-size="8.5" font-style="italic" fill="#7A583A">«Port»</text>
+        <text x="125" y="26" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#1A202C">EquivalenceQueryPort</text>
+        <line x1="0" y1="32" x2="235" y2="32" stroke="#8D5B4C" stroke-width="0.8" />
+        <text x="8" y="46" font-size="8" fill="#2D3748">+ isCourseAccredited(pid, code): bool</text>
+      </g>
+    </g>
+
+    <!-- 3. INFRASTRUCTURE LAYER -->
+    <g transform="translate(600, 255)">
+      <rect x="0" y="0" width="800" height="135" rx="6" fill="#FDFBF7" stroke="#8D5B4C" stroke-width="1.4" />
+      <path d="M 0 0 L 160 0 L 160 20 L 150 26 L 0 26 Z" fill="#EFE5D5" stroke="#8D5B4C" stroke-width="1" />
+      <text x="10" y="16" font-size="10" font-weight="bold" fill="#4A3728">Infrastructure Layer</text>
+
+      <!-- LearningAgreementRepoJPA -->
+      <g transform="translate(20, 35)">
+        <rect x="0" y="0" width="240" height="85" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.2" />
+        <circle cx="14" cy="15" r="6" fill="#84CC16" />
+        <text x="14" y="18" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#FFFFFF">C</text>
+        <text x="125" y="24" text-anchor="middle" font-size="10" font-weight="bold" fill="#1A202C">LearningAgreementRepoJPA</text>
+        <line x1="0" y1="32" x2="240" y2="32" stroke="#8D5B4C" stroke-width="0.8" />
+        <text x="10" y="46" font-size="8.5" fill="#2D3748">+ add(la: LearningAgreement): void</text>
+        <text x="10" y="59" font-size="8.5" fill="#2D3748">+ findById(id: UUID): Optional&lt;LA&gt;</text>
+        <text x="10" y="72" font-size="8.5" fill="#2D3748">+ save(la: LearningAgreement): void</text>
+      </g>
+
+      <!-- OutboxDispatcherRabbitMQ -->
+      <g transform="translate(280, 35)">
+        <rect x="0" y="0" width="235" height="85" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.2" />
+        <circle cx="14" cy="15" r="6" fill="#84CC16" />
+        <text x="14" y="18" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#FFFFFF">C</text>
+        <text x="125" y="24" text-anchor="middle" font-size="10" font-weight="bold" fill="#1A202C">OutboxDispatcherRabbitMQ</text>
+        <line x1="0" y1="32" x2="235" y2="32" stroke="#8D5B4C" stroke-width="0.8" />
+        <text x="10" y="46" font-size="8.5" fill="#2D3748">+ publish(event: DomainEvent): void</text>
+        <text x="10" y="60" font-size="8" fill="#7A583A">- writes to OUTBOX_EVENTS table</text>
+      </g>
+
+      <!-- EquivalenceRestAdapter -->
+      <g transform="translate(535, 35)">
+        <rect x="0" y="0" width="245" height="85" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.2" />
+        <circle cx="14" cy="15" r="6" fill="#84CC16" />
+        <text x="14" y="18" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#FFFFFF">C</text>
+        <text x="125" y="24" text-anchor="middle" font-size="10" font-weight="bold" fill="#1A202C">EquivalenceRestAdapter</text>
+        <line x1="0" y1="32" x2="245" y2="32" stroke="#8D5B4C" stroke-width="0.8" />
+        <text x="10" y="46" font-size="8" fill="#2D3748">+ isCourseAccredited(pid, code): bool</text>
+        <text x="10" y="60" font-size="8" fill="#7A583A">- calls /api/equivalences/verify</text>
+      </g>
+    </g>
+
+    <!-- 4. DOMAIN LAYER -->
+    <g transform="translate(30, 640)">
+      <rect x="0" y="0" width="1370" height="340" rx="6" fill="#FDFBF7" stroke="#8D5B4C" stroke-width="1.4" />
+      <path d="M 0 0 L 130 0 L 130 20 L 120 26 L 0 26 Z" fill="#EFE5D5" stroke="#8D5B4C" stroke-width="1" />
+      <text x="10" y="16" font-size="10" font-weight="bold" fill="#4A3728">Domain Layer</text>
+
+      <!-- LearningAgreementRepo (Domain Interface) -->
+      <g transform="translate(40, 40)">
+        <rect x="0" y="0" width="290" height="95" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.4" />
+        <circle cx="16" cy="16" r="6" fill="#3B82F6" />
+        <text x="16" y="19" text-anchor="middle" font-size="8" font-weight="bold" fill="#FFFFFF">I</text>
+        <text x="150" y="14" text-anchor="middle" font-size="8.5" font-style="italic" fill="#7A583A">«Repository»</text>
+        <text x="150" y="26" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">LearningAgreementRepo</text>
+        <line x1="0" y1="32" x2="290" y2="32" stroke="#8D5B4C" stroke-width="0.8" />
+        <text x="10" y="46" font-size="8.5" fill="#2D3748">+ add(la: LearningAgreement): void</text>
+        <text x="10" y="60" font-size="8.5" fill="#2D3748">+ findById(id: UUID): Optional&lt;LearningAgreement&gt;</text>
+        <text x="10" y="74" font-size="8.5" fill="#2D3748">+ save(la: LearningAgreement): void</text>
+        <text x="10" y="88" font-size="8.5" fill="#2D3748">+ delete(la: LearningAgreement): void</text>
+      </g>
+
+      <!-- LearningAgreement Aggregate Root -->
+      <g transform="translate(380, 40)">
+        <rect x="0" y="0" width="360" height="195" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.6" />
+        <circle cx="18" cy="18" r="7" fill="#84CC16" />
+        <text x="18" y="22" text-anchor="middle" font-size="9" font-weight="bold" fill="#FFFFFF">C</text>
+        <text x="180" y="16" text-anchor="middle" font-size="9" font-style="italic" fill="#7A583A">«Aggregate Root»</text>
+        <text x="180" y="29" text-anchor="middle" font-size="12" font-weight="bold" fill="#1A202C">LearningAgreement</text>
+        <line x1="0" y1="36" x2="360" y2="36" stroke="#8D5B4C" stroke-width="0.8" />
+        <text x="10" y="50" font-size="8.5" fill="#2D3748">- id: UUID</text>
+        <text x="10" y="64" font-size="8.5" fill="#2D3748">- status: LearningAgreementStatus</text>
+        <text x="10" y="78" font-size="8.5" fill="#2D3748">- tableALines: List&lt;CourseLineTableA&gt;</text>
+        <text x="10" y="92" font-size="8.5" fill="#2D3748">- tableBLines: List&lt;CourseLineTableB&gt;</text>
+        <line x1="0" y1="98" x2="360" y2="98" stroke="#8D5B4C" stroke-width="0.8" />
+        <text x="10" y="112" font-size="8.5" font-weight="bold" fill="#9C4221">+ validateEctsBalance(): boolean  [Σ A == Σ B &gt;= 30]</text>
+        <text x="10" y="126" font-size="8.5" fill="#2D3748">+ submit(): LearningAgreementSubmittedEvent</text>
+        <text x="10" y="140" font-size="8.5" fill="#2D3748">+ approveByFaculty(coordId: String): ApprovedEvent</text>
+        <text x="10" y="154" font-size="8.5" fill="#2D3748">+ cancel(): LearningAgreementCancelledEvent</text>
+        <text x="10" y="175" font-size="8" font-style="italic" fill="#7A583A">[Aggregate Boundary protects course line invariant]</text>
+      </g>
+
+      <!-- Composition to Child Entities -->
+      <!-- CourseLineTableA -->
+      <g transform="translate(790, 40)">
+        <rect x="0" y="0" width="260" height="85" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.2" />
+        <circle cx="14" cy="15" r="6" fill="#84CC16" />
+        <text x="14" y="18" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#FFFFFF">C</text>
+        <text x="135" y="14" text-anchor="middle" font-size="8.5" font-style="italic" fill="#7A583A">«Entity»</text>
+        <text x="135" y="26" text-anchor="middle" font-size="10" font-weight="bold" fill="#1A202C">CourseLineTableA</text>
+        <line x1="0" y1="32" x2="260" y2="32" stroke="#8D5B4C" stroke-width="0.8" />
+        <text x="10" y="46" font-size="8.5" fill="#2D3748">- lineId: UUID</text>
+        <text x="10" y="59" font-size="8.5" fill="#2D3748">- courseCode: String</text>
+        <text x="10" y="72" font-size="8.5" fill="#2D3748">- credits: ECTSCredits</text>
+      </g>
+
+      <!-- CourseLineTableB -->
+      <g transform="translate(790, 140)">
+        <rect x="0" y="0" width="260" height="85" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.2" />
+        <circle cx="14" cy="15" r="6" fill="#84CC16" />
+        <text x="14" y="18" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#FFFFFF">C</text>
+        <text x="135" y="14" text-anchor="middle" font-size="8.5" font-style="italic" fill="#7A583A">«Entity»</text>
+        <text x="135" y="26" text-anchor="middle" font-size="10" font-weight="bold" fill="#1A202C">CourseLineTableB</text>
+        <line x1="0" y1="32" x2="260" y2="32" stroke="#8D5B4C" stroke-width="0.8" />
+        <text x="10" y="46" font-size="8.5" fill="#2D3748">- lineId: UUID</text>
+        <text x="10" y="59" font-size="8.5" fill="#2D3748">- homeCourseCode: String</text>
+        <text x="10" y="72" font-size="8.5" fill="#2D3748">- credits: ECTSCredits</text>
+      </g>
+
+      <path d="M 740 100 L 790 80" stroke="#1A202C" stroke-width="1.2" marker-start="url(#diamond)" />
+      <path d="M 740 150 L 790 170" stroke="#1A202C" stroke-width="1.2" marker-start="url(#diamond)" />
+
+      <!-- Domain Events -->
+      <g transform="translate(1100, 40)">
+        <rect x="0" y="0" width="230" height="80" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.2" />
+        <circle cx="14" cy="15" r="6" fill="#3B82F6" />
+        <text x="14" y="18" text-anchor="middle" font-size="8" font-weight="bold" fill="#FFFFFF">I</text>
+        <text x="120" y="14" text-anchor="middle" font-size="8.5" font-style="italic" fill="#7A583A">«interface»</text>
+        <text x="120" y="26" text-anchor="middle" font-size="10" font-weight="bold" fill="#1A202C">DomainEvent</text>
+        <line x1="0" y1="32" x2="230" y2="32" stroke="#8D5B4C" stroke-width="0.8" />
+        <text x="10" y="46" font-size="8.5" fill="#2D3748">+ eventId: UUID</text>
+        <text x="10" y="60" font-size="8.5" fill="#2D3748">+ occurredOn: Instant</text>
+      </g>
+
+      <g transform="translate(1100, 140)">
+        <rect x="0" y="0" width="230" height="85" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.2" />
+        <circle cx="14" cy="15" r="6" fill="#84CC16" />
+        <text x="14" y="18" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#FFFFFF">C</text>
+        <text x="120" y="14" text-anchor="middle" font-size="8.5" font-style="italic" fill="#7A583A">«Domain Event»</text>
+        <text x="120" y="26" text-anchor="middle" font-size="9" font-weight="bold" fill="#1A202C">LAApprovedEvent</text>
+        <line x1="0" y1="32" x2="230" y2="32" stroke="#8D5B4C" stroke-width="0.8" />
+        <text x="10" y="46" font-size="8" fill="#2D3748">+ mobilityId: MobilityId</text>
+        <text x="10" y="59" font-size="8" fill="#2D3748">+ studentId: StudentId</text>
+      </g>
+      <line x1="1215" y1="140" x2="1215" y2="120" stroke="#2D3748" stroke-width="1.2" stroke-dasharray="3,3" marker-end="url(#impl-arrow)" />
+    </g>
+
+    <!-- ARCHITECTURAL CROSS-LAYER CONNECTORS -->
+    <!-- AppService to Domain Repo (1. load / 4. save) -->
+    <path d="M 180 410 L 180 645" stroke="#2D3748" stroke-width="1.5" marker-end="url(#arrow)" />
+    <text x="190" y="585" font-size="9" font-weight="bold" fill="#1A202C">1. load / 4. save</text>
+
+    <!-- AppService to Aggregate Root (3. validate invariants) -->
+    <path d="M 480 410 L 480 645" stroke="#2D3748" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow)" />
+    <text x="490" y="585" font-size="9" font-weight="bold" fill="#9C4221">3. validate invariants</text>
+
+    <!-- AppService to Outbox Publisher (5. publish event) -->
+    <path d="M 140 445 L 140 500" stroke="#2D3748" stroke-width="1.5" marker-end="url(#arrow)" />
+    <text x="148" y="475" font-size="8.5" font-weight="bold" fill="#2B6CB0">5. publish event</text>
+
+    <!-- AppService to Equivalence Port (2. verify syllabus) -->
+    <path d="M 400 445 L 400 500" stroke="#2D3748" stroke-width="1.5" marker-end="url(#arrow)" />
+    <text x="408" y="475" font-size="8.5" font-weight="bold" fill="#2B6CB0">2. verify syllabus</text>
+
+    <!-- Infrastructure implementations (Dashed lines with hollow triangles) -->
+    <!-- JPA implements Domain Repo -->
+    <path d="M 720 375 L 720 540 L 250 540 L 250 645" stroke="#2D3748" stroke-width="1.3" stroke-dasharray="4,4" fill="none" marker-end="url(#impl-arrow)" />
+    <text x="480" y="535" font-size="9" font-style="italic" fill="#7A583A">implements</text>
+
+    <!-- OutboxDispatcher implements OutboxPort -->
+    <path d="M 900 375 L 900 500 L 140 500 L 140 530" stroke="#2D3748" stroke-width="1.3" stroke-dasharray="4,4" fill="none" marker-end="url(#impl-arrow)" />
+    <text x="300" y="495" font-size="9" font-style="italic" fill="#7A583A">implements</text>
+
+    <!-- RestAdapter implements EquivalencePort -->
+    <path d="M 1250 375 L 1250 490 L 400 490 L 400 530" stroke="#2D3748" stroke-width="1.3" stroke-dasharray="4,4" fill="none" marker-end="url(#impl-arrow)" />
+    <text x="550" y="485" font-size="9" font-style="italic" fill="#7A583A">implements</text>
+  </g>
+</svg>

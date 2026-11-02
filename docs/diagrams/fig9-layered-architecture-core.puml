@@ -1,0 +1,130 @@
+@startuml
+title Figure 9. Four-Layer Architecture for the Core Domain (Learning Agreement Management)
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 10
+skinparam roundCorner 8
+skinparam classAttributeIconSize 0
+
+skinparam package {
+  BackgroundColor #FDFBF7
+  BorderColor #7A6253
+  FontSize 11
+  FontStyle bold
+}
+
+skinparam class {
+  BackgroundColor #FFF8EE
+  BorderColor #8D5B4C
+  FontSize 9.5
+  HeaderBackgroundColor #FCEBD9
+}
+
+package "Learning Agreement Management Bounded Context" {
+
+  package "User Interface Layer (Presentation)" as UILayer {
+    class LearningAgreementCtrl <<Controller>> {
+      - appService: LearningAgreementApplicationService
+      + createDraft(req: CreateDraftDTO): ResponseEntity
+      + submitAgreement(id: UUID): ResponseEntity
+      + reviewAgreement(id: UUID, req: ReviewDTO): ResponseEntity
+      + cancelAgreement(id: UUID, req: CancelDTO): ResponseEntity
+    }
+  }
+
+  package "Application Layer" as AppLayer {
+    class LearningAgreementApplicationService <<Application Service>> {
+      - laRepo: LearningAgreementRepo
+      - outboxPublisher: OutboxEventPublisher
+      - equivalencePort: EquivalenceQueryPort
+      + createDraft(cmd: CreateDraftCommand): UUID
+      + submitAgreement(cmd: SubmitLACommand): void
+      + reviewAgreement(cmd: ReviewLACommand): void
+      + cancelAgreement(cmd: CancelLACommand): void
+    }
+
+    interface OutboxEventPublisher <<Port>> {
+      + publish(event: DomainEvent): void
+    }
+
+    interface EquivalenceQueryPort <<Port>> {
+      + verifyCourseAccredited(partnerId: String, hostCode: String): boolean
+    }
+  }
+
+  package "Infrastructure Layer" as InfraLayer {
+    class LearningAgreementRepoJPA {
+      + add(la: LearningAgreement): void
+      + findById(id: UUID): Optional<LearningAgreement>
+      + save(la: LearningAgreement): void
+      + delete(la: LearningAgreement): void
+    }
+
+    class OutboxDispatcherRabbitMQ {
+      + publish(event: DomainEvent): void
+    }
+
+    class EquivalenceRestAdapter {
+      + verifyCourseAccredited(partnerId: String, hostCode: String): boolean
+    }
+  }
+
+  package "Domain Layer" as DomainLayer {
+    interface LearningAgreementRepo <<Repository>> {
+      + add(la: LearningAgreement): void
+      + findById(id: UUID): Optional<LearningAgreement>
+      + save(la: LearningAgreement): void
+      + delete(la: LearningAgreement): void
+    }
+
+    class LearningAgreement <<Aggregate Root>> {
+      - id: UUID
+      - mobilityId: MobilityId
+      - studentId: StudentId
+      - status: LearningAgreementStatus
+      - tableALines: List<CourseLineTableA>
+      - tableBLines: List<CourseLineTableB>
+      + validateEctsBalance(): boolean
+      + submit(): LearningAgreementSubmittedEvent
+      + approveByFaculty(coordId: String): LearningAgreementApprovedEvent
+      + cancel(): LearningAgreementCancelledEvent
+    }
+
+    class CourseLineTableA <<Entity>> {
+      - lineId: UUID
+      - courseCode: String
+      - credits: ECTSCredits
+    }
+
+    class CourseLineTableB <<Entity>> {
+      - lineId: UUID
+      - homeCourseCode: String
+      - credits: ECTSCredits
+    }
+
+    interface DomainEvent <<interface>> {
+      + eventId: UUID
+      + occurredOn: Instant
+    }
+
+    class LearningAgreementApprovedEvent <<Domain Event>> {
+      + eventId: UUID
+      + mobilityId: MobilityId
+      + occurredOn: Instant
+    }
+  }
+
+  UILayer --> AppLayer : delegates
+  AppLayer --> LearningAgreementRepo : 1. load / 4. save
+  AppLayer --> LearningAgreement : 3. validate invariants
+  AppLayer --> OutboxEventPublisher : 5. publish event
+  AppLayer --> EquivalenceQueryPort : 2. verify syllabus
+  InfraLayer ..|> LearningAgreementRepo : implements
+  InfraLayer ..|> OutboxEventPublisher : implements
+  InfraLayer ..|> EquivalenceQueryPort : implements
+  LearningAgreement *-- CourseLineTableA : holds
+  LearningAgreement *-- CourseLineTableB : holds
+  LearningAgreementApprovedEvent ..|> DomainEvent : implements
+}
+
+@enduml

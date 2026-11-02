@@ -1,0 +1,96 @@
+@startuml
+title Figure 10. Four-Layer Architecture for Supporting Subdomain (Equivalence Management)
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 10
+skinparam roundCorner 8
+skinparam classAttributeIconSize 0
+
+skinparam package {
+  BackgroundColor #FDFBF7
+  BorderColor #7A6253
+  FontSize 11
+  FontStyle bold
+}
+
+skinparam class {
+  BackgroundColor #FFF8EE
+  BorderColor #8D5B4C
+  FontSize 9.5
+  HeaderBackgroundColor #FCEBD9
+}
+
+package "Equivalence Management Bounded Context" {
+
+  package "User Interface Layer (Presentation)" as UILayer {
+    class EquivalenceCtrl <<Controller>> {
+      - appService: EquivalenceApplicationService
+      + searchEquivalences(query: SearchQueryDTO): ResponseEntity
+      + registerEquivalence(req: RegisterEquivalenceDTO): ResponseEntity
+      + evaluateProposal(id: UUID, req: EvaluationDTO): ResponseEntity
+    }
+  }
+
+  package "Application Layer" as AppLayer {
+    class EquivalenceApplicationService <<Application Service>> {
+      - equivalenceRepo: AcademicEquivalenceRepo
+      - auditPort: AuditLogPort
+      + registerEquivalence(cmd: RegisterCommand): UUID
+      + evaluateProposal(cmd: EvaluateCommand): void
+      + retireEquivalence(cmd: RetireCommand): void
+    }
+
+    interface AuditLogPort <<Port>> {
+      + logAction(action: String, entityId: UUID): void
+    }
+  }
+
+  package "Infrastructure Layer" as InfraLayer {
+    class AcademicEquivalenceRepoJPA {
+      + save(eq: AcademicEquivalence): void
+      + findById(id: UUID): Optional<AcademicEquivalence>
+      + searchByPartnerAndCode(partnerId: String, code: String): List<AcademicEquivalence>
+    }
+
+    class AuditLogServiceJPA {
+      + logAction(action: String, entityId: UUID): void
+    }
+  }
+
+  package "Domain Layer" as DomainLayer {
+    interface AcademicEquivalenceRepo <<Repository>> {
+      + save(eq: AcademicEquivalence): void
+      + findById(id: UUID): Optional<AcademicEquivalence>
+      + searchByPartnerAndCode(partnerId: String, code: String): List<AcademicEquivalence>
+    }
+
+    class AcademicEquivalence <<Aggregate Root>> {
+      - id: UUID
+      - partnerUniversityId: String
+      - hostCourseCode: String
+      - homeCourseCode: String
+      - credits: ECTSCredits
+      - syllabus: CourseSyllabus
+      - status: EquivalenceStatus
+      + evaluateSyllabus(notes: String): void
+      + approve(evaluatorId: String): void
+      + retire(): void
+    }
+
+    class CourseSyllabus <<Value Object>> {
+      - learningOutcomes: String
+      - weeklyHours: int
+      - thematicUnits: String
+    }
+  }
+
+  UILayer --> AppLayer : delegates
+  AppLayer --> AcademicEquivalenceRepo : load / save
+  AppLayer --> AcademicEquivalence : mutates state
+  AppLayer --> AuditLogPort : audit logging
+  InfraLayer ..|> AcademicEquivalenceRepo : implements
+  InfraLayer ..|> AuditLogPort : implements
+  AcademicEquivalence *-- CourseSyllabus : holds
+}
+
+@enduml
