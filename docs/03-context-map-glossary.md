@@ -1,20 +1,20 @@
-# Strategic Context Map & Glosar Ubiquitous Language
+# Strategic Context Map & Ubiquitous Language Glossary
 
 **Erasmus Mobility Platform (EMP)**  
-**Conformitate:** Domain-Driven Design (Eric Evans, Vaughn Vernon) & Model Proiect 2026 (FEAA Iași)
+**Methodological Alignment:** Strategic Domain-Driven Design (Eric Evans, Vaughn Vernon) & Model Project Guidelines (FEAA Master SDBIS / SIA)
 
 ---
 
-## 1. Harta Strategică de Contexte (Strategic Context Map)
+## 1. Strategic Context Map
 
-Arhitectura strategică descompune platforma în trei Bounded Context-uri operaționale și două Bounded Context-uri generice:
+The strategic architecture decomposes the problem domain into three core operational Bounded Contexts, an integration Shared Kernel, and two supporting generic subdomains:
 
 ```mermaid
 flowchart TD
     subgraph CoreContext ["Learning Agreement Management (Core Domain)"]
         LA_AR["LearningAgreement (Aggregate Root)"]
-        LineA["CourseLineTableA (Entity)"]
-        LineB["CourseLineTableB (Entity)"]
+        LineA["CourseLineTableA (Internal Entity)"]
+        LineB["CourseLineTableB (Internal Entity)"]
     end
 
     subgraph EquivalenceContext ["Equivalence Management (Supporting Subdomain)"]
@@ -24,7 +24,7 @@ flowchart TD
 
     subgraph PreparationContext ["Mobility Preparation (Supporting Subdomain)"]
         Task_AR["ChecklistTask (Aggregate Root)"]
-        Template["ChecklistTemplate (Entity)"]
+        Template["ChecklistTemplate (Internal Entity)"]
     end
 
     subgraph SharedKernel ["Shared Kernel"]
@@ -35,44 +35,43 @@ flowchart TD
     end
 
     subgraph GenericContexts ["Generic Subdomains"]
-        Notif["Notification Service (Messaging)"]
-        Sec["Security & GDPR Audit (RBAC/Auth)"]
+        Notif["Notification Service (Asynchronous Messaging)"]
+        Sec["Security & GDPR Audit (RBAC / Append-Only Ledger)"]
     end
 
-    %% Relatii de integrare
+    %% Integration Contracts
     CoreContext -->|Uses| SharedKernel
     EquivalenceContext -->|Uses| SharedKernel
     PreparationContext -->|Uses| SharedKernel
 
-    CoreContext -.->|Sync REST: Search/Validate| EquivalenceContext
-    CoreContext == Transactional Outbox ==>|Async Event: LA Approved/Cancelled| PreparationContext
-    PreparationContext -.->|Trigger Notif| Notif
-    CoreContext -.->|Trigger Notif| Notif
-    CoreContext -.->|Audit Log| Sec
-    EquivalenceContext -.->|Audit Log| Sec
+    CoreContext -.->|Sync REST Port/Adapter: Search Equivalences| EquivalenceContext
+    CoreContext == Transactional Outbox ==>|Async Domain Event: LA Approved / Cancelled| PreparationContext
+    PreparationContext -.->|Trigger Alert| Notif
+    CoreContext -.->|Trigger Alert| Notif
+    CoreContext -.->|Write Audit Trail| Sec
+    EquivalenceContext -.->|Write Audit Trail| Sec
 ```
 
-### Tipuri de Contracte de Integrare Formalizate:
-1. **Shared Kernel:** Contextele partajează tipurile de date imuabile fundamentale: `StudentId`, `MobilityId`, `AcademicPeriod` și `ECTSCredits`. Orice modificare a acestor tipuri necesită consens între toate echipele.
-2. **Customer / Supplier (Sincron REST cu Adapter):** Subdomeniul *Learning Agreement* este consumator (Customer) al serviciilor expuse de *Equivalence Management* (Supplier). Interogarea compatibilității dintre cursurile Table A și Table B se face printr-un port în Domain Layer și un adaptor REST în Infrastructure Layer.
-3. **Asynchronous Domain Events (Transactional Outbox):** Comunicarea între *Learning Agreement* și *Mobility Preparation* este complet asincronă și decuplată temporal. Evenimentele de domeniu (`LearningAgreementApprovedEvent`, `LearningAgreementCancelledEvent`) sunt salvate atomic în tabela Outbox a contextului emițător și expediate garantat către broker, fiind consumate idempotent în *Mobility Preparation*.
+### Formal Integration Contracts:
+1. **Shared Kernel:** The three Bounded Contexts share a minimal set of immutable identity and measurement Value Objects: `StudentId`, `MobilityId`, `AcademicPeriod`, and `ECTSCredits`. Modifications to these types require cross-team consensus.
+2. **Customer / Supplier (Synchronous REST with Anti-Corruption Layer):** *Learning Agreement Management* acts as a Customer consuming the course catalog services exposed by *Equivalence Management* (Supplier). Queries pass through a domain Port and an infrastructure REST Adapter to preserve aggregate encapsulation.
+3. **Asynchronous Event-Driven Integration (Transactional Outbox Pattern):** Inter-context synchronization between *Learning Agreement* and *Mobility Preparation* is temporal and asynchronous. Upon partner endorsement (`CONFIRMED_BY_HOST`), domain events (`LearningAgreementApprovedEvent`, `LearningAgreementCancelledEvent`) are committed atomically to the local `Outbox` table and delivered via message broker to update onboarding checklist states idempotently.
 
 ---
 
-## 2. Glosarul Ubiquitous Language
+## 2. Ubiquitous Language Glossary
 
-| Termen / Concept | Context Delimitat (Bounded Context) | Tip DDD / Rol | Definiție de Afaceri și Semnificație Arhitecturală |
+| Term / Concept | Bounded Context | DDD Element / Pattern | Formal Business Role & Architectural Significance |
 | :--- | :--- | :--- | :--- |
-| **LearningAgreement** | Learning Agreement Management | **Aggregate Root** | Contractul educațional tripartit oficial încheiat între student, facultatea de origine și universitatea parteneră. Garantează recunoașterea academică automată a creditelor la finalizarea cu succes a mobilității. |
-| **CourseLineTableA** | Learning Agreement Management | **Entity** | Reprezintă o disciplină din planul de învățământ al universității primitoare (gazdă) pe care studentul o va frecventa, având un cod extern, denumire, semestru și credite ECTS. |
-| **CourseLineTableB** | Learning Agreement Management | **Entity** | Reprezintă o disciplină din planul de învățământ al facultății de trimitere (UAIC) care va fi echivalată la întoarcere în baza promovării cursurilor din Table A. |
-| **StareLearningAgreement** | Learning Agreement Management | **Enum / Value Object** | Valorile permise pentru ciclul de viață al contractului: `Ciorna`, `Trimis`, `InRevizuire`, `AprobatFacultate`, `ConfirmatPartener`, `Amendat`, `Anulat`. |
-| **AcademicEquivalence** | Equivalence Management | **Aggregate Root** | Regula formală instituțională care leagă o disciplină sau un grup de discipline externe de o disciplină locală, pe baza similitudinii de conținut și a creditelor transferabile. |
-| **StareEchivalare** | Equivalence Management | **Enum / Value Object** | Stările posibile ale unei reguli de echivalare: `Propusa`, `InEvaluare`, `Aprobata`, `Activa`, `Retrasa`. |
-| **ChecklistTask** | Mobility Preparation | **Aggregate Root** | Sarcină administrativă individuală alocată unui student nominalizat (ex: testare OLS, adeverință EHIC, contract financiar) cu termen limită de rezolvare. |
-| **StareSarcina** | Mobility Preparation | **Enum / Value Object** | Stările posibile ale unei sarcini din checklist: `Initializata`, `InAsteptareDocument`, `TrimisaSpreValidare`, `Finalizata`, `Depasita`. |
-| **StudentId** | Shared Kernel | **Value Object** | Identificator unic de tip UUID/număr matricol care identifică studentul în mod unic la nivelul întregului sistem universitar. |
-| **MobilityId** | Shared Kernel | **Value Object** | Identificator unic al dosarului de mobilitate deschis în urma procesului de selecție și alocare a unui loc la o universitate parteneră. |
-| **AcademicPeriod** | Shared Kernel | **Value Object** | Interval temporal compus din `dataInceput` și `dataSfarsit`, garantând invariantul `dataSfarsit >= dataInceput`. |
-| **ECTSCredits** | Shared Kernel | **Value Object** | Valoare numerică ce cuantifică volumul de muncă asociat unei discipline, garantând invariantul ca valoarea să fie pozitivă și conformă normelor sistemului european de transfer al creditelor. |
-
+| **LearningAgreement** | Learning Agreement Management | **Aggregate Root** | The official tripartite legal and academic contract executed between student, home faculty, and partner host institution, establishing pre-approved credit recognition. |
+| **CourseLineTableA** | Learning Agreement Management | **Internal Entity** | An educational component at the receiving host institution to be completed abroad, possessing a course code, official title, term, language, and ECTS credits. |
+| **CourseLineTableB** | Learning Agreement Management | **Internal Entity** | An accredited educational component from the home degree syllabus that will be replaced and recognized upon passing Table A components. |
+| **StareLearningAgreement** | Learning Agreement Management | **Enum / Value Object** | Contract lifecycle states: `DRAFT`, `SUBMITTED`, `UNDER_REVIEW`, `APPROVED_BY_FACULTY`, `CONFIRMED_BY_HOST`, `AMENDED`, `CANCELLED`. |
+| **AcademicEquivalence** | Equivalence Management | **Aggregate Root** | Institutional mapping binding foreign course syllabi to domestic degree subjects based on verified learning outcomes and credit equivalence. |
+| **StareEchivalare** | Equivalence Management | **Enum / Value Object** | Equivalence lifecycle states: `PROPOSED`, `UNDER_EVALUATION`, `APPROVED`, `ACTIVE`, `RETIRED`. |
+| **ChecklistTask** | Mobility Preparation | **Aggregate Root** | An atomic unit of administrative onboarding compliance (e.g., EHIC card, grant contract, OLS assessment) governed by explicit deadlines. |
+| **StareSarcina** | Mobility Preparation | **Enum / Value Object** | Task lifecycle states: `INITIALIZED`, `PENDING_STUDENT_ACTION`, `SUBMITTED_FOR_VERIFICATION`, `COMPLETED`, `OVERDUE`. |
+| **StudentId** | Shared Kernel | **Value Object** | Globally unique immutable identifier representing the matriculated student across all university subsystems. |
+| **MobilityId** | Shared Kernel | **Value Object** | Globally unique immutable identifier representing the academic exchange grant instance. |
+| **AcademicPeriod** | Shared Kernel | **Value Object** | Immutable date interval capturing mobility start and end dates, enforcing `endDate >= startDate`. |
+| **ECTSCredits** | Shared Kernel | **Value Object** | Decimal numerical value quantifying academic workload according to European Credit Transfer and Accumulation System conventions. |
