@@ -1,0 +1,112 @@
+@startuml
+title Figure 11. Repository Hierarchy: Domain Interfaces and Concrete JPA Infrastructure Implementations
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 10
+skinparam roundCorner 8
+skinparam classAttributeIconSize 0
+
+skinparam class {
+  BackgroundColor #FFF8EE
+  BorderColor #8D5B4C
+  FontSize 9.5
+  HeaderBackgroundColor #FCEBD9
+}
+
+skinparam note {
+  BackgroundColor #FEFCBF
+  BorderColor #D69E2E
+  FontSize 9
+}
+
+abstract class AbstractRepositoryJPA <<abstract>> {
+  # em: EntityManager
+}
+
+note right of AbstractRepositoryJPA
+  The common base class provides persistence infrastructure (EntityManager).
+  Transaction boundaries are managed declaratively via @Transactional
+  in the Application Service, never inside the repository.
+end note
+
+' Concrete Infrastructure Implementations
+class LearningAgreementRepoJPA {
+  + add(la: LearningAgreement): void
+  + findById(id: UUID): Optional<LearningAgreement>
+  + findByStudentId(studentId: StudentId): Optional<LearningAgreement>
+  + save(la: LearningAgreement): void
+  + delete(la: LearningAgreement): void
+}
+
+class CourseLineQueryRepoJPA {
+  + findLinesByAgreementId(agreementId: UUID): List<CourseLineDTO>
+  + findHostCourseByCode(agreementId: UUID, code: String): Optional<CourseLineTableA>
+}
+
+class AcademicEquivalenceRepoJPA {
+  + save(eq: AcademicEquivalence): void
+  + findById(id: UUID): Optional<AcademicEquivalence>
+  + searchByPartnerAndCode(partnerId: String, code: String): List<AcademicEquivalence>
+  + findActiveByDegreeProgram(degreeId: String): List<AcademicEquivalence>
+}
+
+class ChecklistTaskRepoJPA {
+  + save(task: ChecklistTask): void
+  + findById(id: UUID): Optional<ChecklistTask>
+  + findAllByMobilityId(mobilityId: MobilityId): List<ChecklistTask>
+  + findOverdueTasks(referenceDate: LocalDate): List<ChecklistTask>
+}
+
+' Domain Interfaces
+interface LearningAgreementRepo <<Repository>> {
+  + add(la: LearningAgreement): void
+  + findById(id: UUID): Optional<LearningAgreement>
+  + findByStudentId(studentId: StudentId): Optional<LearningAgreement>
+  + save(la: LearningAgreement): void
+  + delete(la: LearningAgreement): void
+}
+
+interface CourseLineQueryRepo <<Repository (read-only)>> {
+  + findLinesByAgreementId(agreementId: UUID): List<CourseLineDTO>
+  + findHostCourseByCode(agreementId: UUID, code: String): Optional<CourseLineTableA>
+}
+
+interface AcademicEquivalenceRepo <<Repository>> {
+  + save(eq: AcademicEquivalence): void
+  + findById(id: UUID): Optional<AcademicEquivalence>
+  + searchByPartnerAndCode(partnerId: String, code: String): List<AcademicEquivalence>
+  + findActiveByDegreeProgram(degreeId: String): List<AcademicEquivalence>
+}
+
+interface ChecklistTaskRepo <<Repository>> {
+  + save(task: ChecklistTask): void
+  + findById(id: UUID): Optional<ChecklistTask>
+  + findAllByMobilityId(mobilityId: MobilityId): List<ChecklistTask>
+  + findOverdueTasks(referenceDate: LocalDate): List<ChecklistTask>
+}
+
+' Notes on Domain Interfaces
+note bottom of CourseLineQueryRepo
+  CourseLineQueryRepo serves read-only projection queries and reports.
+  Any state mutation of course lines must traverse the root LearningAgreement
+  aggregate to guarantee the 30 ECTS parity invariant.
+end note
+
+note bottom of AcademicEquivalenceRepo
+  Returns AcademicEquivalence aggregates and CourseSyllabus Value Objects.
+  Enforces typed query boundaries, preventing raw unvalidated SQL string manipulations.
+end note
+
+' Inheritance: Concrete classes extend AbstractRepositoryJPA
+AbstractRepositoryJPA <|-- LearningAgreementRepoJPA
+AbstractRepositoryJPA <|-- CourseLineQueryRepoJPA
+AbstractRepositoryJPA <|-- AcademicEquivalenceRepoJPA
+AbstractRepositoryJPA <|-- ChecklistTaskRepoJPA
+
+' Realization: Concrete classes implement Domain Interfaces
+LearningAgreementRepoJPA ..|> LearningAgreementRepo
+CourseLineQueryRepoJPA ..|> CourseLineQueryRepo
+AcademicEquivalenceRepoJPA ..|> AcademicEquivalenceRepo
+ChecklistTaskRepoJPA ..|> ChecklistTaskRepo
+
+@enduml

@@ -1,0 +1,194 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1520 620" width="100%" height="100%" style="background-color: #FBF8F1; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#2D3748" />
+    </marker>
+    <marker id="gen-arrow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <polygon points="0,1 11,6 0,11" fill="#FFF9F2" stroke="#2D3748" stroke-width="1.4" />
+    </marker>
+    <marker id="impl-arrow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <polygon points="0,1 11,6 0,11" fill="#FFF9F2" stroke="#2D3748" stroke-width="1.4" />
+    </marker>
+    <filter id="shadow" x="-3%" y="-3%" width="106%" height="106%">
+      <feDropShadow dx="2" dy="3" stdDeviation="3" flood-opacity="0.10" />
+    </filter>
+  </defs>
+
+  <!-- Title -->
+  <text x="30" y="32" font-size="18" font-weight="bold" fill="#1A202C">Figure 11. Repository Hierarchy: Domain Interfaces and Concrete JPA Infrastructure Implementations</text>
+  <text x="30" y="50" font-size="11.5" fill="#5A4A3E">Separation of Domain Repository Contracts from Technical Infrastructure Persistence via AbstractRepositoryJPA</text>
+
+  <!-- ============================================================== -->
+  <!-- TOP: ABSTRACT REPOSITORY JPA                                   -->
+  <!-- ============================================================== -->
+  <g transform="translate(590, 70)">
+    <rect x="0" y="0" width="280" height="65" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.5" filter="url(#shadow)" />
+    <circle cx="16" cy="16" r="6" fill="#0EA5E9" />
+    <text x="16" y="19" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#FFFFFF">A</text>
+    <text x="145" y="14" text-anchor="middle" font-size="8.5" font-style="italic" fill="#7A583A">«abstract»</text>
+    <text x="145" y="26" text-anchor="middle" font-size="11" font-weight="bold" font-style="italic" fill="#1A202C">AbstractRepositoryJPA</text>
+    <line x1="0" y1="32" x2="280" y2="32" stroke="#8D5B4C" stroke-width="0.8" />
+    <text x="12" y="46" font-size="9" fill="#2D3748"># em: EntityManager</text>
+    <text x="12" y="58" font-size="8.5" fill="#7A583A"># entityClass: Class&lt;T&gt;</text>
+  </g>
+
+  <!-- Yellow Note for AbstractRepositoryJPA -->
+  <g transform="translate(910, 65)">
+    <rect x="0" y="0" width="440" height="70" rx="4" fill="#FEFCBF" stroke="#D69E2E" stroke-width="1" />
+    <path d="M 430 0 L 440 10 L 430 10 Z" fill="#B7791F" />
+    <text x="12" y="18" font-size="9" fill="#744210">The common base class provides persistence infrastructure (EntityManager).</text>
+    <text x="12" y="32" font-size="9" fill="#744210">Transaction boundaries are managed declaratively via @Transactional</text>
+    <text x="12" y="46" font-size="9" fill="#744210">in the Application Service, never inside repository methods.</text>
+    <text x="12" y="60" font-size="8.5" font-style="italic" fill="#8C5015">[Guarantees ACID boundaries surround full business operations]</text>
+  </g>
+  <line x1="870" y1="100" x2="910" y2="100" stroke="#D69E2E" stroke-width="1" stroke-dasharray="3,3" />
+
+  <!-- ============================================================== -->
+  <!-- MIDDLE ROW: CONCRETE JPA REPOSITORIES (INFRASTRUCTURE)          -->
+  <!-- ============================================================== -->
+
+  <!-- Class 1: LearningAgreementRepoJPA -->
+  <g transform="translate(30, 190)">
+    <rect x="0" y="0" width="340" height="110" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.4" filter="url(#shadow)" />
+    <circle cx="16" cy="16" r="6" fill="#84CC16" />
+    <text x="16" y="19" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#FFFFFF">C</text>
+    <text x="170" y="24" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">LearningAgreementRepoJPA</text>
+    <line x1="0" y1="32" x2="340" y2="32" stroke="#8D5B4C" stroke-width="0.8" />
+    <text x="10" y="46" font-size="8.5" fill="#2D3748">+ add(la: LearningAgreement): void</text>
+    <text x="10" y="60" font-size="8.5" fill="#2D3748">+ findById(id: UUID): Optional&lt;LearningAgreement&gt;</text>
+    <text x="10" y="74" font-size="8.5" fill="#2D3748">+ findByStudentId(sid: StudentId): Optional&lt;LA&gt;</text>
+    <text x="10" y="88" font-size="8.5" fill="#2D3748">+ save(la: LearningAgreement): void</text>
+    <text x="10" y="102" font-size="8.5" fill="#2D3748">+ delete(la: LearningAgreement): void</text>
+  </g>
+
+  <!-- Class 2: CourseLineQueryRepoJPA -->
+  <g transform="translate(400, 190)">
+    <rect x="0" y="0" width="340" height="85" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.4" filter="url(#shadow)" />
+    <circle cx="16" cy="16" r="6" fill="#84CC16" />
+    <text x="16" y="19" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#FFFFFF">C</text>
+    <text x="170" y="24" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">CourseLineQueryRepoJPA</text>
+    <line x1="0" y1="32" x2="340" y2="32" stroke="#8D5B4C" stroke-width="0.8" />
+    <text x="10" y="46" font-size="8.5" fill="#2D3748">+ findLinesByAgreementId(aid: UUID): List&lt;DTO&gt;</text>
+    <text x="10" y="60" font-size="8.5" fill="#2D3748">+ findHostCourseByCode(aid, code): Optional&lt;LineA&gt;</text>
+    <text x="10" y="74" font-size="8" fill="#7A583A">- read-only projection via CriteriaQuery</text>
+  </g>
+
+  <!-- Class 3: AcademicEquivalenceRepoJPA -->
+  <g transform="translate(770, 190)">
+    <rect x="0" y="0" width="345" height="95" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.4" filter="url(#shadow)" />
+    <circle cx="16" cy="16" r="6" fill="#84CC16" />
+    <text x="16" y="19" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#FFFFFF">C</text>
+    <text x="175" y="24" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">AcademicEquivalenceRepoJPA</text>
+    <line x1="0" y1="32" x2="345" y2="32" stroke="#8D5B4C" stroke-width="0.8" />
+    <text x="10" y="46" font-size="8.5" fill="#2D3748">+ save(eq: AcademicEquivalence): void</text>
+    <text x="10" y="60" font-size="8.5" fill="#2D3748">+ findById(id: UUID): Optional&lt;AcademicEquivalence&gt;</text>
+    <text x="10" y="74" font-size="8.5" fill="#2D3748">+ searchByPartnerAndCode(pid, code): List&lt;EQ&gt;</text>
+    <text x="10" y="88" font-size="8.5" fill="#2D3748">+ findActiveByDegreeProgram(degreeId): List&lt;EQ&gt;</text>
+  </g>
+
+  <!-- Class 4: ChecklistTaskRepoJPA -->
+  <g transform="translate(1145, 190)">
+    <rect x="0" y="0" width="340" height="95" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.4" filter="url(#shadow)" />
+    <circle cx="16" cy="16" r="6" fill="#84CC16" />
+    <text x="16" y="19" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#FFFFFF">C</text>
+    <text x="170" y="24" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">ChecklistTaskRepoJPA</text>
+    <line x1="0" y1="32" x2="340" y2="32" stroke="#8D5B4C" stroke-width="0.8" />
+    <text x="10" y="46" font-size="8.5" fill="#2D3748">+ save(task: ChecklistTask): void</text>
+    <text x="10" y="60" font-size="8.5" fill="#2D3748">+ findById(id: UUID): Optional&lt;ChecklistTask&gt;</text>
+    <text x="10" y="74" font-size="8.5" fill="#2D3748">+ findAllByMobilityId(mid: MobilityId): List&lt;Task&gt;</text>
+    <text x="10" y="88" font-size="8.5" fill="#2D3748">+ findOverdueTasks(refDate: LocalDate): List&lt;Task&gt;</text>
+  </g>
+
+  <!-- Inheritance lines from JPA classes to AbstractRepositoryJPA -->
+  <path d="M 200 190 L 200 160 L 670 160 L 670 135" stroke="#2D3748" stroke-width="1.3" fill="none" marker-end="url(#gen-arrow)" />
+  <path d="M 570 190 L 570 160 L 710 160 L 710 135" stroke="#2D3748" stroke-width="1.3" fill="none" marker-end="url(#gen-arrow)" />
+  <path d="M 940 190 L 940 160 L 750 160 L 750 135" stroke="#2D3748" stroke-width="1.3" fill="none" marker-end="url(#gen-arrow)" />
+  <path d="M 1315 190 L 1315 160 L 790 160 L 790 135" stroke="#2D3748" stroke-width="1.3" fill="none" marker-end="url(#gen-arrow)" />
+
+  <!-- ============================================================== -->
+  <!-- BOTTOM ROW: DOMAIN INTERFACES (DOMAIN LAYER)                   -->
+  <!-- ============================================================== -->
+
+  <!-- Interface 1: LearningAgreementRepo -->
+  <g transform="translate(30, 360)">
+    <rect x="0" y="0" width="340" height="110" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.4" filter="url(#shadow)" />
+    <circle cx="16" cy="16" r="6" fill="#3B82F6" />
+    <text x="16" y="19" text-anchor="middle" font-size="8" font-weight="bold" fill="#FFFFFF">I</text>
+    <text x="170" y="14" text-anchor="middle" font-size="8.5" font-style="italic" fill="#7A583A">«Repository»</text>
+    <text x="170" y="26" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">LearningAgreementRepo</text>
+    <line x1="0" y1="32" x2="340" y2="32" stroke="#8D5B4C" stroke-width="0.8" />
+    <text x="10" y="46" font-size="8.5" fill="#2D3748">+ add(la: LearningAgreement): void</text>
+    <text x="10" y="60" font-size="8.5" fill="#2D3748">+ findById(id: UUID): Optional&lt;LearningAgreement&gt;</text>
+    <text x="10" y="74" font-size="8.5" fill="#2D3748">+ findByStudentId(sid: StudentId): Optional&lt;LA&gt;</text>
+    <text x="10" y="88" font-size="8.5" fill="#2D3748">+ save(la: LearningAgreement): void</text>
+    <text x="10" y="102" font-size="8.5" fill="#2D3748">+ delete(la: LearningAgreement): void</text>
+  </g>
+
+  <!-- Interface 2: CourseLineQueryRepo -->
+  <g transform="translate(400, 360)">
+    <rect x="0" y="0" width="340" height="85" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.4" filter="url(#shadow)" />
+    <circle cx="16" cy="16" r="6" fill="#3B82F6" />
+    <text x="16" y="19" text-anchor="middle" font-size="8" font-weight="bold" fill="#FFFFFF">I</text>
+    <text x="170" y="14" text-anchor="middle" font-size="8.5" font-style="italic" fill="#7A583A">«Repository (read-only)»</text>
+    <text x="170" y="26" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">CourseLineQueryRepo</text>
+    <line x1="0" y1="32" x2="340" y2="32" stroke="#8D5B4C" stroke-width="0.8" />
+    <text x="10" y="46" font-size="8.5" fill="#2D3748">+ findLinesByAgreementId(aid: UUID): List&lt;DTO&gt;</text>
+    <text x="10" y="60" font-size="8.5" fill="#2D3748">+ findHostCourseByCode(aid, code): Optional&lt;LineA&gt;</text>
+  </g>
+
+  <!-- Interface 3: AcademicEquivalenceRepo -->
+  <g transform="translate(770, 360)">
+    <rect x="0" y="0" width="345" height="95" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.4" filter="url(#shadow)" />
+    <circle cx="16" cy="16" r="6" fill="#3B82F6" />
+    <text x="16" y="19" text-anchor="middle" font-size="8" font-weight="bold" fill="#FFFFFF">I</text>
+    <text x="175" y="14" text-anchor="middle" font-size="8.5" font-style="italic" fill="#7A583A">«Repository»</text>
+    <text x="175" y="26" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">AcademicEquivalenceRepo</text>
+    <line x1="0" y1="32" x2="345" y2="32" stroke="#8D5B4C" stroke-width="0.8" />
+    <text x="10" y="46" font-size="8.5" fill="#2D3748">+ save(eq: AcademicEquivalence): void</text>
+    <text x="10" y="60" font-size="8.5" fill="#2D3748">+ findById(id: UUID): Optional&lt;AcademicEquivalence&gt;</text>
+    <text x="10" y="74" font-size="8.5" fill="#2D3748">+ searchByPartnerAndCode(pid, code): List&lt;EQ&gt;</text>
+    <text x="10" y="88" font-size="8.5" fill="#2D3748">+ findActiveByDegreeProgram(degreeId): List&lt;EQ&gt;</text>
+  </g>
+
+  <!-- Interface 4: ChecklistTaskRepo -->
+  <g transform="translate(1145, 360)">
+    <rect x="0" y="0" width="340" height="95" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.4" filter="url(#shadow)" />
+    <circle cx="16" cy="16" r="6" fill="#3B82F6" />
+    <text x="16" y="19" text-anchor="middle" font-size="8" font-weight="bold" fill="#FFFFFF">I</text>
+    <text x="170" y="14" text-anchor="middle" font-size="8.5" font-style="italic" fill="#7A583A">«Repository»</text>
+    <text x="170" y="26" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">ChecklistTaskRepo</text>
+    <line x1="0" y1="32" x2="340" y2="32" stroke="#8D5B4C" stroke-width="0.8" />
+    <text x="10" y="46" font-size="8.5" fill="#2D3748">+ save(task: ChecklistTask): void</text>
+    <text x="10" y="60" font-size="8.5" fill="#2D3748">+ findById(id: UUID): Optional&lt;ChecklistTask&gt;</text>
+    <text x="10" y="74" font-size="8.5" fill="#2D3748">+ findAllByMobilityId(mid: MobilityId): List&lt;Task&gt;</text>
+    <text x="10" y="88" font-size="8.5" fill="#2D3748">+ findOverdueTasks(refDate: LocalDate): List&lt;Task&gt;</text>
+  </g>
+
+  <!-- Implementation lines (Dashed lines with hollow triangles down to Interfaces) -->
+  <line x1="200" y1="300" x2="200" y2="360" stroke="#2D3748" stroke-width="1.3" stroke-dasharray="4,4" marker-end="url(#impl-arrow)" />
+  <line x1="570" y1="275" x2="570" y2="360" stroke="#2D3748" stroke-width="1.3" stroke-dasharray="4,4" marker-end="url(#impl-arrow)" />
+  <line x1="940" y1="285" x2="940" y2="360" stroke="#2D3748" stroke-width="1.3" stroke-dasharray="4,4" marker-end="url(#impl-arrow)" />
+  <line x1="1315" y1="285" x2="1315" y2="360" stroke="#2D3748" stroke-width="1.3" stroke-dasharray="4,4" marker-end="url(#impl-arrow)" />
+
+  <!-- Explanatory Notes on Domain Interfaces -->
+  <g transform="translate(380, 500)">
+    <rect x="0" y="0" width="380" height="80" rx="4" fill="#FEFCBF" stroke="#D69E2E" stroke-width="1" />
+    <path d="M 370 0 L 380 10 L 370 10 Z" fill="#B7791F" />
+    <text x="10" y="18" font-size="9" font-weight="bold" fill="#744210">CourseLineQueryRepo Projection Rule:</text>
+    <text x="10" y="32" font-size="8.5" fill="#744210">Serves read-only projection queries and academic reports.</text>
+    <text x="10" y="46" font-size="8.5" fill="#744210">Any state mutation of course lines must traverse the root</text>
+    <text x="10" y="60" font-size="8.5" fill="#744210">LearningAgreement aggregate to guarantee 30 ECTS parity.</text>
+  </g>
+  <line x1="570" y1="445" x2="570" y2="500" stroke="#D69E2E" stroke-width="1" stroke-dasharray="3,3" />
+
+  <g transform="translate(800, 500)">
+    <rect x="0" y="0" width="380" height="80" rx="4" fill="#FEFCBF" stroke="#D69E2E" stroke-width="1" />
+    <path d="M 370 0 L 380 10 L 370 10 Z" fill="#B7791F" />
+    <text x="10" y="18" font-size="9" font-weight="bold" fill="#744210">Typed Domain Boundaries Rule:</text>
+    <text x="10" y="32" font-size="8.5" fill="#744210">Returns AcademicEquivalence aggregates and CourseSyllabus</text>
+    <text x="10" y="46" font-size="8.5" fill="#744210">Value Objects directly. Enforces typed query boundaries,</text>
+    <text x="10" y="60" font-size="8.5" fill="#744210">preventing raw unvalidated SQL string manipulations.</text>
+  </g>
+  <line x1="940" y1="455" x2="940" y2="500" stroke="#D69E2E" stroke-width="1" stroke-dasharray="3,3" />
+
+</svg>
