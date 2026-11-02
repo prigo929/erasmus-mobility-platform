@@ -5,7 +5,7 @@ Master SDBIS / SIA, Anul I, Semestrul I, Universitatea „Alexandru Ioan Cuza”
 
 ## Echipa de proiect și atribuirea sarcinilor
 
-### Student 1: [Nume Student 1]
+### Student 1: Prigoreanu Alin-Gabriel
 * **Subdomeniu:** Gestiunea Candidaturilor și a Mobilităților (Core Domain)
 * **Diagramă Use Case:** Procesul de înscriere și selecție dosare
 * **Use Case Documentat (SVDPI & Gherkin):** `UC01 - Depunere Dosar Candidatură`
