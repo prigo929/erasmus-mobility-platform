@@ -1,0 +1,230 @@
+@startuml
+title Figure 8. Tactical DDD Domain Model with Isolated Aggregates and Explicit Consistency Boundaries
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 10
+skinparam roundCorner 8
+skinparam classAttributeIconSize 0
+
+skinparam package {
+  BackgroundColor #FDFBF7
+  BorderColor #7A6253
+  FontSize 12
+  FontStyle bold
+}
+
+skinparam class {
+  BackgroundColor #FFF8EE
+  BorderColor #8D5B4C
+  FontSize 10
+  HeaderBackgroundColor #FCEBD9
+}
+
+skinparam stereotypeCBackgroundColor #E2D4C9
+
+package "Common types (Shared Kernel)" as SharedKernel {
+  class StudentId <<Value Object>> {
+    + value: UUID
+  }
+
+  class MobilityId <<Value Object>> {
+    + value: UUID
+  }
+
+  class AcademicPeriod <<Value Object>> {
+    + startDate: LocalDate
+    + endDate: LocalDate
+  }
+
+  class ECTSCredits <<Value Object>> {
+    + value: BigDecimal
+  }
+}
+
+package "Learning Agreement Management (Core Domain)" as CoreDomain {
+  class ECTSParityService <<Domain Service>> {
+    + validateBalance(tableA: List<CourseLineTableA>, tableB: List<CourseLineTableB>): boolean
+    + calculateDeficit(tableA: List<CourseLineTableA>, tableB: List<CourseLineTableB>): BigDecimal
+  }
+
+  class LearningAgreement <<Aggregate Root>> {
+    - id: UUID
+    - mobilityId: MobilityId
+    - studentId: StudentId
+    - hostUniversityId: String
+    - academicPeriod: AcademicPeriod
+    - status: LearningAgreementStatus
+    - tableALines: List<CourseLineTableA>
+    - tableBLines: List<CourseLineTableB>
+    - academicYear: String
+    - rejectionNotes: String
+    + addTableALine(code: String, title: String, ects: ECTSCredits, term: String): void
+    + addTableBLine(code: String, title: String, ects: ECTSCredits, term: String): void
+    + removeCourseLine(lineId: UUID): void
+    + validateEctsBalance(): boolean
+    + submit(): LearningAgreementSubmittedEvent
+    + approveByFaculty(coordinatorId: String): LearningAgreementApprovedEvent
+    + requestChanges(notes: String): void
+    + confirmByHost(): LearningAgreementConfirmedEvent
+    + cancel(): LearningAgreementCancelledEvent
+  }
+
+  class CourseLineTableA <<Entity>> {
+    - lineId: UUID
+    - courseCode: String
+    - courseTitle: String
+    - credits: ECTSCredits
+    - semesterTerm: String
+    - instructionLanguage: String
+    + updateCredits(credits: ECTSCredits): void
+  }
+
+  class CourseLineTableB <<Entity>> {
+    - lineId: UUID
+    - homeCourseCode: String
+    - homeCourseTitle: String
+    - credits: ECTSCredits
+    - semesterTerm: String
+    - equivalentCourseCode: String
+    + updateCredits(credits: ECTSCredits): void
+  }
+
+  enum LearningAgreementStatus <<Enum>> {
+    DRAFT
+    SUBMITTED
+    UNDER_REVIEW
+    APPROVED_BY_FACULTY
+    CONFIRMED_BY_HOST
+    AMENDED
+    CANCELLED
+  }
+
+  ECTSParityService ..> LearningAgreement : <<use>>
+  LearningAgreement *-- "1..*" CourseLineTableA : composition
+  LearningAgreement *-- "1..*" CourseLineTableB : composition
+  LearningAgreement --> LearningAgreementStatus
+}
+
+package "Equivalence Management (Supporting)" as EquivalenceDomain {
+  class SyllabusEvaluationService <<Domain Service>> {
+    + calculateSimilarityScore(source: CourseSyllabus, target: CourseSyllabus): double
+  }
+
+  class AcademicEquivalence <<Aggregate Root>> {
+    - id: UUID
+    - partnerUniversityId: String
+    - hostCourseCode: String
+    - hostCourseTitle: String
+    - homeCourseCode: String
+    - homeCourseTitle: String
+    - credits: ECTSCredits
+    - syllabus: CourseSyllabus
+    - status: EquivalenceStatus
+    - validityPeriod: AcademicPeriod
+    + evaluateSyllabus(committeeNotes: String): void
+    + approve(evaluatorId: String): EquivalenceApprovedEvent
+    + retire(): void
+    + isCompatibleWith(criteria: String): boolean
+  }
+
+  class CourseSyllabus <<Value Object>> {
+    - learningOutcomes: String
+    - weeklyHours: int
+    - thematicUnits: String
+    - gradingCriteria: String
+  }
+
+  enum EquivalenceStatus <<Enum>> {
+    PROPOSED
+    UNDER_EVALUATION
+    APPROVED
+    ACTIVE
+    RETIRED
+  }
+
+  SyllabusEvaluationService ..> AcademicEquivalence : <<use>>
+  AcademicEquivalence *-- CourseSyllabus : holds
+  AcademicEquivalence --> EquivalenceStatus
+}
+
+package "Mobility Preparation (Supporting)" as PreparationDomain {
+  class MobilityDossier <<Aggregate Root>> {
+    - id: MobilityId
+    - studentId: StudentId
+    - partnerUniversityId: String
+    - period: AcademicPeriod
+    - grantAmount: GrantAmount
+    - status: MobilityStatus
+    + initializeChecklist(templateId: String): void
+    + cancelMobility(reason: String): MobilityCancelledEvent
+    + markPrepared(): MobilityPreparedEvent
+  }
+
+  class ChecklistTask <<Aggregate Root>> {
+    - id: UUID
+    - mobilityId: MobilityId
+    - studentId: StudentId
+    - taskCode: String
+    - title: String
+    - deadline: LocalDate
+    - status: TaskStatus
+    - document: DocumentAttachment
+    - isMandatory: boolean
+    + uploadDocument(fileRef: String, hash: String): void
+    + submitForVerification(): void
+    + verifyAndComplete(officerId: String): TaskCompletedEvent
+    + markOverdue(): TaskOverdueEvent
+    + abortTask(): void
+  }
+
+  class DocumentAttachment <<Value Object>> {
+    - fileName: String
+    - storageUri: String
+    - checksumSha256: String
+    - uploadTimestamp: Instant
+  }
+
+  class GrantAmount <<Value Object>> {
+    - monthlyRate: BigDecimal
+    - totalAmount: BigDecimal
+    - currency: String
+  }
+
+  enum TaskStatus <<Enum>> {
+    INITIALIZED
+    PENDING_STUDENT_ACTION
+    SUBMITTED_FOR_VERIFICATION
+    COMPLETED
+    OVERDUE
+    ABORTED
+  }
+
+  enum MobilityStatus <<Enum>> {
+    NOMINATED
+    IN_PREPARATION
+    PREPARED
+    ABROAD
+    COMPLETED
+    CANCELLED
+  }
+
+  MobilityDossier *-- GrantAmount : holds
+  MobilityDossier --> MobilityStatus
+  ChecklistTask *-- DocumentAttachment : holds
+  ChecklistTask --> TaskStatus
+}
+
+LearningAgreement --> StudentId
+LearningAgreement --> MobilityId
+LearningAgreement --> AcademicPeriod
+CourseLineTableA --> ECTSCredits
+CourseLineTableB --> ECTSCredits
+AcademicEquivalence --> AcademicPeriod
+AcademicEquivalence --> ECTSCredits
+MobilityDossier --> StudentId
+MobilityDossier --> MobilityId
+MobilityDossier --> AcademicPeriod
+ChecklistTask --> StudentId
+ChecklistTask --> MobilityId
+
+@enduml
