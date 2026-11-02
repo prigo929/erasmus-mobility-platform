@@ -1,0 +1,42 @@
+@startuml
+title Use Case Diagram - Learning Agreement Management (Core Domain)
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Student" as S
+actor "Home Coordinator" as HC
+actor "Scheduler" as T
+actor "Host Coordinator\n(extern, secundar)" as XC
+
+rectangle "Learning Agreement Management" {
+  usecase "Create LA" as U1
+  usecase "Manage Course Lines" as U2
+  usecase "Propose New Equivalence" as U3
+  usecase "Submit LA" as U5
+  usecase "Check ECTS Balance" as U4
+  usecase "Request Amendment" as U9
+  usecase "Cancel LA" as U10
+  usecase "Track LA Status" as U11
+  usecase "Review LA" as U6
+  usecase "Notify Student of Decision" as U8
+  usecase "Escalate Overdue Review" as U7
+  usecase "Confirm LA at Host University" as U12
+}
+
+S --> U1
+S --> U2
+S --> U5
+S --> U9
+S --> U10
+S --> U11
+HC --> U6
+T --> U7
+XC --> U12
+
+U5 ..> U4 : <<include>>
+U6 ..> U8 : <<include>>
+U3 ..> U2 : <<extend>>
+note on link : [nicio echivalare\ngasita in catalog]
+U7 ..> U6 : <<extend>>
+note on link : [nicio decizie in\n5 zile lucratoare]
+@enduml
