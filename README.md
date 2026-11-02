@@ -1,5 +1,3 @@
-# erasmus-mobility-platform
-
 # Sistem Integrat de Gestiune a Mobilităților Erasmus+ (Erasmus Mobility Platform)
 
 Proiect semestrial la disciplina **Analiza și Proiectarea Orientate pe Obiecte**
