@@ -90,3 +90,4 @@ The base class exposes persistence operations. It declares zero transaction boun
 * **Domain Interface:** Exposes `save`, `findById`, `findAllByMobilityId`, and `findOverdueTasks`.
 * **Concrete JPA Class:** `ChecklistTaskRepoJPA` queries student administrative onboarding tasks.
 * **Batch Scheduling:** Supports indexed date queries for the nightly temporal deadline sweep.
+
