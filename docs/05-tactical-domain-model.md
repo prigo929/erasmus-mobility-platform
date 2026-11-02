@@ -62,3 +62,4 @@ The core package isolates the contract aggregate:
 * **`DocumentAttachment` (Value Object):** Stores file names, SHA-256 cryptographic hashes, and cloud storage references.
 * **`GrantAmount` (Value Object):** Immutable currency and financial calculation model.
 * **`TaskStatus` and `MobilityStatus` (Enums):** Lifecycle states for onboarding milestones and student mobility stages.
+
