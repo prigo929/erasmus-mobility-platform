@@ -1,12 +1,12 @@
 @startuml
-title Use Case Diagram - Learning Agreement Management (Core Domain)
+title Figure 3. Use Case Diagram - Learning Agreement Management (Core Domain)
 left to right direction
 skinparam packageStyle rectangle
 
 actor "Student" as S
-actor "Home Coordinator" as HC
+actor "Home Academic Coordinator" as HC
 actor "Scheduler" as T
-actor "Host Coordinator\n(extern, secundar)" as XC
+actor "Host Institutional Coordinator\n(external, secondary)" as XC
 
 rectangle "Learning Agreement Management" {
   usecase "Create LA" as U1
@@ -36,7 +36,7 @@ XC --> U12
 U5 ..> U4 : <<include>>
 U6 ..> U8 : <<include>>
 U3 ..> U2 : <<extend>>
-note on link : [nicio echivalare\ngasita in catalog]
+note on link : [no equivalence\nfound in catalog]
 U7 ..> U6 : <<extend>>
-note on link : [nicio decizie in\n5 zile lucratoare]
+note on link : [no decision rendered\nwithin 5 business days]
 @enduml

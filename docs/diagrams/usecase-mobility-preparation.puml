@@ -1,10 +1,10 @@
 @startuml
-title Use Case Diagram - Mobility Preparation (Supporting)
+title Figure 5. Use Case Diagram - Mobility Preparation (Supporting Subdomain)
 left to right direction
 skinparam packageStyle rectangle
 
 actor "Student" as S
-actor "Home Coordinator" as HC
+actor "Home Academic Coordinator" as HC
 actor "Scheduler" as T
 
 rectangle "Mobility Preparation" {
@@ -28,7 +28,7 @@ T --> P9
 
 P1 ..> P2 : <<include>>
 P8 ..> P6 : <<extend>>
-note on link : [sarcina are link\ncatre formular]
+note on link : [task provides link\nto official form]
 P5 ..> P4 : <<extend>>
-note on link : [sarcina a depasit\ntermenul]
+note on link : [task exceeded\nscheduled deadline]
 @enduml

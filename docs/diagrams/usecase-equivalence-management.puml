@@ -1,14 +1,14 @@
 @startuml
-title Use Case Diagram - Equivalence Management (Supporting)
+title Figure 4. Use Case Diagram - Equivalence Management (Supporting Subdomain)
 left to right direction
 skinparam packageStyle rectangle
 
 actor "Student" as S
-actor "Home Coordinator" as HC
+actor "Home Academic Coordinator" as HC
 
 rectangle "Equivalence Management" {
   usecase "Search Equivalences" as E1
-  usecase "Compare ECTS" as E2
+  usecase "Compare ECTS & Syllabus" as E2
   usecase "Register Equivalence" as E3
   usecase "Validate ECTS Values" as E4
   usecase "Import Historical Equivalences" as E5
@@ -25,5 +25,5 @@ HC --> E7
 
 E3 ..> E4 : <<include>>
 E5 ..> E3 : <<extend>>
-note on link : [incarcare in masa]
+note on link : [bulk data import]
 @enduml
