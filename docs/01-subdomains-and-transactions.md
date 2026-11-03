@@ -2,7 +2,11 @@
 
 **Master in Software Development and Business Information Systems (SDBIS / SIA), 1st Year**  
 **Course:** Object-Oriented Analysis and Design (OOAD)  
-**Project:** Erasmus Mobility Platform (EMP) — Enterprise Distributed Architecture for International Academic Exchanges  
+**Project:** Erasmus Mobility Platform (EMP): Enterprise Distributed Architecture for International Academic Exchanges  
+**Authors:**
+* Prigoreanu Alin-Gabriel (Student 1)
+* Bîrgovan A. Mihai-Daniel (Student 2)
+* Schipor Ana-Maria (Student 3)
 
 ---
 
@@ -10,7 +14,7 @@
 
 Within European higher education institutions participating in the Erasmus+ framework, student academic mobility is a strategic cornerstone of internationalization. However, managing exchange programs is plagued by operational fragmentation: workflows are mediated by disjointed email threads, manually scanned paper documents, out-of-date course catalogs, and a lack of real-time curricular synchronization between the sending institution (*Home University*) and the receiving institution (*Host University*).
 
-To eliminate administrative bottlenecks and achieve strict compliance with European Commission standards—specifically the **Erasmus Without Paper (EWP)** network—there is an urgent need to engineer an enterprise web application: the **Erasmus Mobility Platform (EMP)**. The platform orchestrates the complete mobility lifecycle: from student nomination confirmation and automated administrative onboarding checklists, to querying historic syllabus equivalence catalogs, authoring tripartite study contracts (*Learning Agreements*), validating European Credit Transfer and Accumulation System (ECTS) parity, and securing digital institutional approvals.
+To eliminate administrative bottlenecks and achieve strict compliance with European Commission standards, specifically the **Erasmus Without Paper (EWP)** network, there is an urgent need to engineer an enterprise web application: the **Erasmus Mobility Platform (EMP)**. The platform orchestrates the complete mobility lifecycle: from student nomination confirmation and automated administrative onboarding checklists, to querying historic syllabus equivalence catalogs, authoring tripartite study contracts (*Learning Agreements*), validating European Credit Transfer and Accumulation System (ECTS) parity, and securing digital institutional approvals.
 
 Following the principles of **Domain-Driven Design (DDD)**, the application's complexity is decomposed into three primary Bounded Contexts, supported by generic infrastructural subdomains:
 

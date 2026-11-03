@@ -19,9 +19,14 @@ The software models three specialized Bounded Contexts:
 
 ## 2. Team Members and Individual Task Allocation
 
-The project is developed by a team of three students. Individual responsibilities map directly to course deliverables:
+The project is developed by a team of three graduate students:
+* **Prigoreanu Alin-Gabriel** (Student 1)
+* **Bîrgovan A. Mihai-Daniel** (Student 2)
+* **Schipor Ana-Maria** (Student 3)
 
-### Student 1: Learning Agreement Management (Core Domain)
+Individual responsibilities map directly to course deliverables:
+
+### Student 1: Prigoreanu Alin-Gabriel - Learning Agreement Management (Core Domain)
 * **Domain Responsibility:** Core academic workflow, study contracts, and tripartite approvals.
 * **Use Case Diagram:** `docs/diagrams/usecase-learning-agreement.puml`
 * **Detailed Use Case (SVDPI):** `UC01 - Submit Learning Agreement` (including ECTS balance verification).
@@ -29,7 +34,7 @@ The project is developed by a team of three students. Individual responsibilitie
 * **Dynamic Interaction:** Sequence diagram for study plan submission and academic coordinator review.
 * **State Machine:** Entity `LearningAgreement` via `StareLearningAgreement` enum (`DRAFT`, `SUBMITTED`, `UNDER_REVIEW`, `APPROVED_BY_FACULTY`, `CONFIRMED_BY_HOST`, `AMENDED`, `CANCELLED`).
 
-### Student 2: Equivalence Management (Supporting Subdomain)
+### Student 2: Bîrgovan A. Mihai-Daniel - Equivalence Management (Supporting Subdomain)
 * **Domain Responsibility:** Institutional course catalog, academic syllabus matching, and credit parity rules.
 * **Use Case Diagram:** `docs/diagrams/usecase-equivalence-management.puml`
 * **Detailed Use Case (SVDPI):** `UC02 - Register Course Equivalence` (including mandatory ECTS range checks).
@@ -37,7 +42,7 @@ The project is developed by a team of three students. Individual responsibilitie
 * **Dynamic Interaction:** Synchronous REST sequence diagram verifying syllabus equivalence queries.
 * **State Machine:** Entity `AcademicEquivalence` via `StareEchivalare` enum (`PROPOSED`, `UNDER_EVALUATION`, `APPROVED`, `ACTIVE`, `RETIRED`).
 
-### Student 3: Mobility Preparation (Supporting Subdomain)
+### Student 3: Schipor Ana-Maria - Mobility Preparation (Supporting Subdomain)
 * **Domain Responsibility:** Administrative readiness, document onboarding, and deadline enforcement.
 * **Use Case Diagram:** `docs/diagrams/usecase-mobility-preparation.puml`
 * **Detailed Use Case (SVDPI):** `UC03 - Confirm Nomination` (including automated checklist generation).
