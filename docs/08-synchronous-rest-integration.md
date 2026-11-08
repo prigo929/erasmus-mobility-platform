@@ -145,3 +145,4 @@ The query matches course identifiers and verifies that the current date falls in
 1. **Remote Timeout:** If `Equivalence Context` exceeds the 2500 ms limit, `EquivalenceRestAdapter` throws a `RemoteServiceUnavailableException`. The calling agreement service marks verification as pending and prompts the student to retry later. It never submits unverified agreements.
 2. **Schema Drift:** The server serializes responses into `EquivalenceResponseDTO`. If the server adds extra metadata fields, client deserialization ignores unknown properties. The contract remains intact.
 3. **Network Partition:** If the network link breaks, read operations fail fast. The local database of `Learning Agreement Management` remains uncorrupted.
+

@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1520 640" width="100%" height="100%" style="background-color: #FBF8F1; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1520 680" width="100%" height="100%" style="background-color: #FBF8F1; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
   <defs>
     <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
       <path d="M 0 1 L 10 5 L 0 9 z" fill="#2D3748" />
@@ -15,7 +15,7 @@
   <text x="30" y="32" font-size="18" font-weight="bold" fill="#1A202C">Figure 12. Synchronous REST Integration - Client Side (Learning Agreement Context)</text>
   <text x="30" y="50" font-size="11.5" fill="#5A4A3E">Decoupling Core Domain from External Equivalence Service via Domain Port and Infrastructure HTTP Adapter</text>
 
-  <!-- Application Layer Box -->
+  <!-- Application Layer Box (Left) -->
   <g transform="translate(30, 80)">
     <rect x="0" y="0" width="380" height="230" rx="6" fill="#F7FAFC" stroke="#CBD5E0" stroke-width="1.2" />
     <text x="14" y="22" font-size="12" font-weight="bold" fill="#4A5568">Application Layer: agreement.application</text>
@@ -39,21 +39,21 @@
     </g>
   </g>
 
-  <!-- Domain Layer Box -->
+  <!-- Domain Layer Box (Center) -->
   <g transform="translate(450, 80)">
-    <rect x="0" y="0" width="450" height="490" rx="6" fill="#F7FAFC" stroke="#CBD5E0" stroke-width="1.2" />
+    <rect x="0" y="0" width="460" height="560" rx="6" fill="#F7FAFC" stroke="#CBD5E0" stroke-width="1.2" />
     <text x="14" y="22" font-size="12" font-weight="bold" fill="#4A5568">Domain Layer: agreement.domain.ports</text>
 
     <!-- Interface: IEquivalenceCatalogAdapter -->
     <g transform="translate(25, 45)">
-      <rect x="0" y="0" width="400" height="150" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.5" filter="url(#shadow)" />
+      <rect x="0" y="0" width="410" height="150" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.5" filter="url(#shadow)" />
       <circle cx="16" cy="16" r="6" fill="#10B981" />
       <text x="16" y="19" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#FFFFFF">I</text>
-      <text x="200" y="15" text-anchor="middle" font-size="9" font-style="italic" fill="#7A583A">«interface, DomainPort»</text>
-      <text x="200" y="28" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">IEquivalenceCatalogAdapter</text>
-      <line x1="0" y1="36" x2="400" y2="36" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="205" y="15" text-anchor="middle" font-size="9" font-style="italic" fill="#7A583A">«interface, DomainPort»</text>
+      <text x="205" y="28" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">IEquivalenceCatalogAdapter</text>
+      <line x1="0" y1="36" x2="410" y2="36" stroke="#8D5B4C" stroke-width="0.8" />
       <text x="12" y="52" font-size="9" fill="#7A583A">/* Contract owned entirely by the Core Domain */</text>
-      <line x1="0" y1="60" x2="400" y2="60" stroke="#8D5B4C" stroke-width="0.8" />
+      <line x1="0" y1="60" x2="410" y2="60" stroke="#8D5B4C" stroke-width="0.8" />
       <text x="12" y="78" font-size="9" fill="#2D3748">+ checkEquivalence(sendCode: String, hostCode: String): VerificationResult</text>
       <text x="12" y="96" font-size="9" fill="#2D3748">+ getEquivalenceDetails(id: UUID): Optional&lt;EquivalenceDetailsVO&gt;</text>
       <text x="12" y="114" font-size="9" fill="#2D3748">+ verifyBatchEquivalences(codes: List&lt;Pair&gt;): List&lt;VerificationResult&gt;</text>
@@ -61,33 +61,33 @@
     </g>
 
     <!-- Class: EquivalenceVerificationResult (Value Object) -->
-    <g transform="translate(25, 240)">
-      <rect x="0" y="0" width="400" height="210" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.5" filter="url(#shadow)" />
+    <g transform="translate(25, 300)">
+      <rect x="0" y="0" width="410" height="230" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.5" filter="url(#shadow)" />
       <circle cx="16" cy="16" r="6" fill="#6366F1" />
       <text x="16" y="19" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#FFFFFF">V</text>
-      <text x="200" y="15" text-anchor="middle" font-size="9" font-style="italic" fill="#7A583A">«ValueObject»</text>
-      <text x="200" y="28" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">EquivalenceVerificationResult</text>
-      <line x1="0" y1="36" x2="400" y2="36" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="205" y="15" text-anchor="middle" font-size="9" font-style="italic" fill="#7A583A">«ValueObject»</text>
+      <text x="205" y="28" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">EquivalenceVerificationResult</text>
+      <line x1="0" y1="36" x2="410" y2="36" stroke="#8D5B4C" stroke-width="0.8" />
       <text x="12" y="52" font-size="9" fill="#2D3748">- sendCourseCode: String</text>
-      <text x="12" y="68" font-size="9" fill="#2D3748">- hostCourseCode: String</text>
-      <text x="12" y="84" font-size="9" fill="#2D3748">- recognizedCredits: int</text>
-      <text x="12" y="100" font-size="9" fill="#2D3748">- isPreApproved: boolean</text>
-      <text x="12" y="116" font-size="9" fill="#2D3748">- expirationDate: LocalDate</text>
-      <text x="12" y="132" font-size="9" fill="#2D3748">- verificationSource: String</text>
-      <line x1="0" y1="140" x2="400" y2="140" stroke="#8D5B4C" stroke-width="0.8" />
-      <text x="12" y="156" font-size="9" fill="#2D3748">+ isValid(): boolean</text>
-      <text x="12" y="172" font-size="9" fill="#2D3748">+ isExpired(asOf: LocalDate): boolean</text>
-      <text x="12" y="188" font-size="9" fill="#2D3748">+ satisfiesRequirement(minCredits: int): boolean</text>
+      <text x="12" y="70" font-size="9" fill="#2D3748">- hostCourseCode: String</text>
+      <text x="12" y="88" font-size="9" fill="#2D3748">- recognizedCredits: int</text>
+      <text x="12" y="106" font-size="9" fill="#2D3748">- isPreApproved: boolean</text>
+      <text x="12" y="124" font-size="9" fill="#2D3748">- expirationDate: LocalDate</text>
+      <text x="12" y="142" font-size="9" fill="#2D3748">- verificationSource: String</text>
+      <line x1="0" y1="150" x2="410" y2="150" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="12" y="168" font-size="9" fill="#2D3748">+ isValid(): boolean</text>
+      <text x="12" y="186" font-size="9" fill="#2D3748">+ isExpired(asOf: LocalDate): boolean</text>
+      <text x="12" y="204" font-size="9" fill="#2D3748">+ satisfiesRequirement(minCredits: int): boolean</text>
     </g>
   </g>
 
-  <!-- Infrastructure Layer Box -->
-  <g transform="translate(940, 80)">
-    <rect x="0" y="0" width="550" height="490" rx="6" fill="#F7FAFC" stroke="#CBD5E0" stroke-width="1.2" />
+  <!-- Infrastructure Layer Box (Right) -->
+  <g transform="translate(950, 80)">
+    <rect x="0" y="0" width="540" height="560" rx="6" fill="#F7FAFC" stroke="#CBD5E0" stroke-width="1.2" />
     <text x="14" y="22" font-size="12" font-weight="bold" fill="#4A5568">Infrastructure Layer: agreement.infrastructure.adapters</text>
 
     <!-- Class: EquivalenceRestAdapter -->
-    <g transform="translate(25, 45)">
+    <g transform="translate(20, 45)">
       <rect x="0" y="0" width="500" height="230" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.5" filter="url(#shadow)" />
       <circle cx="16" cy="16" r="6" fill="#0EA5E9" />
       <text x="16" y="19" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#FFFFFF">C</text>
@@ -108,48 +108,48 @@
     </g>
 
     <!-- Class: EquivalenceResponseDTO -->
-    <g transform="translate(25, 300)">
-      <rect x="0" y="0" width="500" height="150" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.5" filter="url(#shadow)" />
+    <g transform="translate(20, 360)">
+      <rect x="0" y="0" width="500" height="170" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.5" filter="url(#shadow)" />
       <circle cx="16" cy="16" r="6" fill="#F59E0B" />
       <text x="16" y="19" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#FFFFFF">D</text>
       <text x="250" y="15" text-anchor="middle" font-size="9" font-style="italic" fill="#7A583A">«DTO»</text>
       <text x="250" y="28" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">EquivalenceResponseDTO</text>
       <line x1="0" y1="36" x2="500" y2="36" stroke="#8D5B4C" stroke-width="0.8" />
-      <text x="12" y="52" font-size="9" fill="#2D3748">+ equivalenceId: UUID</text>
-      <text x="12" y="68" font-size="9" fill="#2D3748">+ sendCourseCode: String</text>
-      <text x="12" y="84" font-size="9" fill="#2D3748">+ hostCourseCode: String</text>
-      <text x="12" y="100" font-size="9" fill="#2D3748">+ recognizedECTS: int</text>
-      <text x="12" y="116" font-size="9" fill="#2D3748">+ validationStatus: String</text>
-      <text x="12" y="132" font-size="9" fill="#2D3748">+ expirationTimestamp: String</text>
+      <text x="12" y="54" font-size="9" fill="#2D3748">+ equivalenceId: UUID</text>
+      <text x="12" y="72" font-size="9" fill="#2D3748">+ sendCourseCode: String</text>
+      <text x="12" y="90" font-size="9" fill="#2D3748">+ hostCourseCode: String</text>
+      <text x="12" y="108" font-size="9" fill="#2D3748">+ recognizedECTS: int</text>
+      <text x="12" y="126" font-size="9" fill="#2D3748">+ validationStatus: String</text>
+      <text x="12" y="144" font-size="9" fill="#2D3748">+ expirationTimestamp: String</text>
     </g>
   </g>
 
-  <!-- Connectors -->
+  <!-- Clean Connectors between Boxes (Outside Text) -->
   <!-- AgreementApplicationService -> IEquivalenceCatalogAdapter -->
-  <line x1="395" y1="180" x2="475" y2="180" stroke="#2D3748" stroke-width="1.4" marker-end="url(#arrow)" />
-  <text x="415" y="172" font-size="9" fill="#2D3748" font-weight="bold">invokes</text>
+  <line x1="395" y1="200" x2="475" y2="200" stroke="#2D3748" stroke-width="1.5" marker-end="url(#arrow)" />
+  <text x="415" y="192" font-size="9" font-weight="bold" fill="#2D3748">invokes</text>
 
   <!-- EquivalenceRestAdapter -> IEquivalenceCatalogAdapter (implements) -->
-  <line x1="965" y1="180" x2="875" y2="180" stroke="#2D3748" stroke-width="1.4" stroke-dasharray="5,5" marker-end="url(#impl-arrow)" />
-  <text x="890" y="172" font-size="9" fill="#2D3748" font-weight="bold">implements</text>
+  <line x1="970" y1="200" x2="885" y2="200" stroke="#2D3748" stroke-width="1.5" stroke-dasharray="5,5" marker-end="url(#impl-arrow)" />
+  <text x="898" y="192" font-size="9" font-weight="bold" fill="#2D3748">implements</text>
 
-  <!-- EquivalenceRestAdapter -> EquivalenceResponseDTO -->
-  <line x1="1190" y1="275" x2="1190" y2="300" stroke="#2D3748" stroke-width="1.4" marker-end="url(#arrow)" />
-  <text x="1198" y="290" font-size="8.5" fill="#2D3748">deserializes</text>
+  <!-- IEquivalenceCatalogAdapter -> EquivalenceVerificationResult (produces) -->
+  <line x1="680" y1="275" x2="680" y2="380" stroke="#2D3748" stroke-width="1.5" marker-end="url(#arrow)" />
+  <text x="690" y="335" font-size="9" font-weight="bold" fill="#2D3748">produces</text>
 
-  <!-- IEquivalenceCatalogAdapter -> EquivalenceVerificationResult -->
-  <line x1="675" y1="195" x2="675" y2="240" stroke="#2D3748" stroke-width="1.4" marker-end="url(#arrow)" />
-  <text x="685" y="220" font-size="8.5" fill="#2D3748">produces</text>
+  <!-- EquivalenceRestAdapter -> EquivalenceResponseDTO (deserializes) -->
+  <line x1="1200" y1="355" x2="1200" y2="440" stroke="#2D3748" stroke-width="1.5" marker-end="url(#arrow)" />
+  <text x="1210" y="405" font-size="9" font-weight="bold" fill="#2D3748">deserializes</text>
 
-  <!-- Yellow Note at bottom left -->
+  <!-- Architectural Note (Bottom Left) -->
   <g transform="translate(30, 340)">
-    <rect x="0" y="0" width="380" height="120" rx="4" fill="#FEFCBF" stroke="#D69E2E" stroke-width="1" />
+    <rect x="0" y="0" width="380" height="150" rx="4" fill="#FEFCBF" stroke="#D69E2E" stroke-width="1" />
     <path d="M 370 0 L 380 10 L 370 10 Z" fill="#B7791F" />
-    <text x="12" y="20" font-size="9" font-weight="bold" fill="#744210">Architectural Rule: Dependency Inversion</text>
-    <text x="12" y="38" font-size="8.5" fill="#744210">The Core Domain defines IEquivalenceCatalogAdapter.</text>
-    <text x="12" y="54" font-size="8.5" fill="#744210">The Infrastructure adapter depends inward on the port.</text>
-    <text x="12" y="70" font-size="8.5" fill="#744210">No HTTP or networking libraries pollute the Domain model.</text>
-    <text x="12" y="86" font-size="8.5" fill="#744210">RestTemplate executes requests with strict timeout budgets.</text>
-    <text x="12" y="102" font-size="8.5" font-style="italic" fill="#8C5015">[Guarantees independent deployability and testability]</text>
+    <text x="14" y="24" font-size="10" font-weight="bold" fill="#744210">Architectural Rule: Dependency Inversion</text>
+    <text x="14" y="46" font-size="9" fill="#744210">The Core Domain defines IEquivalenceCatalogAdapter.</text>
+    <text x="14" y="66" font-size="9" fill="#744210">The Infrastructure adapter depends inward on the port.</text>
+    <text x="14" y="86" font-size="9" fill="#744210">No HTTP or networking libraries pollute the Domain model.</text>
+    <text x="14" y="106" font-size="9" fill="#744210">RestTemplate executes requests with strict timeout budgets.</text>
+    <text x="14" y="130" font-size="8.5" font-style="italic" fill="#8C5015">[Guarantees independent deployability and testability]</text>
   </g>
 </svg>

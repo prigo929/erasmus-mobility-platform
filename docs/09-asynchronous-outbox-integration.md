@@ -228,3 +228,4 @@ If the message arrives twice, `processedEventRepo.existsById(cmd.getEventId())` 
 1. **Broker Failure on Publish:** If the message broker rejects connections, the dispatcher halts polling. Records stay marked as `PENDING` in the outbox table. No events are lost.
 2. **Crash Before Manual ACK:** If the consumer server loses power after persisting tasks but before running `basicAck`, RabbitMQ redelivers the message upon server restart. The receiver runs its check against `IProcessedEventRepository`, detects the prior commit, skips duplicate task generation, and delivers the delayed ACK.
 3. **Poison Message Defense:** If a corrupted JSON payload enters the queue, Jackson deserialization fails. The receiver dead-letters the message into `erasmus.dlq` after three attempts, preventing infinite processing loops.
+

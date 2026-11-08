@@ -4,26 +4,27 @@ left to right direction
 skinparam packageStyle rectangle
 
 actor "Student" as S
-actor "Home Academic Coordinator" as HC
+actor "Home Academic\nCoordinator" as HC
 
 rectangle "Equivalence Management" {
   usecase "Search Equivalences" as E1
   usecase "Compare ECTS & Syllabus" as E2
+  usecase "Import Historical Equivalences" as E5
   usecase "Register Equivalence" as E3
   usecase "Validate ECTS Values" as E4
-  usecase "Import Historical Equivalences" as E5
   usecase "Approve Proposed Equivalence" as E6
   usecase "Retire Equivalence" as E7
 }
 
 S --> E1
 S --> E2
-HC --> E3
 HC --> E5
+HC --> E3
 HC --> E6
 HC --> E7
 
-E3 ..> E4 : <<include>>
 E5 ..> E3 : <<extend>>
 note on link : [bulk data import]
+E3 ..> E4 : <<include>>
+
 @enduml

@@ -4,31 +4,33 @@ left to right direction
 skinparam packageStyle rectangle
 
 actor "Student" as S
-actor "Home Academic Coordinator" as HC
-actor "Scheduler" as T
+actor "Scheduler\n(Temporal Trigger)" as T
+actor "Erasmus Office\nCoordinator (DRI)" as HC
 
 rectangle "Mobility Preparation" {
-  usecase "Confirm Nomination" as P1
-  usecase "Generate Checklist" as P2
-  usecase "Manage Checklist Template" as P3
-  usecase "Monitor Student Progress" as P4
-  usecase "Flag Overdue Task" as P5
   usecase "View Checklist" as P6
   usecase "Open Official Form" as P8
   usecase "Mark Task Done" as P7
   usecase "Send Deadline Reminder" as P9
+  usecase "Manage Checklist Template" as P3
+  usecase "Confirm Nomination" as P1
+  usecase "Generate Checklist" as P2
+  usecase "Monitor Student Progress" as P4
+  usecase "Flag Overdue Task" as P5
 }
 
-HC --> P1
-HC --> P3
-HC --> P4
 S --> P6
 S --> P7
 T --> P9
+T --> P5
+HC --> P3
+HC --> P1
+HC --> P4
 
-P1 ..> P2 : <<include>>
 P8 ..> P6 : <<extend>>
 note on link : [task provides link\nto official form]
+P1 ..> P2 : <<include>>
 P5 ..> P4 : <<extend>>
 note on link : [task exceeded\nscheduled deadline]
+
 @enduml

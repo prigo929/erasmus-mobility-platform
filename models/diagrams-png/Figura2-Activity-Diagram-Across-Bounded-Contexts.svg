@@ -153,8 +153,8 @@
   <!-- Merge node and transition into Lane 3 -->
   <polygon points="557,610 567,618 557,626 547,618" fill="#1A202C" />
   <line x1="567" y1="618" x2="760" y2="618" stroke="#2D3748" stroke-width="2" />
-  <line x1="760" y1="618" x2="760" y2="460" stroke="#2D3748" stroke-width="2" />
-  <line x1="760" y1="460" x2="885" y2="460" stroke="#2D3748" stroke-width="2" marker-end="url(#arrow)" />
+  <line x1="760" y1="618" x2="760" y2="485" stroke="#2D3748" stroke-width="2" />
+  <line x1="760" y1="485" x2="890" y2="485" stroke="#2D3748" stroke-width="2" marker-end="url(#arrow)" />
 
   <!-- ========================================== -->
   <!-- STREAM 3: LEARNING AGREEMENT MANAGEMENT    -->
