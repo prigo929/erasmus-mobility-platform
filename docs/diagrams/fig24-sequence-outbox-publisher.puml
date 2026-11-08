@@ -1,0 +1,109 @@
+@startuml
+title Figure 24. Sequence Diagram - Asynchronous Transactional Outbox Flow (Learning Agreement Context)
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 10
+skinparam roundCorner 6
+
+actor "Home Academic Coordinator" as Coordinator
+boundary "Faculty Portal UI" as UI
+control "LearningAgreementWebController" as Controller
+participant "AgreementApplicationService" as AppService
+participant "LearningAgreementRepo" as AgreementRepo
+participant "LearningAgreement" as Aggregate
+participant "IOutboxRepository" as OutboxRepo
+database "PostgreSQL Relational DB\n(Single ACID Scope)" as DB
+participant "OutboxDispatcher\n(@Scheduled Poller)" as Dispatcher
+queue "RabbitMQ Exchange\nerasmus.events.topic" as Broker
+
+Coordinator -> UI : Click "Approve Study Contract"
+activate UI
+
+UI -> Controller : POST /api/v1/agreements/{id}/approve
+activate Controller
+
+Controller -> AppService : approveAgreement(agreementId, coordinatorId)
+activate AppService
+
+note over AppService, DB #FEFCBF
+  Beginning of Spring @Transactional Boundary
+  A single local database transaction encompasses both writes.
+end note
+
+AppService -> AgreementRepo : findById(agreementId)
+activate AgreementRepo
+AgreementRepo -> DB : SELECT * FROM learning_agreements WHERE id = ?
+activate DB
+DB --> AgreementRepo : ResultSet
+deactivate DB
+AgreementRepo --> AppService : LearningAgreement
+deactivate AgreementRepo
+
+AppService -> Aggregate : approve(coordinatorId)
+activate Aggregate
+Aggregate --> AppService : LearningAgreementApprovedEvent
+deactivate Aggregate
+
+AppService -> AgreementRepo : save(agreement)
+activate AgreementRepo
+AgreementRepo -> DB : UPDATE learning_agreements SET status='APPROVED_BY_FACULTY'
+activate DB
+DB --> AgreementRepo : updated
+deactivate DB
+AgreementRepo --> AppService : void
+deactivate AgreementRepo
+
+AppService -> OutboxRepo : save(OutboxMessage.fromEvent(event))
+activate OutboxRepo
+OutboxRepo -> DB : INSERT INTO outbox_messages (id, event_type, payload, status='PENDING')
+activate DB
+DB --> OutboxRepo : inserted
+deactivate DB
+OutboxRepo --> AppService : void
+deactivate OutboxRepo
+
+note over AppService, DB #FEFCBF
+  End of Spring @Transactional Boundary: COMMIT TRANSACTION.
+  Both records persist atomically. Distributed lock eliminated.
+end note
+
+AppService --> Controller : void (Approval Confirmed)
+deactivate AppService
+
+Controller --> UI : 200 OK
+deactivate Controller
+
+UI --> Coordinator : Display "Contract Approved"
+deactivate UI
+
+== Background Outbox Polling Worker (Every 2000 ms) ==
+
+Dispatcher -> OutboxRepo : findPendingMessages(50)
+activate Dispatcher
+activate OutboxRepo
+OutboxRepo -> DB : SELECT * FROM outbox_messages WHERE status='PENDING' LIMIT 50
+activate DB
+DB --> OutboxRepo : List<OutboxMessage>
+deactivate DB
+OutboxRepo --> Dispatcher : List<OutboxMessage>
+deactivate OutboxRepo
+
+loop for each pending message
+  Dispatcher -> Broker : convertAndSend("erasmus.events.topic", "agreement.approved", payloadJson)
+  activate Broker
+  Broker --> Dispatcher : AMQP ACK (Message Persisted to Disk)
+  deactivate Broker
+
+  Dispatcher -> OutboxRepo : markAsPublished(msgId, Instant.now())
+  activate OutboxRepo
+  OutboxRepo -> DB : UPDATE outbox_messages SET status='PUBLISHED', published_at=? WHERE id=?
+  activate DB
+  DB --> OutboxRepo : updated
+  deactivate DB
+  OutboxRepo --> Dispatcher : void
+  deactivate OutboxRepo
+end
+deactivate Dispatcher
+
+@enduml
+

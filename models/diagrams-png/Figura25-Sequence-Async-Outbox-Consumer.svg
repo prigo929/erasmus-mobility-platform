@@ -1,0 +1,132 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 950" width="100%" height="100%" style="background-color: #FBF8F1; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#2D3748" />
+    </marker>
+    <marker id="orange-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#DD6B20" />
+    </marker>
+    <marker id="ret-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#718096" />
+    </marker>
+    <filter id="shadow" x="-3%" y="-3%" width="106%" height="106%">
+      <feDropShadow dx="2" dy="2" stdDeviation="2.5" flood-opacity="0.10" />
+    </filter>
+  </defs>
+
+  <text x="30" y="32" font-size="18" font-weight="bold" fill="#1A202C">Figure 25. Sequence Diagram: Asynchronous Outbox Integration - Consumer Side (Mobility Preparation Context)</text>
+  <text x="30" y="50" font-size="11.5" fill="#5A4A3E">Author: Schipor Ana-Maria. Idempotent Inbound Event Consumption, Duplicate Detection, and Checklist Task Generation</text>
+
+  <!-- Lifeline Headers -->
+  <g transform="translate(40, 75)">
+    <rect x="0" y="0" width="160" height="45" rx="5" fill="#ED8936" stroke="#C05621" stroke-width="1.5" filter="url(#shadow)" />
+    <text x="80" y="27" text-anchor="middle" font-size="11" font-weight="bold" fill="#FFFFFF">RabbitMQ Queue</text>
+    <line x1="80" y1="45" x2="80" y2="820" stroke="#DD6B20" stroke-width="1.5" stroke-dasharray="6,4" />
+  </g>
+
+  <g transform="translate(250, 75)">
+    <rect x="0" y="0" width="230" height="45" rx="5" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.5" filter="url(#shadow)" />
+    <text x="115" y="27" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">:MessageReceiver</text>
+    <line x1="115" y1="45" x2="115" y2="820" stroke="#CBD5E0" stroke-width="1.5" stroke-dasharray="6,4" />
+  </g>
+
+  <g transform="translate(540, 75)">
+    <rect x="0" y="0" width="220" height="45" rx="5" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.5" filter="url(#shadow)" />
+    <text x="110" y="27" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">:PreparationAppService</text>
+    <line x1="110" y1="45" x2="110" y2="820" stroke="#CBD5E0" stroke-width="1.5" stroke-dasharray="6,4" />
+  </g>
+
+  <g transform="translate(820, 75)">
+    <rect x="0" y="0" width="210" height="45" rx="5" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.5" filter="url(#shadow)" />
+    <text x="105" y="27" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">:IProcessedEventRepo</text>
+    <line x1="105" y1="45" x2="105" y2="820" stroke="#CBD5E0" stroke-width="1.5" stroke-dasharray="6,4" />
+  </g>
+
+  <g transform="translate(1090, 75)">
+    <rect x="0" y="0" width="180" height="45" rx="5" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.5" filter="url(#shadow)" />
+    <text x="90" y="27" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">:MobilityChecklist</text>
+    <line x1="90" y1="45" x2="90" y2="820" stroke="#CBD5E0" stroke-width="1.5" stroke-dasharray="6,4" />
+  </g>
+
+  <g transform="translate(1330, 75)">
+    <rect x="0" y="0" width="160" height="45" rx="5" fill="#EDF2F7" stroke="#4A5568" stroke-width="1.5" filter="url(#shadow)" />
+    <text x="80" y="27" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">db:PostgreSQL</text>
+    <line x1="80" y1="45" x2="80" y2="820" stroke="#A0AEC0" stroke-width="1.5" stroke-dasharray="6,4" />
+  </g>
+
+  <!-- Activation Boxes -->
+  <rect x="115" y="140" width="10" height="660" fill="#FBD38D" stroke="#C05621" stroke-width="1" />
+  <rect x="360" y="150" width="10" height="630" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1" />
+  <rect x="645" y="210" width="10" height="520" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1" />
+  <rect x="920" y="270" width="10" height="130" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1" />
+  <rect x="1175" y="440" width="10" height="120" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1" />
+  <rect x="1405" y="290" width="10" height="380" fill="#E2E8F0" stroke="#4A5568" stroke-width="1" />
+
+  <!-- Messages -->
+  <!-- 1. Broker pushes message to Receiver -->
+  <line x1="125" y1="150" x2="360" y2="150" stroke="#DD6B20" stroke-width="1.6" marker-end="url(#orange-arrow)" />
+  <text x="242" y="142" font-size="9" text-anchor="middle" font-weight="bold" fill="#C05621">onMessage(payloadJson, deliveryTag, channel)</text>
+
+  <!-- 2. Receiver parses JSON to Command -->
+  <path d="M 370 165 L 420 165 L 420 195 L 370 195" fill="none" stroke="#2D3748" stroke-width="1.4" marker-end="url(#arrow)" />
+  <text x="427" y="182" font-size="8" fill="#4A5568">cmd = parseToCommand(payload)</text>
+
+  <!-- 3. Receiver -> Application Service (clean arrow from 370 to 645) -->
+  <line x1="370" y1="215" x2="645" y2="215" stroke="#2D3748" stroke-width="1.5" marker-end="url(#arrow)" />
+  <text x="507" y="207" font-size="8.5" text-anchor="middle" font-weight="bold" fill="#2D3748">initializeChecklistFromApprovedAgreement(cmd)</text>
+
+  <!-- Transaction Frame (Starts cleanly at y=235) -->
+  <rect x="600" y="235" width="850" height="460" rx="4" fill="none" stroke="#C53030" stroke-width="1.2" stroke-dasharray="5,3" />
+  <text x="665" y="252" font-size="8.5" font-weight="bold" fill="#C53030">@Transactional Scope (Atomic Idempotent Consumption)</text>
+
+  <!-- 4. Service checks Idempotency Port (y=275) -->
+  <line x1="655" y1="275" x2="920" y2="275" stroke="#2D3748" stroke-width="1.5" marker-end="url(#arrow)" />
+  <text x="787" y="267" font-size="8.5" text-anchor="middle" font-weight="bold" fill="#2D3748">existsById(cmd.eventId)</text>
+
+  <!-- 5. Port queries DB -->
+  <line x1="930" y1="295" x2="1405" y2="295" stroke="#2D3748" stroke-width="1.5" marker-end="url(#arrow)" />
+  <text x="1167" y="287" font-size="8" text-anchor="middle" fill="#4A5568">SELECT 1 FROM processed_events WHERE event_id = ?</text>
+
+  <line x1="1405" y1="335" x2="930" y2="335" stroke="#718096" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#ret-arrow)" />
+  <text x="1167" y="327" font-size="8" text-anchor="middle" fill="#4A5568">return false (event not previously handled)</text>
+
+  <line x1="920" y1="365" x2="655" y2="365" stroke="#718096" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#ret-arrow)" />
+  <text x="787" y="357" font-size="8.5" text-anchor="middle" fill="#4A5568">return false (proceed with execution)</text>
+
+  <!-- Alt frame for idempotency decision -->
+  <rect x="620" y="385" width="810" height="295" rx="3" fill="#FFFDF5" stroke="#CBD5E0" stroke-width="0.8" />
+  <text x="630" y="400" font-size="8" font-weight="bold" fill="#4A5568">[if not already processed]:</text>
+
+  <!-- 6. Service instantiates MobilityChecklist Aggregate -->
+  <line x1="655" y1="435" x2="1175" y2="435" stroke="#2D3748" stroke-width="1.5" marker-end="url(#arrow)" />
+  <text x="915" y="427" font-size="8.5" text-anchor="middle" font-weight="bold" fill="#2D3748">new MobilityChecklist(studentId, agreementId)</text>
+
+  <!-- 7. Aggregate initializes default preparation tasks -->
+  <path d="M 1185 450 L 1235 450 L 1235 485 L 1185 485" fill="none" stroke="#2D3748" stroke-width="1.4" marker-end="url(#arrow)" />
+  <text x="1242" y="465" font-size="8" fill="#4A5568">initializeDefaultTasks()</text>
+  <text x="1242" y="478" font-size="7.5" fill="#718096">[Insurance, Grant, Accommodation]</text>
+
+  <!-- 8. Service writes Checklist & Records EventId -->
+  <line x1="655" y1="535" x2="1405" y2="535" stroke="#2D3748" stroke-width="1.5" marker-end="url(#arrow)" />
+  <text x="1030" y="527" font-size="8.5" text-anchor="middle" font-weight="bold" fill="#2D3748">checklistRepo.save(checklist) &amp; processedEventRepo.record(eventId)</text>
+
+  <!-- DB Commit -->
+  <line x1="1405" y1="630" x2="655" y2="630" stroke="#718096" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#ret-arrow)" />
+  <text x="1030" y="622" font-size="8.5" text-anchor="middle" fill="#4A5568">COMMIT Transaction: Checklist saved &amp; Event registered</text>
+
+  <!-- Service returns to Receiver -->
+  <line x1="645" y1="710" x2="370" y2="710" stroke="#718096" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#ret-arrow)" />
+  <text x="507" y="702" font-size="8.5" text-anchor="middle" fill="#4A5568">return success</text>
+
+  <!-- 9. Receiver sends AMQP ACK to broker -->
+  <line x1="360" y1="760" x2="125" y2="760" stroke="#DD6B20" stroke-width="1.6" marker-end="url(#orange-arrow)" />
+  <text x="242" y="752" font-size="9" text-anchor="middle" font-weight="bold" fill="#C05621">channel.basicAck(deliveryTag, multiple=false)</text>
+
+  <!-- Note Box -->
+  <g transform="translate(40, 840)">
+    <rect x="0" y="0" width="1520" height="75" rx="4" fill="#FEFCBF" stroke="#D69E2E" stroke-width="1" />
+    <text x="16" y="20" font-size="9.5" font-weight="bold" fill="#744210">Idempotency &amp; At-Least-Once Delivery Resilience</text>
+    <text x="16" y="38" font-size="8.5" fill="#744210">1. Because network glitches can redeliver the same broker message, existsById(eventId) protects against duplicate checklist creation.</text>
+    <text x="16" y="54" font-size="8.5" fill="#744210">2. If a message is a duplicate, execution skips task generation and immediately acknowledges the message with channel.basicAck().</text>
+  </g>
+</svg>

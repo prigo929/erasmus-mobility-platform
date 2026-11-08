@@ -1,0 +1,74 @@
+@startuml
+title Figure 22. Sequence Diagram - Synchronous REST Client Flow (Learning Agreement Context)
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 10
+skinparam roundCorner 6
+
+actor "Student" as Student
+boundary "Web Browser UI" as UI
+control "LearningAgreementWebController" as Controller
+participant "AgreementApplicationService" as AppService
+participant "LearningAgreementRepo" as Repo
+participant "LearningAgreement" as Aggregate
+participant "IEquivalenceCatalogAdapter\n(Domain Port)" as Port
+participant "EquivalenceRestAdapter\n(Infrastructure)" as RestAdapter
+boundary "External HTTP Server\n(Equivalence Context)" as RemoteServer
+
+Student -> UI : Click "Verify Equivalences & Submit"
+activate UI
+
+UI -> Controller : POST /api/v1/agreements/{id}/validate-and-submit
+activate Controller
+
+Controller -> AppService : validateAndSubmitAgreement(agreementId)
+activate AppService
+
+AppService -> Repo : findById(agreementId)
+activate Repo
+Repo --> AppService : Optional<LearningAgreement>
+deactivate Repo
+
+loop for each CourseLine in Table A
+  AppService -> Port : checkEquivalence(sendCode, hostCode)
+  activate Port
+  Port -> RestAdapter : checkEquivalence(sendCode, hostCode)
+  activate RestAdapter
+
+  RestAdapter -> RemoteServer : GET /api/v1/equivalences/verify?sendCode={send}&hostCode={host}
+  activate RemoteServer
+  RemoteServer --> RestAdapter : 200 OK (EquivalenceResponseDTO JSON)
+  deactivate RemoteServer
+
+  RestAdapter -> RestAdapter : mapToDomain(dto)
+  RestAdapter --> Port : EquivalenceVerificationResult
+  deactivate RestAdapter
+
+  Port --> AppService : EquivalenceVerificationResult
+  deactivate Port
+end
+
+AppService -> Aggregate : validateEctsBalance()
+activate Aggregate
+Aggregate --> AppService : true (Credit Parity Invariant Met)
+
+AppService -> Aggregate : submit()
+Aggregate --> AppService : LearningAgreementSubmittedEvent
+deactivate Aggregate
+
+AppService -> Repo : save(agreement)
+activate Repo
+Repo --> AppService : void
+deactivate Repo
+
+AppService --> Controller : SubmissionResult(SUCCESS)
+deactivate AppService
+
+Controller --> UI : 200 OK (Agreement Submitted)
+deactivate Controller
+
+UI --> Student : Display "Agreement Successfully Submitted"
+deactivate UI
+
+@enduml
+

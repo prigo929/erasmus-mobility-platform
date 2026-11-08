@@ -1,0 +1,109 @@
+@startuml
+title Figure 25. Sequence Diagram - Idempotent Consumer Flow (Mobility Preparation Context)
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 10
+skinparam roundCorner 6
+
+queue "RabbitMQ Queue\nmobility.preparation.agreement.approved" as Broker
+participant "AgreementApprovedMessageReceiver\n(@RabbitListener)" as Receiver
+participant "PreparationApplicationService\n(@Transactional)" as AppService
+participant "IProcessedEventRepository" as ProcessedEventRepo
+participant "MobilityChecklistRepository" as ChecklistRepo
+database "PostgreSQL Relational DB" as DB
+participant "MobilityChecklist\n(AggregateRoot)" as Aggregate
+
+Broker -> Receiver : onMessage(payloadJson, deliveryTag, channel)
+activate Receiver
+
+Receiver -> Receiver : parseToCommand(payloadJson)
+Receiver -> AppService : initializeChecklistFromApprovedAgreement(cmd)
+activate AppService
+
+note over AppService, DB #FEFCBF
+  Beginning of Spring @Transactional Boundary (Idempotency Filter)
+end note
+
+AppService -> ProcessedEventRepo : existsById(cmd.getEventId())
+activate ProcessedEventRepo
+
+ProcessedEventRepo -> DB : SELECT COUNT(*) FROM processed_events WHERE event_id = ?
+activate DB
+DB --> ProcessedEventRepo : 0 (Not yet processed)
+deactivate DB
+
+ProcessedEventRepo --> AppService : false (New Event)
+deactivate ProcessedEventRepo
+
+AppService -> Aggregate : new MobilityChecklist(agreementId, studentId)
+activate Aggregate
+AppService -> Aggregate : initializeDefaultPreparationTasks()
+Aggregate --> AppService : checklist initialized with 5 standard tasks
+deactivate Aggregate
+
+AppService -> ChecklistRepo : save(checklist)
+activate ChecklistRepo
+ChecklistRepo -> DB : INSERT INTO mobility_checklists ...; INSERT INTO checklist_tasks ...
+activate DB
+DB --> ChecklistRepo : inserted
+deactivate DB
+ChecklistRepo --> AppService : void
+deactivate ChecklistRepo
+
+AppService -> ProcessedEventRepo : recordEvent(cmd.getEventId(), Instant.now())
+activate ProcessedEventRepo
+ProcessedEventRepo -> DB : INSERT INTO processed_events (event_id, processed_at) VALUES (?, ?)
+activate DB
+DB --> ProcessedEventRepo : inserted
+deactivate DB
+ProcessedEventRepo --> AppService : void
+deactivate ProcessedEventRepo
+
+note over AppService, DB #FEFCBF
+  End of Spring @Transactional Boundary: COMMIT TRANSACTION.
+  Tasks and event record persisted together.
+end note
+
+AppService --> Receiver : void (Success)
+deactivate AppService
+
+Receiver -> Broker : channel.basicAck(deliveryTag, multiple=false)
+activate Broker
+Broker --> Receiver : Message removed from queue
+deactivate Broker
+
+deactivate Receiver
+
+== Subsequent Duplicate Delivery Scenario (Network Re-delivery) ==
+
+Broker -> Receiver : onMessage(duplicatePayloadJson, newDeliveryTag, channel)
+activate Receiver
+Receiver -> AppService : initializeChecklistFromApprovedAgreement(cmd)
+activate AppService
+
+AppService -> ProcessedEventRepo : existsById(cmd.getEventId())
+activate ProcessedEventRepo
+ProcessedEventRepo -> DB : SELECT COUNT(*) FROM processed_events WHERE event_id = ?
+activate DB
+DB --> ProcessedEventRepo : 1 (Already recorded)
+deactivate DB
+ProcessedEventRepo --> AppService : true (Duplicate detected!)
+deactivate ProcessedEventRepo
+
+note over AppService #FEFCBF
+  Idempotency Guard Triggers:
+  Duplicate detected. Service returns immediately.
+  Zero duplicate tasks are inserted.
+end note
+
+AppService --> Receiver : void (No-op)
+deactivate AppService
+
+Receiver -> Broker : channel.basicAck(newDeliveryTag, false)
+activate Broker
+Broker --> Receiver : Redundant message drained cleanly
+deactivate Broker
+deactivate Receiver
+
+@enduml
+

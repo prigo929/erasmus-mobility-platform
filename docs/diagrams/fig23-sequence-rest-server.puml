@@ -1,0 +1,53 @@
+@startuml
+title Figure 23. Sequence Diagram - Synchronous REST Server Flow (Equivalence Management Context)
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 10
+skinparam roundCorner 6
+
+boundary "Inbound HTTP Request\n(Client Context)" as ClientHttp
+control "EquivalenceApiRest\n(Open Host Service)" as Controller
+participant "EquivalenceApplicationService" as AppService
+participant "AcademicEquivalenceRepository\n(Domain Port)" as RepoPort
+participant "AcademicEquivalenceRepoJPA\n(Infrastructure)" as RepoJPA
+database "PostgreSQL Relational DB" as DB
+participant "AcademicEquivalence\n(AggregateRoot)" as Aggregate
+
+ClientHttp -> Controller : GET /api/v1/equivalences/verify?sendCode=CS101&hostCode=INF200
+activate Controller
+
+Controller -> AppService : checkEquivalence("CS101", "INF200")
+activate AppService
+
+AppService -> RepoPort : findByCourseCodes("CS101", "INF200")
+activate RepoPort
+
+RepoPort -> RepoJPA : findByCourseCodes("CS101", "INF200")
+activate RepoJPA
+
+RepoJPA -> DB : SELECT * FROM academic_equivalences WHERE send_code = ? AND host_code = ?
+activate DB
+DB --> RepoJPA : ResultSet (equivalence record)
+deactivate DB
+
+RepoJPA -> RepoJPA : mapToAggregate(ResultSet)
+RepoJPA --> RepoPort : Optional<AcademicEquivalence>
+deactivate RepoJPA
+
+RepoPort --> AppService : Optional<AcademicEquivalence>
+deactivate RepoPort
+
+AppService -> Aggregate : isCurrentlyValid(LocalDate.now())
+activate Aggregate
+Aggregate --> AppService : true
+deactivate Aggregate
+
+AppService --> Controller : EquivalenceCheckResult(ACTIVE, 6 ECTS, validUntil=2027-09-30)
+deactivate AppService
+
+Controller -> Controller : toDTO(result)
+Controller --> ClientHttp : 200 OK (EquivalenceResponseDTO JSON)
+deactivate Controller
+
+@enduml
+

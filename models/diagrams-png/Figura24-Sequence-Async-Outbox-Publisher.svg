@@ -1,0 +1,150 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 950" width="100%" height="100%" style="background-color: #FBF8F1; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#2D3748" />
+    </marker>
+    <marker id="orange-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#DD6B20" />
+    </marker>
+    <marker id="ret-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#718096" />
+    </marker>
+    <filter id="shadow" x="-3%" y="-3%" width="106%" height="106%">
+      <feDropShadow dx="2" dy="2" stdDeviation="2.5" flood-opacity="0.10" />
+    </filter>
+  </defs>
+
+  <text x="30" y="32" font-size="18" font-weight="bold" fill="#1A202C">Figure 24. Sequence Diagram: Asynchronous Outbox Integration - Producer Side (Learning Agreement Context)</text>
+  <text x="30" y="50" font-size="11.5" fill="#5A4A3E">Author: Prigoreanu Alin-Gabriel. Single ACID Commit of Aggregate Mutation and Outbox Record followed by Reliable AMQP Dispatch</text>
+
+  <!-- Lifeline Headers -->
+  <g transform="translate(30, 75)">
+    <rect x="0" y="0" width="130" height="45" rx="5" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.5" filter="url(#shadow)" />
+    <text x="65" y="27" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">:Coordinator</text>
+    <line x1="65" y1="45" x2="65" y2="820" stroke="#CBD5E0" stroke-width="1.5" stroke-dasharray="6,4" />
+  </g>
+
+  <g transform="translate(190, 75)">
+    <rect x="0" y="0" width="190" height="45" rx="5" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.5" filter="url(#shadow)" />
+    <text x="95" y="27" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">:AgreementController</text>
+    <line x1="95" y1="45" x2="95" y2="820" stroke="#CBD5E0" stroke-width="1.5" stroke-dasharray="6,4" />
+  </g>
+
+  <g transform="translate(410, 75)">
+    <rect x="0" y="0" width="200" height="45" rx="5" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.5" filter="url(#shadow)" />
+    <text x="100" y="27" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">:AgreementAppService</text>
+    <line x1="100" y1="45" x2="100" y2="820" stroke="#CBD5E0" stroke-width="1.5" stroke-dasharray="6,4" />
+  </g>
+
+  <g transform="translate(640, 75)">
+    <rect x="0" y="0" width="190" height="45" rx="5" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.5" filter="url(#shadow)" />
+    <text x="95" y="27" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">la:LearningAgreement</text>
+    <line x1="95" y1="45" x2="95" y2="820" stroke="#CBD5E0" stroke-width="1.5" stroke-dasharray="6,4" />
+  </g>
+
+  <g transform="translate(860, 75)">
+    <rect x="0" y="0" width="180" height="45" rx="5" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.5" filter="url(#shadow)" />
+    <text x="90" y="27" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">:JPA Repositories</text>
+    <line x1="90" y1="45" x2="90" y2="820" stroke="#CBD5E0" stroke-width="1.5" stroke-dasharray="6,4" />
+  </g>
+
+  <g transform="translate(1070, 75)">
+    <rect x="0" y="0" width="160" height="45" rx="5" fill="#EDF2F7" stroke="#4A5568" stroke-width="1.5" filter="url(#shadow)" />
+    <text x="80" y="27" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">db:PostgreSQL (ACID)</text>
+    <line x1="80" y1="45" x2="80" y2="820" stroke="#A0AEC0" stroke-width="1.5" stroke-dasharray="6,4" />
+  </g>
+
+  <g transform="translate(1260, 75)">
+    <rect x="0" y="0" width="160" height="45" rx="5" fill="#FEFCBF" stroke="#D69E2E" stroke-width="1.5" filter="url(#shadow)" />
+    <text x="80" y="27" text-anchor="middle" font-size="11" font-weight="bold" fill="#744210">:OutboxDispatcher</text>
+    <line x1="80" y1="45" x2="80" y2="820" stroke="#D69E2E" stroke-width="1.5" stroke-dasharray="6,4" />
+  </g>
+
+  <g transform="translate(1450, 75)">
+    <rect x="0" y="0" width="120" height="45" rx="5" fill="#ED8936" stroke="#C05621" stroke-width="1.5" filter="url(#shadow)" />
+    <text x="60" y="27" text-anchor="middle" font-size="11" font-weight="bold" fill="#FFFFFF">RabbitMQ</text>
+    <line x1="60" y1="45" x2="60" y2="820" stroke="#DD6B20" stroke-width="1.5" stroke-dasharray="6,4" />
+  </g>
+
+  <!-- Activation Boxes -->
+  <rect x="90" y="140" width="10" height="340" fill="#E2E8F0" stroke="#718096" stroke-width="1" />
+  <rect x="280" y="150" width="10" height="310" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1" />
+  <rect x="505" y="170" width="10" height="280" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1" />
+  <rect x="730" y="225" width="10" height="85" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1" />
+  <rect x="945" y="325" width="10" height="110" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1" />
+  <rect x="1145" y="345" width="10" height="80" fill="#E2E8F0" stroke="#4A5568" stroke-width="1" />
+
+  <rect x="1335" y="520" width="10" height="280" fill="#FEFCBF" stroke="#D69E2E" stroke-width="1" />
+  <rect x="1505" y="600" width="10" height="120" fill="#FBD38D" stroke="#C05621" stroke-width="1" />
+
+  <!-- Coordinator -> Controller -->
+  <line x1="100" y1="150" x2="280" y2="150" stroke="#2D3748" stroke-width="1.5" marker-end="url(#arrow)" />
+  <text x="190" y="142" font-size="9" text-anchor="middle" font-weight="bold" fill="#2D3748">POST /agreements/{id}/approve</text>
+
+  <!-- Controller -> Service (Above Transaction Frame) -->
+  <line x1="290" y1="170" x2="505" y2="170" stroke="#2D3748" stroke-width="1.5" marker-end="url(#arrow)" />
+  <text x="397" y="162" font-size="9" text-anchor="middle" font-weight="bold" fill="#2D3748">approveAgreement(id, coordId)</text>
+
+  <!-- Part 1: Phase of Local Transactional Write (Clean frame starts inside AppService) -->
+  <rect x="470" y="195" width="700" height="255" rx="4" fill="none" stroke="#C53030" stroke-width="1.2" stroke-dasharray="5,3" />
+  <text x="525" y="212" font-size="8.5" font-weight="bold" fill="#C53030">@Transactional Boundary (Local ACID Transaction)</text>
+
+  <!-- Service -> Aggregate -->
+  <line x1="515" y1="230" x2="730" y2="230" stroke="#2D3748" stroke-width="1.5" marker-end="url(#arrow)" />
+  <text x="622" y="222" font-size="8.5" text-anchor="middle" font-weight="bold" fill="#2D3748">approve(coordId)</text>
+
+  <!-- Aggregate Mutates & Emits Event -->
+  <path d="M 740 245 L 790 245 L 790 275 L 740 275" fill="none" stroke="#2D3748" stroke-width="1.4" marker-end="url(#arrow)" />
+  <text x="797" y="258" font-size="8" fill="#4A5568">status = APPROVED_BY_FACULTY;</text>
+  <text x="797" y="270" font-size="8" fill="#4A5568">create AgreementApprovedEvent</text>
+
+  <line x1="730" y1="295" x2="515" y2="295" stroke="#718096" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#ret-arrow)" />
+  <text x="622" y="287" font-size="8.5" text-anchor="middle" fill="#4A5568">return AgreementApprovedEvent</text>
+
+  <!-- Service saves Aggregate & OutboxMessage -->
+  <line x1="515" y1="330" x2="945" y2="330" stroke="#2D3748" stroke-width="1.5" marker-end="url(#arrow)" />
+  <text x="730" y="322" font-size="8.5" text-anchor="middle" font-weight="bold" fill="#2D3748">agreementRepo.save(la) &amp; outboxRepo.save(msg)</text>
+
+  <!-- Repositories write to DB -->
+  <line x1="955" y1="350" x2="1145" y2="350" stroke="#2D3748" stroke-width="1.5" marker-end="url(#arrow)" />
+  <text x="1050" y="342" font-size="8" text-anchor="middle" fill="#4A5568">INSERT into learning_agreements &amp; outbox_messages</text>
+
+  <line x1="1145" y1="395" x2="955" y2="395" stroke="#718096" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#ret-arrow)" />
+  <text x="1050" y="387" font-size="8" text-anchor="middle" fill="#4A5568">COMMIT Transaction (Zero Dual-Write Risk)</text>
+
+  <!-- Controller returns to Coordinator -->
+  <line x1="505" y1="435" x2="290" y2="435" stroke="#718096" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#ret-arrow)" />
+  <line x1="280" y1="460" x2="100" y2="460" stroke="#2D3748" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#ret-arrow)" />
+  <text x="190" y="452" font-size="9" text-anchor="middle" font-weight="bold" fill="#2D3748">HTTP 200 OK (Agreement Approved)</text>
+
+  <!-- Phase 2: Asynchronous Background Dispatch -->
+  <rect x="910" y="500" width="670" height="320" rx="4" fill="none" stroke="#D69E2E" stroke-width="1.2" stroke-dasharray="5,3" />
+  <text x="920" y="516" font-size="8.5" font-weight="bold" fill="#744210">Asynchronous Polling &amp; Dispatcher Loop (@Scheduled fixedDelay=2000ms)</text>
+
+  <!-- Dispatcher polls Outbox table -->
+  <line x1="1335" y1="540" x2="1155" y2="540" stroke="#2D3748" stroke-width="1.5" marker-end="url(#arrow)" />
+  <text x="1245" y="532" font-size="8.5" text-anchor="middle" font-weight="bold" fill="#2D3748">SELECT * FROM outbox_messages WHERE status = 'PENDING'</text>
+
+  <line x1="1155" y1="570" x2="1335" y2="570" stroke="#718096" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#ret-arrow)" />
+  <text x="1245" y="562" font-size="8.5" text-anchor="middle" fill="#4A5568">return List&lt;OutboxMessage&gt;</text>
+
+  <!-- Dispatcher publishes to RabbitMQ -->
+  <line x1="1345" y1="610" x2="1505" y2="610" stroke="#DD6B20" stroke-width="1.6" marker-end="url(#orange-arrow)" />
+  <text x="1425" y="602" font-size="8.5" text-anchor="middle" font-weight="bold" fill="#C05621">publish(topicExchange, routingKey, payload)</text>
+
+  <!-- RabbitMQ Ack -->
+  <line x1="1505" y1="670" x2="1345" y2="670" stroke="#DD6B20" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#ret-arrow)" />
+  <text x="1425" y="662" font-size="8.5" text-anchor="middle" fill="#C05621">broker ACK confirmation</text>
+
+  <!-- Dispatcher updates status to PUBLISHED -->
+  <line x1="1335" y1="730" x2="1155" y2="730" stroke="#2D3748" stroke-width="1.5" marker-end="url(#arrow)" />
+  <text x="1245" y="722" font-size="8.5" text-anchor="middle" font-weight="bold" fill="#2D3748">UPDATE outbox_messages SET status = 'PUBLISHED'</text>
+
+  <!-- Note Box -->
+  <g transform="translate(40, 840)">
+    <rect x="0" y="0" width="1520" height="75" rx="4" fill="#FEFCBF" stroke="#D69E2E" stroke-width="1" />
+    <text x="16" y="20" font-size="9.5" font-weight="bold" fill="#744210">Guaranteed At-Least-Once Delivery via Transactional Outbox Pattern</text>
+    <text x="16" y="38" font-size="8.5" fill="#744210">1. Eliminates Dual-Write vulnerability: Aggregate state and OutboxMessage row share the exact same relational ACID transaction.</text>
+    <text x="16" y="54" font-size="8.5" fill="#744210">2. If RabbitMQ is temporarily offline, events remain securely safely persisted in the outbox table until connection is re-established.</text>
+  </g>
+</svg>

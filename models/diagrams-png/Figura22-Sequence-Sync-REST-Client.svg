@@ -1,0 +1,145 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 950" width="100%" height="100%" style="background-color: #FBF8F1; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#2D3748" />
+    </marker>
+    <marker id="blue-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#2B6CB0" />
+    </marker>
+    <marker id="ret-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#718096" />
+    </marker>
+    <filter id="shadow" x="-3%" y="-3%" width="106%" height="106%">
+      <feDropShadow dx="2" dy="2" stdDeviation="2.5" flood-opacity="0.10" />
+    </filter>
+  </defs>
+
+  <text x="30" y="32" font-size="18" font-weight="bold" fill="#1A202C">Figure 22. Sequence Diagram: Synchronous REST Integration - Client Side (Learning Agreement Context)</text>
+  <text x="30" y="50" font-size="11.5" fill="#5A4A3E">Author: Prigoreanu Alin-Gabriel. HTTP GET Call from Domain Port to Remote Equivalence Catalog via Infrastructure Adapter</text>
+
+  <!-- Lifeline Headers -->
+  <g transform="translate(40, 75)">
+    <rect x="0" y="0" width="120" height="45" rx="5" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.5" filter="url(#shadow)" />
+    <text x="60" y="27" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">:Student</text>
+    <line x1="60" y1="45" x2="60" y2="820" stroke="#CBD5E0" stroke-width="1.5" stroke-dasharray="6,4" />
+  </g>
+
+  <g transform="translate(200, 75)">
+    <rect x="0" y="0" width="230" height="45" rx="5" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.5" filter="url(#shadow)" />
+    <text x="115" y="27" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">:AgreementWebController</text>
+    <line x1="115" y1="45" x2="115" y2="820" stroke="#CBD5E0" stroke-width="1.5" stroke-dasharray="6,4" />
+  </g>
+
+  <g transform="translate(470, 75)">
+    <rect x="0" y="0" width="220" height="45" rx="5" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.5" filter="url(#shadow)" />
+    <text x="110" y="27" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">:AgreementAppService</text>
+    <line x1="110" y1="45" x2="110" y2="820" stroke="#CBD5E0" stroke-width="1.5" stroke-dasharray="6,4" />
+  </g>
+
+  <g transform="translate(730, 75)">
+    <rect x="0" y="0" width="210" height="45" rx="5" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.5" filter="url(#shadow)" />
+    <text x="105" y="27" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">:IEquivalenceAdapter</text>
+    <line x1="105" y1="45" x2="105" y2="820" stroke="#CBD5E0" stroke-width="1.5" stroke-dasharray="6,4" />
+  </g>
+
+  <g transform="translate(980, 75)">
+    <rect x="0" y="0" width="200" height="45" rx="5" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.5" filter="url(#shadow)" />
+    <text x="100" y="27" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">:EquivalenceRestAdapter</text>
+    <line x1="100" y1="45" x2="100" y2="820" stroke="#CBD5E0" stroke-width="1.5" stroke-dasharray="6,4" />
+  </g>
+
+  <g transform="translate(1220, 75)">
+    <rect x="0" y="0" width="140" height="45" rx="5" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.5" filter="url(#shadow)" />
+    <text x="70" y="27" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">:RestTemplate</text>
+    <line x1="70" y1="45" x2="70" y2="820" stroke="#CBD5E0" stroke-width="1.5" stroke-dasharray="6,4" />
+  </g>
+
+  <g transform="translate(1400, 75)">
+    <rect x="0" y="0" width="160" height="45" rx="5" fill="#EBF8FF" stroke="#3182CE" stroke-width="1.5" filter="url(#shadow)" />
+    <text x="80" y="27" text-anchor="middle" font-size="11" font-weight="bold" fill="#2B6CB0">Equivalence API</text>
+    <line x1="80" y1="45" x2="80" y2="820" stroke="#63B3ED" stroke-width="1.5" stroke-dasharray="6,4" />
+  </g>
+
+  <!-- Activation Boxes -->
+  <rect x="95" y="140" width="10" height="660" fill="#E2E8F0" stroke="#718096" stroke-width="1" />
+  <rect x="310" y="150" width="10" height="630" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1" />
+  <rect x="575" y="170" width="10" height="580" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1" />
+  <rect x="830" y="270" width="10" height="420" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1" />
+  <rect x="1075" y="300" width="10" height="370" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1" />
+  <rect x="1285" y="350" width="10" height="240" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1" />
+  <rect x="1475" y="380" width="10" height="180" fill="#BEE3F8" stroke="#3182CE" stroke-width="1" />
+
+  <!-- Messages -->
+  <!-- 1. Student -> WebController -->
+  <line x1="105" y1="150" x2="310" y2="150" stroke="#2D3748" stroke-width="1.5" marker-end="url(#arrow)" />
+  <text x="207" y="142" font-size="9" text-anchor="middle" font-weight="bold" fill="#2D3748">POST /api/agreements/{id}/verify</text>
+
+  <!-- 2. Controller -> ApplicationService -->
+  <line x1="320" y1="170" x2="575" y2="170" stroke="#2D3748" stroke-width="1.5" marker-end="url(#arrow)" />
+  <text x="447" y="162" font-size="9" text-anchor="middle" font-weight="bold" fill="#2D3748">verifyCourses(agreementId)</text>
+
+  <!-- 3. Self Call Service: Load Agreement & Extract Courses -->
+  <path d="M 585 190 L 635 190 L 635 220 L 585 220" fill="none" stroke="#2D3748" stroke-width="1.4" marker-end="url(#arrow)" />
+  <text x="642" y="208" font-size="8.5" fill="#4A5568">loadCoursePairs(TableA, TableB)</text>
+
+  <!-- Loop Frame for Course Lines Verification -->
+  <rect x="520" y="240" width="1020" height="460" rx="4" fill="none" stroke="#8D5B4C" stroke-width="1.2" stroke-dasharray="5,3" />
+  <path d="M 520 240 L 670 240 L 670 260 L 655 270 L 520 270 Z" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1.2" />
+  <text x="530" y="255" font-size="9" font-weight="bold" fill="#8D5B4C">loop [for each course pair]</text>
+
+  <!-- 4. Service -> Domain Port (Plentiful breathing room at y=295) -->
+  <line x1="585" y1="295" x2="830" y2="295" stroke="#2D3748" stroke-width="1.5" marker-end="url(#arrow)" />
+  <text x="707" y="287" font-size="9" text-anchor="middle" font-weight="bold" fill="#2D3748">checkEquivalence(sendCode, hostCode)</text>
+
+  <!-- 5. Domain Port -> Infra Adapter (polymorphic delegation) -->
+  <line x1="840" y1="320" x2="1075" y2="320" stroke="#2D3748" stroke-width="1.5" marker-end="url(#arrow)" />
+  <text x="957" y="312" font-size="9" text-anchor="middle" font-weight="bold" fill="#2D3748">implements &amp; calls</text>
+
+  <!-- 6. Infra Adapter -> RestTemplate -->
+  <line x1="1085" y1="355" x2="1285" y2="355" stroke="#2D3748" stroke-width="1.5" marker-end="url(#arrow)" />
+  <text x="1185" y="347" font-size="8.5" text-anchor="middle" font-weight="bold" fill="#2D3748">getForObject(uri, DTO.class)</text>
+
+  <!-- 7. RestTemplate -> Remote API (Network HTTP GET) -->
+  <line x1="1295" y1="385" x2="1475" y2="385" stroke="#2B6CB0" stroke-width="1.6" marker-end="url(#blue-arrow)" />
+  <text x="1385" y="377" font-size="8.5" text-anchor="middle" font-weight="bold" fill="#2B6CB0">HTTP GET /api/equivalences/search?send=...&amp;host=...</text>
+
+  <!-- Server processing note -->
+  <rect x="1390" y="405" width="170" height="45" rx="3" fill="#EBF8FF" stroke="#3182CE" stroke-width="0.8" />
+  <text x="1400" y="420" font-size="8" fill="#2B6CB0">Queries DB catalog,</text>
+  <text x="1400" y="432" font-size="8" fill="#2B6CB0">checks validity window</text>
+
+  <!-- 8. Remote API -> RestTemplate (HTTP 200 JSON) -->
+  <line x1="1475" y1="475" x2="1295" y2="475" stroke="#2B6CB0" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#ret-arrow)" />
+  <text x="1385" y="467" font-size="8.5" text-anchor="middle" fill="#2B6CB0">HTTP 200 OK {recognizedCredits: 6, status: "ACTIVE"}</text>
+
+  <!-- 9. RestTemplate -> Adapter (Deserialized DTO) -->
+  <line x1="1285" y1="525" x2="1085" y2="525" stroke="#718096" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#ret-arrow)" />
+  <text x="1185" y="517" font-size="8.5" text-anchor="middle" fill="#4A5568">return EquivalenceResponseDTO</text>
+
+  <!-- 10. Adapter Self: Map to Value Object -->
+  <path d="M 1085 545 L 1135 545 L 1135 575 L 1085 575" fill="none" stroke="#2D3748" stroke-width="1.4" marker-end="url(#arrow)" />
+  <text x="1142" y="563" font-size="8" fill="#4A5568">mapToDomainValueObject()</text>
+
+  <!-- 11. Adapter -> Port -> Service (VerificationResult VO) -->
+  <line x1="1075" y1="615" x2="840" y2="615" stroke="#718096" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#ret-arrow)" />
+  <text x="957" y="607" font-size="8.5" text-anchor="middle" fill="#4A5568">return VerificationResult</text>
+
+  <line x1="830" y1="650" x2="585" y2="650" stroke="#718096" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#ret-arrow)" />
+  <text x="707" y="642" font-size="8.5" text-anchor="middle" fill="#4A5568">return VerificationResult</text>
+
+  <!-- 12. Service -> Controller -->
+  <line x1="575" y1="730" x2="320" y2="730" stroke="#718096" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#ret-arrow)" />
+  <text x="447" y="722" font-size="8.5" text-anchor="middle" fill="#4A5568">return List&lt;VerificationResult&gt;</text>
+
+  <!-- 13. Controller -> Student (HTTP 200 UI Response) -->
+  <line x1="310" y1="770" x2="105" y2="770" stroke="#2D3748" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#ret-arrow)" />
+  <text x="207" y="762" font-size="9" text-anchor="middle" font-weight="bold" fill="#2D3748">HTTP 200 OK (all equivalences validated)</text>
+
+  <!-- Invariant Architectural Note Box -->
+  <g transform="translate(60, 840)">
+    <rect x="0" y="0" width="1480" height="75" rx="4" fill="#FEFCBF" stroke="#D69E2E" stroke-width="1" />
+    <text x="16" y="20" font-size="9.5" font-weight="bold" fill="#744210">Architectural Decoupling: Dependency Inversion via Port &amp; Adapter</text>
+    <text x="16" y="38" font-size="8.5" fill="#744210">1. Core Domain defines IEquivalenceCatalogAdapter port. No HTTP or Spring RestTemplate dependencies pollute the Domain layer.</text>
+    <text x="16" y="54" font-size="8.5" fill="#744210">2. EquivalenceRestAdapter handles network timeouts (connect=1500ms, read=2500ms) and converts transport DTOs into domain Value Objects.</text>
+  </g>
+</svg>
