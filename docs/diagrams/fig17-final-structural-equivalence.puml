@@ -1,0 +1,132 @@
+@startuml
+title Figure 17. Consolidated Structural Solution - Equivalence Management (Supporting Subdomain)
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 9.5
+skinparam roundCorner 6
+skinparam classAttributeIconSize 0
+
+skinparam package {
+  BackgroundColor #F7FAFC
+  BorderColor #A0AEC0
+  FontSize 11
+  FontStyle bold
+}
+
+skinparam class {
+  BackgroundColor #FFF8EE
+  BorderColor #8D5B4C
+  FontSize 9
+  HeaderBackgroundColor #FCEBD9
+}
+
+package "ro.uaic.feaa.erasmus.equivalence.presentation" {
+  class EquivalenceApiRest <<RestController, OHS>> {
+    - equivalenceService: EquivalenceApplicationService
+    + verifyEquivalence(sendCode: String, hostCode: String): ResponseEntity<EquivalenceResponseDTO>
+    + getEquivalenceById(id: UUID): ResponseEntity<EquivalenceResponseDTO>
+    + registerNewEquivalence(req: RegisterEquivalenceRequest): ResponseEntity<UUID>
+  }
+}
+
+package "ro.uaic.feaa.erasmus.equivalence.application" {
+  class EquivalenceApplicationService <<ApplicationService>> {
+    - equivalenceRepo: AcademicEquivalenceRepository
+    + checkEquivalence(sendCode: String, hostCode: String): EquivalenceCheckResult
+    + registerEquivalence(cmd: RegisterEquivalenceCommand): UUID
+    + retireEquivalence(id: UUID, reason: String): void
+  }
+
+  class RegisterEquivalenceCommand <<Command>> {
+    + sendCourseCode: String
+    + hostCourseCode: String
+    + credits: int
+    + validityYears: int
+  }
+
+  class EquivalenceResponseDTO <<DTO>> {
+    + equivalenceId: UUID
+    + sendCode: String
+    + hostCode: String
+    + recognizedCredits: int
+    + status: String
+    + validUntil: LocalDate
+  }
+}
+
+package "ro.uaic.feaa.erasmus.equivalence.domain" {
+  class AcademicEquivalence <<AggregateRoot>> {
+    - id: EquivalenceId
+    - sendCourse: CourseSyllabus
+    - hostCourse: CourseSyllabus
+    - recognizedCredits: ECTSCredits
+    - validityWindow: ValidityWindow
+    - status: EquivalenceStatus
+    + isCurrentlyValid(asOf: LocalDate): boolean
+    + matchesCourses(send: String, host: String): boolean
+    + retire(effectiveDate: LocalDate): void
+  }
+
+  class CourseSyllabus <<Entity>> {
+    - code: CourseCode
+    - courseName: String
+    - credits: ECTSCredits
+    - universityId: UUID
+  }
+
+  enum EquivalenceStatus <<Enum>> {
+    PROPOSED
+    UNDER_EVALUATION
+    APPROVED
+    ACTIVE
+    RETIRED
+  }
+
+  class EquivalenceId <<ValueObject>> {
+    - value: UUID
+  }
+
+  class CourseCode <<ValueObject>> {
+    - value: String
+  }
+
+  class ECTSCredits <<ValueObject>> {
+    - value: int
+  }
+
+  class ValidityWindow <<ValueObject>> {
+    - startDate: LocalDate
+    - endDate: LocalDate
+    + isWithinWindow(date: LocalDate): boolean
+  }
+
+  interface AcademicEquivalenceRepository <<interface, DomainPort>> {
+    + findByCourseCodes(sendCode: String, hostCode: String): Optional<AcademicEquivalence>
+    + findById(id: EquivalenceId): Optional<AcademicEquivalence>
+    + save(equivalence: AcademicEquivalence): void
+  }
+}
+
+package "ro.uaic.feaa.erasmus.equivalence.infrastructure" {
+  abstract class AbstractRepositoryJPA <<abstract>> {
+    # em: EntityManager
+  }
+
+  class AcademicEquivalenceRepoJPA {
+    + findByCourseCodes(sendCode: String, hostCode: String): Optional<AcademicEquivalence>
+    + findById(id: EquivalenceId): Optional<AcademicEquivalence>
+    + save(equivalence: AcademicEquivalence): void
+  }
+}
+
+' Relationships
+EquivalenceApiRest --> EquivalenceApplicationService : invokes
+EquivalenceApplicationService --> AcademicEquivalenceRepository : calls
+AcademicEquivalence *-- "2" CourseSyllabus : contains
+AcademicEquivalence --> EquivalenceStatus : state
+AcademicEquivalence *-- ValidityWindow : contains
+AcademicEquivalenceRepoJPA --|> AbstractRepositoryJPA : extends
+AcademicEquivalenceRepoJPA ..|> AcademicEquivalenceRepository : implements
+
+@enduml
+

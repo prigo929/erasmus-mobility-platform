@@ -1,0 +1,233 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1560 920" width="100%" height="100%" style="background-color: #FBF8F1; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#2D3748" />
+    </marker>
+    <marker id="gen-arrow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <polygon points="0,1 11,6 0,11" fill="#FFF9F2" stroke="#2D3748" stroke-width="1.4" />
+    </marker>
+    <marker id="impl-arrow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <polygon points="0,1 11,6 0,11" fill="#FFF9F2" stroke="#2D3748" stroke-width="1.4" />
+    </marker>
+    <marker id="diamond" viewBox="0 0 12 12" refX="0" refY="6" markerWidth="9" markerHeight="9" orient="auto">
+      <polygon points="0,6 6,1 12,6 6,11" fill="#2D3748" stroke="#2D3748" stroke-width="1" />
+    </marker>
+    <filter id="shadow" x="-3%" y="-3%" width="106%" height="106%">
+      <feDropShadow dx="2" dy="3" stdDeviation="3" flood-opacity="0.10" />
+    </filter>
+  </defs>
+
+  <text x="30" y="32" font-size="18" font-weight="bold" fill="#1A202C">Figure 18. Consolidated Structural Solution: Mobility Preparation (Supporting Subdomain)</text>
+  <text x="30" y="50" font-size="11.5" fill="#5A4A3E">Author: Schipor Ana-Maria. Complete Package Class Diagram: RabbitMQ Receiver, Checklist Application Service, and Idempotency Port</text>
+
+  <!-- Presentation Layer -->
+  <g transform="translate(30, 75)">
+    <rect x="0" y="0" width="460" height="200" rx="6" fill="#F7FAFC" stroke="#CBD5E0" stroke-width="1.2" />
+    <text x="14" y="22" font-size="11.5" font-weight="bold" fill="#4A5568">Presentation: preparation.presentation</text>
+    <g transform="translate(15, 35)">
+      <rect x="0" y="0" width="430" height="145" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.5" filter="url(#shadow)" />
+      <circle cx="16" cy="16" r="6" fill="#0EA5E9" />
+      <text x="16" y="19" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#FFFFFF">C</text>
+      <text x="215" y="15" text-anchor="middle" font-size="9" font-style="italic" fill="#7A583A">«RestController»</text>
+      <text x="215" y="28" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">MobilityChecklistWebController</text>
+      <line x1="0" y1="36" x2="430" y2="36" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="10" y="52" font-size="8.5" fill="#2D3748">- preparationService: PreparationApplicationService</text>
+      <line x1="0" y1="60" x2="430" y2="60" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="10" y="78" font-size="8.5" fill="#2D3748">+ getStudentChecklist(studentId: UUID): ResponseEntity</text>
+      <text x="10" y="96" font-size="8.5" fill="#2D3748">+ completeTask(checklistId: UUID, taskId: UUID): ResponseEntity</text>
+      <text x="10" y="114" font-size="8.5" fill="#2D3748">+ uploadTaskProof(taskId: UUID, file: MultipartFile): ResponseEntity</text>
+    </g>
+  </g>
+
+  <!-- Application Layer -->
+  <g transform="translate(520, 75)">
+    <rect x="0" y="0" width="1010" height="200" rx="6" fill="#F7FAFC" stroke="#CBD5E0" stroke-width="1.2" />
+    <text x="14" y="22" font-size="11.5" font-weight="bold" fill="#4A5568">Application: preparation.application</text>
+    <g transform="translate(15, 35)">
+      <rect x="0" y="0" width="480" height="145" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.5" filter="url(#shadow)" />
+      <circle cx="16" cy="16" r="6" fill="#0EA5E9" />
+      <text x="16" y="19" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#FFFFFF">C</text>
+      <text x="240" y="15" text-anchor="middle" font-size="9" font-style="italic" fill="#7A583A">«ApplicationService, @Transactional»</text>
+      <text x="240" y="28" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">PreparationApplicationService</text>
+      <line x1="0" y1="36" x2="480" y2="36" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="10" y="52" font-size="8.5" fill="#2D3748">- checklistRepo: MobilityChecklistRepository</text>
+      <text x="10" y="66" font-size="8.5" fill="#2D3748">- processedEventRepo: IProcessedEventRepository</text>
+      <line x1="0" y1="74" x2="480" y2="74" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="10" y="90" font-size="8.5" fill="#2D3748">+ initializeChecklistFromApprovedAgreement(cmd): void</text>
+      <text x="10" y="106" font-size="8.5" fill="#2D3748">+ markTaskComplete(checklistId: UUID, taskId: UUID): void</text>
+      <text x="10" y="122" font-size="8.5" fill="#2D3748">+ attachDocumentProof(taskId: UUID, docRef: String): void</text>
+    </g>
+    <g transform="translate(520, 35)">
+      <rect x="0" y="0" width="450" height="145" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.2" />
+      <circle cx="14" cy="15" r="6" fill="#F59E0B" />
+      <text x="14" y="18" text-anchor="middle" font-size="8" font-weight="bold" fill="#FFFFFF">D</text>
+      <text x="225" y="14" text-anchor="middle" font-size="8.5" font-style="italic" fill="#7A583A">«DTO»</text>
+      <text x="225" y="26" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1A202C">ChecklistSummaryDTO</text>
+      <line x1="0" y1="32" x2="450" y2="32" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="8" y="48" font-size="8.5" fill="#2D3748">+ checklistId: UUID</text>
+      <text x="8" y="64" font-size="8.5" fill="#2D3748">+ completedCount: int, pendingCount: int</text>
+      <text x="8" y="80" font-size="8.5" fill="#2D3748">+ isReadyForDeparture: boolean</text>
+      <text x="8" y="96" font-size="8.5" fill="#2D3748">+ overdueTasks: List&lt;String&gt;</text>
+    </g>
+  </g>
+
+  <!-- Domain Layer: Checklist, Task, Status on top; Repositories side-by-side below -->
+  <g transform="translate(30, 295)">
+    <rect x="0" y="0" width="1500" height="350" rx="6" fill="#F7FAFC" stroke="#CBD5E0" stroke-width="1.2" />
+    <text x="14" y="22" font-size="11.5" font-weight="bold" fill="#4A5568">Domain Layer: preparation.domain</text>
+
+    <!-- MobilityChecklist Aggregate Root -->
+    <g transform="translate(20, 35)">
+      <rect x="0" y="0" width="450" height="180" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.6" filter="url(#shadow)" />
+      <circle cx="18" cy="18" r="7" fill="#EF4444" />
+      <text x="18" y="22" text-anchor="middle" font-size="9" font-weight="bold" fill="#FFFFFF">A</text>
+      <text x="225" y="16" text-anchor="middle" font-size="9" font-style="italic" fill="#7A583A">«AggregateRoot»</text>
+      <text x="225" y="29" text-anchor="middle" font-size="12" font-weight="bold" fill="#1A202C">MobilityChecklist</text>
+      <line x1="0" y1="36" x2="450" y2="36" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="10" y="52" font-size="8.5" fill="#2D3748">- id: ChecklistId, studentId: StudentId, agreementId: AgreementId</text>
+      <text x="10" y="68" font-size="8.5" fill="#2D3748">- tasks: List&lt;ChecklistTask&gt;</text>
+      <line x1="0" y1="76" x2="450" y2="76" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="10" y="94" font-size="8.5" fill="#2D3748">+ initializeDefaultPreparationTasks(): void</text>
+      <text x="10" y="112" font-size="8.5" fill="#2D3748">+ completeTask(taskId: TaskId): void</text>
+      <text x="10" y="130" font-size="8.5" fill="#2D3748">+ areMandatoryTasksComplete(): boolean</text>
+      <text x="10" y="148" font-size="8.5" fill="#2D3748">+ flagOverdueTasks(asOf: LocalDate): void</text>
+    </g>
+
+    <!-- ChecklistTask Entity -->
+    <g transform="translate(510, 35)">
+      <rect x="0" y="0" width="370" height="180" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.4" />
+      <circle cx="16" cy="16" r="6" fill="#0EA5E9" />
+      <text x="16" y="19" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#FFFFFF">E</text>
+      <text x="185" y="15" text-anchor="middle" font-size="9" font-style="italic" fill="#7A583A">«Entity»</text>
+      <text x="185" y="28" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">ChecklistTask</text>
+      <line x1="0" y1="36" x2="370" y2="36" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="10" y="52" font-size="8.5" fill="#2D3748">- taskId: TaskId, taskType: TaskType, title: String</text>
+      <text x="10" y="68" font-size="8.5" fill="#2D3748">- status: TaskStatus, deadline: LocalDate</text>
+      <line x1="0" y1="76" x2="370" y2="76" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="10" y="94" font-size="8.5" fill="#2D3748">+ markSubmitted(): void</text>
+      <text x="10" y="112" font-size="8.5" fill="#2D3748">+ markCompleted(): void</text>
+      <text x="10" y="130" font-size="8.5" fill="#2D3748">+ markOverdue(): void</text>
+    </g>
+
+    <!-- Composition line MobilityChecklist -> ChecklistTask -->
+    <line x1="470" y1="100" x2="510" y2="100" stroke="#2D3748" stroke-width="1.4" marker-start="url(#diamond)" />
+    <text x="490" y="92" font-size="8" fill="#2D3748" text-anchor="middle">1..*</text>
+
+    <!-- TaskStatus Enum -->
+    <g transform="translate(910, 35)">
+      <rect x="0" y="0" width="180" height="150" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.2" />
+      <circle cx="14" cy="15" r="6" fill="#EA580C" />
+      <text x="14" y="18" text-anchor="middle" font-size="8" font-weight="bold" fill="#FFFFFF">E</text>
+      <text x="95" y="14" text-anchor="middle" font-size="8.5" font-style="italic" fill="#7A583A">«Enum»</text>
+      <text x="95" y="26" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#1A202C">TaskStatus</text>
+      <line x1="0" y1="32" x2="180" y2="32" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="10" y="46" font-size="8" fill="#2D3748">INITIALIZED</text>
+      <text x="10" y="60" font-size="8" fill="#2D3748">PENDING_STUDENT_ACTION</text>
+      <text x="10" y="74" font-size="8" fill="#2D3748">SUBMITTED_FOR_VERIFICATION</text>
+      <text x="10" y="88" font-size="8" fill="#2D3748">COMPLETED | OVERDUE</text>
+      <text x="10" y="102" font-size="8" fill="#2D3748">ABANDONED</text>
+    </g>
+
+    <!-- Domain Ports Row (Side by Side at bottom of Domain) -->
+    <!-- MobilityChecklistRepository (x=510, y=235) -->
+    <g transform="translate(510, 235)">
+      <rect x="0" y="0" width="460" height="95" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.3" />
+      <circle cx="14" cy="15" r="6" fill="#10B981" />
+      <text x="14" y="18" text-anchor="middle" font-size="8" font-weight="bold" fill="#FFFFFF">I</text>
+      <text x="230" y="14" text-anchor="middle" font-size="8.5" font-style="italic" fill="#7A583A">«interface, RepositoryPort»</text>
+      <text x="230" y="26" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1A202C">MobilityChecklistRepository</text>
+      <line x1="0" y1="32" x2="460" y2="32" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="10" y="48" font-size="8.5" fill="#2D3748">+ save(checklist: MobilityChecklist): void</text>
+      <text x="10" y="64" font-size="8.5" fill="#2D3748">+ findByAgreementId(aid: UUID): Optional&lt;MobilityChecklist&gt;</text>
+    </g>
+
+    <!-- IProcessedEventRepository (x=1010, y=235) -->
+    <g transform="translate(1010, 235)">
+      <rect x="0" y="0" width="460" height="95" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.3" />
+      <circle cx="14" cy="15" r="6" fill="#10B981" />
+      <text x="14" y="18" text-anchor="middle" font-size="8" font-weight="bold" fill="#FFFFFF">I</text>
+      <text x="230" y="14" text-anchor="middle" font-size="8.5" font-style="italic" fill="#7A583A">«interface, IdempotencyPort»</text>
+      <text x="230" y="26" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1A202C">IProcessedEventRepository</text>
+      <line x1="0" y1="32" x2="460" y2="32" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="10" y="48" font-size="8.5" fill="#2D3748">+ existsById(eventId: UUID): boolean</text>
+      <text x="10" y="64" font-size="8.5" fill="#2D3748">+ recordEvent(eventId: UUID, at: Instant): void</text>
+    </g>
+  </g>
+
+  <!-- Infrastructure Layer -->
+  <g transform="translate(30, 685)">
+    <rect x="0" y="0" width="1500" height="200" rx="6" fill="#F7FAFC" stroke="#CBD5E0" stroke-width="1.2" />
+    <text x="14" y="22" font-size="11.5" font-weight="bold" fill="#4A5568">Infrastructure Layer: preparation.infrastructure</text>
+
+    <!-- AbstractRepositoryJPA -->
+    <g transform="translate(20, 35)">
+      <rect x="0" y="0" width="200" height="120" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.4" />
+      <circle cx="14" cy="15" r="6" fill="#0EA5E9" />
+      <text x="14" y="18" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#FFFFFF">A</text>
+      <text x="100" y="14" text-anchor="middle" font-size="8.5" font-style="italic" fill="#7A583A">«abstract»</text>
+      <text x="100" y="26" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1A202C">AbstractRepositoryJPA</text>
+      <line x1="0" y1="32" x2="200" y2="32" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="8" y="48" font-size="8.5" fill="#2D3748"># em: EntityManager</text>
+      <text x="8" y="66" font-size="8.5" fill="#2D3748"># persist(T entity): void</text>
+    </g>
+
+    <!-- AgreementApprovedMessageReceiver -->
+    <g transform="translate(240, 35)">
+      <rect x="0" y="0" width="310" height="120" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.4" />
+      <circle cx="14" cy="15" r="6" fill="#0EA5E9" />
+      <text x="14" y="18" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#FFFFFF">C</text>
+      <text x="155" y="14" text-anchor="middle" font-size="8.5" font-style="italic" fill="#7A583A">«RabbitListener»</text>
+      <text x="155" y="26" text-anchor="middle" font-size="10" font-weight="bold" fill="#1A202C">AgreementApprovedMessageReceiver</text>
+      <line x1="0" y1="32" x2="310" y2="32" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="8" y="48" font-size="8.5" fill="#2D3748">- prepService: PreparationAppService</text>
+      <text x="8" y="66" font-size="8.5" fill="#2D3748">+ onMessage(payload, tag, channel): void</text>
+    </g>
+
+    <!-- MobilityChecklistRepoJPA (Directly below MobilityChecklistRepository) -->
+    <g transform="translate(580, 35)">
+      <rect x="0" y="0" width="410" height="120" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.4" />
+      <circle cx="14" cy="15" r="6" fill="#0EA5E9" />
+      <text x="14" y="18" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#FFFFFF">C</text>
+      <text x="205" y="14" text-anchor="middle" font-size="8.5" font-style="italic" fill="#7A583A">«RepositoryImplementation»</text>
+      <text x="205" y="26" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1A202C">MobilityChecklistRepoJPA</text>
+      <line x1="0" y1="32" x2="410" y2="32" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="8" y="48" font-size="8.5" fill="#2D3748">+ save(checklist: MobilityChecklist): void</text>
+      <text x="8" y="66" font-size="8.5" fill="#2D3748">+ findByAgreementId(aid): Optional&lt;Checklist&gt;</text>
+    </g>
+
+    <!-- ProcessedEventRepoJPA (Directly below IProcessedEventRepository) -->
+    <g transform="translate(1030, 35)">
+      <rect x="0" y="0" width="430" height="120" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.4" />
+      <circle cx="14" cy="15" r="6" fill="#0EA5E9" />
+      <text x="14" y="18" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#FFFFFF">C</text>
+      <text x="215" y="14" text-anchor="middle" font-size="8.5" font-style="italic" fill="#7A583A">«RepositoryImplementation»</text>
+      <text x="215" y="26" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1A202C">ProcessedEventRepoJPA</text>
+      <line x1="0" y1="32" x2="430" y2="32" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="8" y="48" font-size="8.5" fill="#2D3748">+ existsById(eventId: UUID): boolean</text>
+      <text x="8" y="66" font-size="8.5" fill="#2D3748">+ recordEvent(eventId: UUID, at: Instant): void</text>
+    </g>
+  </g>
+
+  <!-- Connectors -->
+  <line x1="490" y1="175" x2="535" y2="175" stroke="#2D3748" stroke-width="1.5" marker-end="url(#arrow)" />
+  <text x="512" y="167" font-size="8.5" font-weight="bold" fill="#2D3748" text-anchor="middle">delegates</text>
+
+  <!-- AgreementApprovedMessageReceiver -> PreparationApplicationService -->
+  <path d="M 420 720 L 420 285 L 650 285 L 650 220" fill="none" stroke="#2D3748" stroke-width="1.5" marker-end="url(#arrow)" />
+  <text x="470" y="278" font-size="8.5" font-weight="bold" fill="#2D3748" text-anchor="middle">dispatches to</text>
+
+  <!-- MobilityChecklistRepoJPA extends AbstractRepoJPA via clean bottom route -->
+  <path d="M 610 840 L 610 860 L 250 860" fill="none" stroke="#2D3748" stroke-width="1.3" marker-end="url(#gen-arrow)" />
+
+  <!-- ProcessedEventRepoJPA extends AbstractRepoJPA via clean bottom route -->
+  <path d="M 1060 840 L 1060 870 L 250 870" fill="none" stroke="#2D3748" stroke-width="1.3" marker-end="url(#gen-arrow)" />
+
+  <!-- Clean Vertical Implementation Lines -->
+  <!-- MobilityChecklistRepoJPA implements MobilityChecklistRepository -->
+  <line x1="770" y1="720" x2="770" y2="625" stroke="#2D3748" stroke-width="1.5" stroke-dasharray="5,5" marker-end="url(#impl-arrow)" />
+  <text x="780" y="675" font-size="8.5" fill="#2D3748">implements</text>
+
+  <!-- ProcessedEventRepoJPA implements IProcessedEventRepository -->
+  <line x1="1260" y1="720" x2="1260" y2="625" stroke="#2D3748" stroke-width="1.5" stroke-dasharray="5,5" marker-end="url(#impl-arrow)" />
+  <text x="1270" y="675" font-size="8.5" fill="#2D3748">implements</text>
+</svg>

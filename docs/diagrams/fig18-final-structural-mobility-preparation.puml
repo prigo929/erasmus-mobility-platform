@@ -1,0 +1,153 @@
+@startuml
+title Figure 18. Consolidated Structural Solution - Mobility Preparation (Supporting Subdomain)
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 9.5
+skinparam roundCorner 6
+skinparam classAttributeIconSize 0
+
+skinparam package {
+  BackgroundColor #F7FAFC
+  BorderColor #A0AEC0
+  FontSize 11
+  FontStyle bold
+}
+
+skinparam class {
+  BackgroundColor #FFF8EE
+  BorderColor #8D5B4C
+  FontSize 9
+  HeaderBackgroundColor #FCEBD9
+}
+
+package "ro.uaic.feaa.erasmus.preparation.presentation" {
+  class MobilityChecklistWebController <<RestController>> {
+    - preparationService: PreparationApplicationService
+    + getStudentChecklist(studentId: UUID): ResponseEntity<ChecklistSummaryDTO>
+    + completeTask(checklistId: UUID, taskId: UUID): ResponseEntity<Void>
+    + uploadTaskProof(taskId: UUID, file: MultipartFile): ResponseEntity<String>
+  }
+}
+
+package "ro.uaic.feaa.erasmus.preparation.application" {
+  class PreparationApplicationService <<ApplicationService>> {
+    - checklistRepo: MobilityChecklistRepository
+    - processedEventRepo: IProcessedEventRepository
+    + initializeChecklistFromApprovedAgreement(cmd: InitializeChecklistCommand): void
+    + markTaskComplete(checklistId: UUID, taskId: UUID): void
+    + attachDocumentProof(taskId: UUID, docRef: String): void
+  }
+
+  class InitializeChecklistCommand <<Command>> {
+    + eventId: UUID
+    + agreementId: UUID
+    + studentId: UUID
+  }
+
+  class ChecklistSummaryDTO <<DTO>> {
+    + checklistId: UUID
+    + completedCount: int
+    + pendingCount: int
+    + isReadyForDeparture: boolean
+  }
+}
+
+package "ro.uaic.feaa.erasmus.preparation.domain" {
+  class MobilityChecklist <<AggregateRoot>> {
+    - id: ChecklistId
+    - studentId: StudentId
+    - agreementId: AgreementId
+    - tasks: List<ChecklistTask>
+    + initializeDefaultPreparationTasks(): void
+    + completeTask(taskId: TaskId): void
+    + areMandatoryTasksComplete(): boolean
+    + flagOverdueTasks(asOf: LocalDate): void
+  }
+
+  class ChecklistTask <<Entity>> {
+    - taskId: TaskId
+    - taskType: TaskType
+    - title: String
+    - status: TaskStatus
+    - deadline: LocalDate
+    - proofDocumentUri: String
+    + markSubmitted(): void
+    + markCompleted(): void
+    + markOverdue(): void
+  }
+
+  enum TaskStatus <<Enum>> {
+    INITIALIZED
+    PENDING_STUDENT_ACTION
+    SUBMITTED_FOR_VERIFICATION
+    COMPLETED
+    OVERDUE
+    ABANDONED
+  }
+
+  enum TaskType <<Enum>> {
+    LEARNING_AGREEMENT_COUNTERSIGN
+    HEALTH_INSURANCE_PROOF
+    ACCOMMODATION_BOOKING
+    VISA_CONFIRMATION
+    GRANT_AGREEMENT_SIGNATURE
+  }
+
+  class ChecklistId <<ValueObject>> {
+    - value: UUID
+  }
+
+  class TaskId <<ValueObject>> {
+    - value: UUID
+  }
+
+  interface MobilityChecklistRepository <<interface, DomainPort>> {
+    + save(checklist: MobilityChecklist): void
+    + findByAgreementId(agreementId: AgreementId): Optional<MobilityChecklist>
+    + findByStudentId(studentId: StudentId): Optional<MobilityChecklist>
+  }
+
+  interface IProcessedEventRepository <<interface, DomainPort>> {
+    + existsById(eventId: UUID): boolean
+    + recordEvent(eventId: UUID, at: Instant): void
+  }
+}
+
+package "ro.uaic.feaa.erasmus.preparation.infrastructure" {
+  abstract class AbstractRepositoryJPA <<abstract>> {
+    # em: EntityManager
+  }
+
+  class MobilityChecklistRepoJPA {
+    + save(checklist: MobilityChecklist): void
+    + findByAgreementId(agreementId: AgreementId): Optional<MobilityChecklist>
+    + findByStudentId(studentId: StudentId): Optional<MobilityChecklist>
+  }
+
+  class ProcessedEventRepoJPA {
+    + existsById(eventId: UUID): boolean
+    + recordEvent(eventId: UUID, at: Instant): void
+  }
+
+  class AgreementApprovedMessageReceiver <<RabbitListener>> {
+    - preparationService: PreparationApplicationService
+    - objectMapper: ObjectMapper
+    + onMessage(payload: String, tag: long, channel: Channel): void
+  }
+}
+
+' Relationships
+MobilityChecklistWebController --> PreparationApplicationService : calls
+AgreementApprovedMessageReceiver --> PreparationApplicationService : dispatches
+PreparationApplicationService --> MobilityChecklistRepository : persists
+PreparationApplicationService --> IProcessedEventRepository : checks idempotency
+MobilityChecklist *-- ChecklistTask : aggregates
+MobilityChecklist --> TaskStatus : tasks have
+ChecklistTask --> TaskType : classified by
+MobilityChecklistRepoJPA --|> AbstractRepositoryJPA : extends
+MobilityChecklistRepoJPA ..|> MobilityChecklistRepository : implements
+ProcessedEventRepoJPA --|> AbstractRepositoryJPA : extends
+ProcessedEventRepoJPA ..|> IProcessedEventRepository : implements
+
+@enduml
+

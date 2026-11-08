@@ -1,0 +1,275 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1120" width="100%" height="100%" style="background-color: #FBF8F1; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#2D3748" />
+    </marker>
+    <marker id="gen-arrow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <polygon points="0,1 11,6 0,11" fill="#FFF9F2" stroke="#2D3748" stroke-width="1.4" />
+    </marker>
+    <marker id="impl-arrow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <polygon points="0,1 11,6 0,11" fill="#FFF9F2" stroke="#2D3748" stroke-width="1.4" />
+    </marker>
+    <marker id="diamond" viewBox="0 0 12 12" refX="0" refY="6" markerWidth="9" markerHeight="9" orient="auto">
+      <polygon points="0,6 6,1 12,6 6,11" fill="#2D3748" stroke="#2D3748" stroke-width="1" />
+    </marker>
+    <filter id="shadow" x="-3%" y="-3%" width="106%" height="106%">
+      <feDropShadow dx="2" dy="3" stdDeviation="3" flood-opacity="0.10" />
+    </filter>
+  </defs>
+
+  <text x="30" y="32" font-size="18" font-weight="bold" fill="#1A202C">Figure 16. Consolidated Structural Solution: Learning Agreement Management (Core Domain)</text>
+  <text x="30" y="50" font-size="11.5" fill="#5A4A3E">Author: Prigoreanu Alin-Gabriel. Complete Package Class Diagram: Presentation, Application, Domain, and Infrastructure</text>
+
+  <!-- Presentation Layer -->
+  <g transform="translate(30, 75)">
+    <rect x="0" y="0" width="450" height="200" rx="6" fill="#F7FAFC" stroke="#CBD5E0" stroke-width="1.2" />
+    <text x="14" y="22" font-size="11.5" font-weight="bold" fill="#4A5568">Presentation: agreement.presentation</text>
+    <g transform="translate(15, 35)">
+      <rect x="0" y="0" width="420" height="145" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.5" filter="url(#shadow)" />
+      <circle cx="16" cy="16" r="6" fill="#0EA5E9" />
+      <text x="16" y="19" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#FFFFFF">C</text>
+      <text x="210" y="15" text-anchor="middle" font-size="9" font-style="italic" fill="#7A583A">«RestController»</text>
+      <text x="210" y="28" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">LearningAgreementWebController</text>
+      <line x1="0" y1="36" x2="420" y2="36" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="10" y="52" font-size="8.5" fill="#2D3748">- agreementService: AgreementApplicationService</text>
+      <line x1="0" y1="60" x2="420" y2="60" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="10" y="76" font-size="8.5" fill="#2D3748">+ submitDraft(agreementId: UUID): ResponseEntity&lt;Void&gt;</text>
+      <text x="10" y="92" font-size="8.5" fill="#2D3748">+ verifyEquivalences(agreementId: UUID): ResponseEntity&lt;List&lt;VerificationResult&gt;&gt;</text>
+      <text x="10" y="108" font-size="8.5" fill="#2D3748">+ approveByCoordinator(agreementId: UUID, coordId: UUID): ResponseEntity&lt;Void&gt;</text>
+      <text x="10" y="124" font-size="8.5" fill="#2D3748">+ getAgreementSummary(agreementId: UUID): ResponseEntity&lt;AgreementSummaryDTO&gt;</text>
+    </g>
+  </g>
+
+  <!-- Application Layer -->
+  <g transform="translate(510, 75)">
+    <rect x="0" y="0" width="1050" height="200" rx="6" fill="#F7FAFC" stroke="#CBD5E0" stroke-width="1.2" />
+    <text x="14" y="22" font-size="11.5" font-weight="bold" fill="#4A5568">Application: agreement.application</text>
+    <g transform="translate(15, 35)">
+      <rect x="0" y="0" width="480" height="145" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.5" filter="url(#shadow)" />
+      <circle cx="16" cy="16" r="6" fill="#0EA5E9" />
+      <text x="16" y="19" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#FFFFFF">C</text>
+      <text x="240" y="15" text-anchor="middle" font-size="9" font-style="italic" fill="#7A583A">«ApplicationService, @Transactional»</text>
+      <text x="240" y="28" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">AgreementApplicationService</text>
+      <line x1="0" y1="36" x2="480" y2="36" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="10" y="52" font-size="8.5" fill="#2D3748">- agreementRepo: LearningAgreementRepository</text>
+      <text x="10" y="66" font-size="8.5" fill="#2D3748">- outboxRepo: IOutboxRepository</text>
+      <text x="10" y="80" font-size="8.5" fill="#2D3748">- equivalenceAdapter: IEquivalenceCatalogAdapter</text>
+      <line x1="0" y1="88" x2="480" y2="88" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="10" y="104" font-size="8.5" fill="#2D3748">+ submitDraft(agreementId: UUID): void</text>
+      <text x="10" y="120" font-size="8.5" fill="#2D3748">+ approveAgreement(agreementId: UUID, coordinatorId: UUID): void</text>
+      <text x="10" y="136" font-size="8.5" fill="#2D3748">+ verifyCourses(agreementId: UUID): List&lt;VerificationResult&gt;</text>
+    </g>
+    <g transform="translate(520, 35)">
+      <rect x="0" y="0" width="240" height="70" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.2" />
+      <circle cx="14" cy="15" r="6" fill="#F59E0B" />
+      <text x="14" y="18" text-anchor="middle" font-size="8" font-weight="bold" fill="#FFFFFF">C</text>
+      <text x="120" y="14" text-anchor="middle" font-size="8.5" font-style="italic" fill="#7A583A">«Command»</text>
+      <text x="120" y="26" text-anchor="middle" font-size="10" font-weight="bold" fill="#1A202C">SubmitAgreementCommand</text>
+      <line x1="0" y1="32" x2="240" y2="32" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="8" y="46" font-size="8.5" fill="#2D3748">+ agreementId: UUID</text>
+      <text x="8" y="58" font-size="8.5" fill="#2D3748">+ studentId: UUID</text>
+    </g>
+    <g transform="translate(780, 35)">
+      <rect x="0" y="0" width="240" height="70" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.2" />
+      <circle cx="14" cy="15" r="6" fill="#F59E0B" />
+      <text x="14" y="18" text-anchor="middle" font-size="8" font-weight="bold" fill="#FFFFFF">D</text>
+      <text x="120" y="14" text-anchor="middle" font-size="8.5" font-style="italic" fill="#7A583A">«DTO»</text>
+      <text x="120" y="26" text-anchor="middle" font-size="10" font-weight="bold" fill="#1A202C">AgreementSummaryDTO</text>
+      <line x1="0" y1="32" x2="240" y2="32" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="8" y="46" font-size="8.5" fill="#2D3748">+ agreementId: UUID</text>
+      <text x="8" y="58" font-size="8.5" fill="#2D3748">+ status: String, totalECTS: int</text>
+    </g>
+  </g>
+
+  <!-- Domain Layer: TableA & TableB placed next to LearningAgreement, AgreementStatus on far right -->
+  <g transform="translate(30, 300)">
+    <rect x="0" y="0" width="1530" height="460" rx="6" fill="#F7FAFC" stroke="#CBD5E0" stroke-width="1.2" />
+    <text x="14" y="22" font-size="11.5" font-weight="bold" fill="#4A5568">Domain Layer: agreement.domain</text>
+
+    <!-- LearningAgreement Aggregate Root -->
+    <g transform="translate(20, 35)">
+      <rect x="0" y="0" width="440" height="280" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.6" filter="url(#shadow)" />
+      <circle cx="18" cy="18" r="7" fill="#EF4444" />
+      <text x="18" y="22" text-anchor="middle" font-size="9" font-weight="bold" fill="#FFFFFF">A</text>
+      <text x="220" y="16" text-anchor="middle" font-size="9" font-style="italic" fill="#7A583A">«AggregateRoot»</text>
+      <text x="220" y="29" text-anchor="middle" font-size="12" font-weight="bold" fill="#1A202C">LearningAgreement</text>
+      <line x1="0" y1="36" x2="440" y2="36" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="10" y="52" font-size="8.5" fill="#2D3748">- id: AgreementId</text>
+      <text x="10" y="66" font-size="8.5" fill="#2D3748">- studentId: StudentId</text>
+      <text x="10" y="80" font-size="8.5" fill="#2D3748">- status: LearningAgreementStatus</text>
+      <text x="10" y="94" font-size="8.5" fill="#2D3748">- linesTableA: List&lt;CourseLineTableA&gt;</text>
+      <text x="10" y="108" font-size="8.5" fill="#2D3748">- linesTableB: List&lt;CourseLineTableB&gt;</text>
+      <line x1="0" y1="116" x2="440" y2="116" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="10" y="132" font-size="8.5" fill="#2D3748">+ submit(): void</text>
+      <text x="10" y="148" font-size="8.5" fill="#2D3748">+ approve(coordinatorId: UUID): LearningAgreementApprovedEvent</text>
+      <text x="10" y="164" font-size="8.5" fill="#2D3748">+ calculateTotalCreditsTableA(): ECTSCredits</text>
+      <text x="10" y="180" font-size="8.5" fill="#2D3748">+ calculateTotalCreditsTableB(): ECTSCredits</text>
+      <text x="10" y="196" font-size="8.5" font-weight="bold" fill="#9C4221">+ hasCreditParity(): boolean [Invariant: Σ A == Σ B &gt;= 30]</text>
+      <text x="10" y="212" font-size="8" fill="#7A583A"># addCourseLineA(line: CourseLineTableA): void</text>
+      <text x="10" y="226" font-size="8" fill="#7A583A"># addCourseLineB(line: CourseLineTableB): void</text>
+    </g>
+
+    <!-- CourseLineTableA (Host Courses) -->
+    <g transform="translate(500, 35)">
+      <rect x="0" y="0" width="350" height="135" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.3" />
+      <circle cx="16" cy="16" r="6" fill="#0EA5E9" />
+      <text x="16" y="19" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#FFFFFF">E</text>
+      <text x="175" y="15" text-anchor="middle" font-size="9" font-style="italic" fill="#7A583A">«Entity»</text>
+      <text x="175" y="28" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">CourseLineTableA (Host Courses)</text>
+      <line x1="0" y1="36" x2="350" y2="36" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="10" y="52" font-size="8.5" fill="#2D3748">- lineId: UUID</text>
+      <text x="10" y="68" font-size="8.5" fill="#2D3748">- hostCourseCode: String</text>
+      <text x="10" y="84" font-size="8.5" fill="#2D3748">- courseTitle: String</text>
+      <text x="10" y="100" font-size="8.5" fill="#2D3748">- credits: ECTSCredits</text>
+      <text x="10" y="116" font-size="8" fill="#7A583A">+ getCredits(): ECTSCredits</text>
+    </g>
+
+    <!-- CourseLineTableB (Home Equivalents) -->
+    <g transform="translate(880, 35)">
+      <rect x="0" y="0" width="370" height="135" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.3" />
+      <circle cx="16" cy="16" r="6" fill="#0EA5E9" />
+      <text x="16" y="19" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#FFFFFF">E</text>
+      <text x="185" y="15" text-anchor="middle" font-size="9" font-style="italic" fill="#7A583A">«Entity»</text>
+      <text x="185" y="28" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">CourseLineTableB (Home Equivalents)</text>
+      <line x1="0" y1="36" x2="370" y2="36" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="10" y="52" font-size="8.5" fill="#2D3748">- lineId: UUID</text>
+      <text x="10" y="68" font-size="8.5" fill="#2D3748">- homeCourseCode: String</text>
+      <text x="10" y="84" font-size="8.5" fill="#2D3748">- equivalentCourseTitle: String</text>
+      <text x="10" y="100" font-size="8.5" fill="#2D3748">- credits: ECTSCredits</text>
+      <text x="10" y="116" font-size="8" fill="#7A583A">+ getCredits(): ECTSCredits</text>
+    </g>
+
+    <!-- AgreementStatus Enum (Far Right) -->
+    <g transform="translate(1280, 35)">
+      <rect x="0" y="0" width="220" height="150" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.2" />
+      <circle cx="14" cy="15" r="6" fill="#EA580C" />
+      <text x="14" y="18" text-anchor="middle" font-size="8" font-weight="bold" fill="#FFFFFF">E</text>
+      <text x="115" y="14" text-anchor="middle" font-size="8.5" font-style="italic" fill="#7A583A">«Enum»</text>
+      <text x="115" y="26" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#1A202C">AgreementStatus</text>
+      <line x1="0" y1="32" x2="220" y2="32" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="10" y="46" font-size="8" fill="#2D3748">DRAFT, SUBMITTED,</text>
+      <text x="10" y="60" font-size="8" fill="#2D3748">UNDER_REVIEW,</text>
+      <text x="10" y="74" font-size="8" fill="#2D3748">APPROVED_BY_FACULTY,</text>
+      <text x="10" y="88" font-size="8" fill="#2D3748">CONFIRMED_BY_HOST,</text>
+      <text x="10" y="102" font-size="8" fill="#2D3748">AMENDED, CANCELLED</text>
+    </g>
+
+    <!-- Clean Composition lines LearningAgreement -> TableA and TableB -->
+    <line x1="460" y1="90" x2="500" y2="90" stroke="#2D3748" stroke-width="1.4" marker-start="url(#diamond)" />
+    <text x="480" y="82" font-size="8" fill="#2D3748" text-anchor="middle">1..*</text>
+
+    <line x1="850" y1="90" x2="880" y2="90" stroke="#2D3748" stroke-width="1.4" />
+    <text x="865" y="82" font-size="8" fill="#2D3748" text-anchor="middle">1..*</text>
+
+    <!-- Domain Ports Row (Bottom of Domain Layer) -->
+    <g transform="translate(20, 345)">
+      <rect x="0" y="0" width="440" height="95" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.3" />
+      <circle cx="14" cy="15" r="6" fill="#10B981" />
+      <text x="14" y="18" text-anchor="middle" font-size="8" font-weight="bold" fill="#FFFFFF">I</text>
+      <text x="220" y="14" text-anchor="middle" font-size="8.5" font-style="italic" fill="#7A583A">«interface, RepositoryPort»</text>
+      <text x="220" y="26" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1A202C">LearningAgreementRepository</text>
+      <line x1="0" y1="32" x2="440" y2="32" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="10" y="46" font-size="8.5" fill="#2D3748">+ findById(id: AgreementId): Optional&lt;LearningAgreement&gt;</text>
+      <text x="10" y="60" font-size="8.5" fill="#2D3748">+ save(agreement: LearningAgreement): void</text>
+    </g>
+
+    <g transform="translate(500, 345)">
+      <rect x="0" y="0" width="460" height="95" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.3" />
+      <circle cx="14" cy="15" r="6" fill="#10B981" />
+      <text x="14" y="18" text-anchor="middle" font-size="8" font-weight="bold" fill="#FFFFFF">I</text>
+      <text x="230" y="14" text-anchor="middle" font-size="8.5" font-style="italic" fill="#7A583A">«interface, IntegrationPort»</text>
+      <text x="230" y="26" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1A202C">IEquivalenceCatalogAdapter</text>
+      <line x1="0" y1="32" x2="460" y2="32" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="10" y="46" font-size="8.5" fill="#2D3748">+ checkEquivalence(sendCode, hostCode): VerificationResult</text>
+      <text x="10" y="60" font-size="8.5" fill="#2D3748">+ pingCatalogEndpoint(): boolean</text>
+    </g>
+
+    <g transform="translate(1000, 345)">
+      <rect x="0" y="0" width="460" height="95" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.3" />
+      <circle cx="14" cy="15" r="6" fill="#10B981" />
+      <text x="14" y="18" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#FFFFFF">I</text>
+      <text x="230" y="14" text-anchor="middle" font-size="8.5" font-style="italic" fill="#7A583A">«interface, OutboxPort»</text>
+      <text x="230" y="26" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1A202C">IOutboxRepository</text>
+      <line x1="0" y1="32" x2="460" y2="32" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="10" y="46" font-size="8.5" fill="#2D3748">+ save(message: OutboxMessage): void</text>
+      <text x="10" y="60" font-size="8.5" fill="#2D3748">+ findPendingMessages(limit: int): List&lt;OutboxMessage&gt;</text>
+    </g>
+  </g>
+
+  <!-- Infrastructure Layer -->
+  <g transform="translate(30, 800)">
+    <rect x="0" y="0" width="1530" height="280" rx="6" fill="#F7FAFC" stroke="#CBD5E0" stroke-width="1.2" />
+    <text x="14" y="22" font-size="11.5" font-weight="bold" fill="#4A5568">Infrastructure Layer: agreement.infrastructure</text>
+
+    <!-- AbstractRepositoryJPA -->
+    <g transform="translate(20, 35)">
+      <rect x="0" y="0" width="220" height="100" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.4" />
+      <circle cx="14" cy="15" r="6" fill="#0EA5E9" />
+      <text x="14" y="18" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#FFFFFF">A</text>
+      <text x="110" y="14" text-anchor="middle" font-size="8.5" font-style="italic" fill="#7A583A">«abstract»</text>
+      <text x="110" y="26" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1A202C">AbstractRepositoryJPA</text>
+      <line x1="0" y1="32" x2="220" y2="32" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="8" y="46" font-size="8.5" fill="#2D3748"># em: EntityManager</text>
+      <text x="8" y="60" font-size="8.5" fill="#2D3748"># persist(T entity): void</text>
+    </g>
+
+    <!-- LearningAgreementRepoJPA -->
+    <g transform="translate(260, 35)">
+      <rect x="0" y="0" width="310" height="100" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.4" />
+      <circle cx="14" cy="15" r="6" fill="#0EA5E9" />
+      <text x="14" y="18" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#FFFFFF">C</text>
+      <text x="155" y="14" text-anchor="middle" font-size="8.5" font-style="italic" fill="#7A583A">«RepositoryImplementation»</text>
+      <text x="155" y="26" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1A202C">LearningAgreementRepoJPA</text>
+      <line x1="0" y1="32" x2="310" y2="32" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="8" y="46" font-size="8.5" fill="#2D3748">+ findById(id): Optional&lt;LA&gt;</text>
+      <text x="8" y="60" font-size="8.5" fill="#2D3748">+ save(agreement): void</text>
+    </g>
+
+    <!-- EquivalenceRestAdapter -->
+    <g transform="translate(600, 35)">
+      <rect x="0" y="0" width="410" height="100" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.4" />
+      <circle cx="14" cy="15" r="6" fill="#0EA5E9" />
+      <text x="14" y="18" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#FFFFFF">C</text>
+      <text x="205" y="14" text-anchor="middle" font-size="8.5" font-style="italic" fill="#7A583A">«Adapter»</text>
+      <text x="205" y="26" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1A202C">EquivalenceRestAdapter</text>
+      <line x1="0" y1="32" x2="410" y2="32" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="8" y="46" font-size="8.5" fill="#2D3748">- restTemplate: RestTemplate</text>
+      <text x="8" y="60" font-size="8.5" fill="#2D3748">+ checkEquivalence(send, host): VerificationResult</text>
+    </g>
+
+    <!-- OutboxRepoJPA -->
+    <g transform="translate(1040, 35)">
+      <rect x="0" y="0" width="450" height="100" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.4" />
+      <circle cx="14" cy="15" r="6" fill="#0EA5E9" />
+      <text x="14" y="18" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#FFFFFF">C</text>
+      <text x="225" y="14" text-anchor="middle" font-size="8.5" font-style="italic" fill="#7A583A">«RepositoryImplementation»</text>
+      <text x="225" y="26" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1A202C">OutboxRepoJPA</text>
+      <line x1="0" y1="32" x2="450" y2="32" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="8" y="46" font-size="8.5" fill="#2D3748">+ save(msg: OutboxMessage): void</text>
+      <text x="8" y="60" font-size="8.5" fill="#2D3748">+ findPending(limit: int): List&lt;OutboxMessage&gt;</text>
+    </g>
+  </g>
+
+  <!-- Connectors -->
+  <line x1="480" y1="175" x2="525" y2="175" stroke="#2D3748" stroke-width="1.5" marker-end="url(#arrow)" />
+  <text x="502" y="167" font-size="8.5" font-weight="bold" fill="#2D3748" text-anchor="middle">delegates</text>
+
+  <path d="M 720 220 L 720 280 L 250 280 L 250 335" fill="none" stroke="#2D3748" stroke-width="1.5" marker-end="url(#arrow)" />
+  <text x="480" y="274" font-size="8.5" font-weight="bold" fill="#9C4221" text-anchor="middle">executes domain invariants</text>
+
+  <!-- LearningAgreementRepoJPA extends AbstractRepositoryJPA -->
+  <line x1="290" y1="885" x2="240" y2="885" stroke="#2D3748" stroke-width="1.5" marker-end="url(#gen-arrow)" />
+
+  <!-- OutboxRepoJPA extends AbstractRepositoryJPA via routed line at bottom -->
+  <path d="M 1040 900 L 130 900 L 130 935" fill="none" stroke="#2D3748" stroke-width="1.3" marker-end="url(#gen-arrow)" />
+
+  <!-- Clean Vertical Implementation Lines -->
+  <line x1="415" y1="835" x2="415" y2="740" stroke="#2D3748" stroke-width="1.5" stroke-dasharray="5,5" marker-end="url(#impl-arrow)" />
+  <text x="425" y="785" font-size="8.5" fill="#2D3748">implements</text>
+
+  <line x1="805" y1="835" x2="805" y2="740" stroke="#2D3748" stroke-width="1.5" stroke-dasharray="5,5" marker-end="url(#impl-arrow)" />
+  <text x="815" y="785" font-size="8.5" fill="#2D3748">implements</text>
+
+  <line x1="1265" y1="835" x2="1265" y2="740" stroke="#2D3748" stroke-width="1.5" stroke-dasharray="5,5" marker-end="url(#impl-arrow)" />
+  <text x="1275" y="785" font-size="8.5" fill="#2D3748">implements</text>
+</svg>

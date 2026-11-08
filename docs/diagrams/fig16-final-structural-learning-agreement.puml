@@ -1,0 +1,182 @@
+@startuml
+title Figure 16. Consolidated Structural Solution - Learning Agreement Management (Core Domain)
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 9.5
+skinparam roundCorner 6
+skinparam classAttributeIconSize 0
+
+skinparam package {
+  BackgroundColor #F7FAFC
+  BorderColor #A0AEC0
+  FontSize 11
+  FontStyle bold
+}
+
+skinparam class {
+  BackgroundColor #FFF8EE
+  BorderColor #8D5B4C
+  FontSize 9
+  HeaderBackgroundColor #FCEBD9
+}
+
+package "ro.uaic.feaa.erasmus.agreement.presentation" {
+  class LearningAgreementWebController <<RestController>> {
+    - agreementService: AgreementApplicationService
+    + submitDraft(agreementId: UUID): ResponseEntity<Void>
+    + verifyEquivalences(agreementId: UUID): ResponseEntity<List<EquivalenceVerificationResult>>
+    + approveByCoordinator(agreementId: UUID, coordinatorId: UUID): ResponseEntity<Void>
+    + getAgreementSummary(agreementId: UUID): ResponseEntity<AgreementSummaryDTO>
+  }
+}
+
+package "ro.uaic.feaa.erasmus.agreement.application" {
+  class AgreementApplicationService <<ApplicationService>> {
+    - agreementRepo: LearningAgreementRepository
+    - outboxRepo: IOutboxRepository
+    - equivalenceAdapter: IEquivalenceCatalogAdapter
+    - eventSerializer: EventJsonSerializer
+    + submitDraft(agreementId: UUID): void
+    + approveAgreement(agreementId: UUID, coordinatorId: UUID): void
+    + verifyCourses(agreementId: UUID): List<EquivalenceVerificationResult>
+  }
+
+  class SubmitAgreementCommand <<Command>> {
+    + agreementId: UUID
+    + studentId: UUID
+  }
+
+  class AgreementSummaryDTO <<DTO>> {
+    + agreementId: UUID
+    + status: String
+    + totalTableA: int
+    + totalTableB: int
+  }
+}
+
+package "ro.uaic.feaa.erasmus.agreement.domain" {
+  class LearningAgreement <<AggregateRoot>> {
+    - id: AgreementId
+    - studentId: StudentId
+    - academicYear: AcademicYear
+    - status: LearningAgreementStatus
+    - linesTableA: List<CourseLineTableA>
+    - linesTableB: List<CourseLineTableB>
+    + submit(): void
+    + approve(coordinatorId: UUID): LearningAgreementApprovedEvent
+    + calculateTotalCreditsTableA(): ECTSCredits
+    + calculateTotalCreditsTableB(): ECTSCredits
+    + hasCreditParity(): boolean
+  }
+
+  class CourseLineTableA <<Entity>> {
+    - lineId: UUID
+    - hostCourseCode: String
+    - courseTitle: String
+    - credits: ECTSCredits
+  }
+
+  class CourseLineTableB <<Entity>> {
+    - lineId: UUID
+    - homeCourseCode: String
+    - equivalentCourseTitle: String
+    - credits: ECTSCredits
+  }
+
+  enum LearningAgreementStatus <<Enum>> {
+    DRAFT
+    SUBMITTED
+    UNDER_REVIEW
+    APPROVED_BY_FACULTY
+    CONFIRMED_BY_HOST
+    AMENDED
+    CANCELLED
+  }
+
+  class AgreementId <<ValueObject>> {
+    - value: UUID
+  }
+
+  class ECTSCredits <<ValueObject>> {
+    - value: int
+    + isMinimumMet(): boolean
+  }
+
+  interface LearningAgreementRepository <<interface, DomainPort>> {
+    + findById(id: AgreementId): Optional<LearningAgreement>
+    + save(agreement: LearningAgreement): void
+  }
+
+  interface IEquivalenceCatalogAdapter <<interface, DomainPort>> {
+    + checkEquivalence(sendCode: String, hostCode: String): EquivalenceVerificationResult
+  }
+
+  interface IOutboxRepository <<interface, DomainPort>> {
+    + save(message: OutboxMessage): void
+    + findPendingMessages(limit: int): List<OutboxMessage>
+    + markAsPublished(id: UUID, at: Instant): void
+  }
+
+  class LearningAgreementApprovedEvent <<DomainEvent>> {
+    + eventId: UUID
+    + agreementId: UUID
+    + studentId: UUID
+    + occurredOn: Instant
+  }
+}
+
+package "ro.uaic.feaa.erasmus.agreement.infrastructure" {
+  abstract class AbstractRepositoryJPA <<abstract>> {
+    # em: EntityManager
+  }
+
+  class LearningAgreementRepoJPA {
+    + findById(id: AgreementId): Optional<LearningAgreement>
+    + save(agreement: LearningAgreement): void
+  }
+
+  class OutboxRepoJPA {
+    + save(message: OutboxMessage): void
+    + findPendingMessages(limit: int): List<OutboxMessage>
+    + markAsPublished(id: UUID, at: Instant): void
+  }
+
+  class OutboxMessage <<Entity>> {
+    - id: UUID
+    - aggregateId: UUID
+    - payloadJson: String
+    - status: OutboxStatus
+  }
+
+  class EquivalenceRestAdapter {
+    - restTemplate: RestTemplate
+    - equivalenceUrl: String
+    + checkEquivalence(sendCode: String, hostCode: String): EquivalenceVerificationResult
+  }
+
+  class OutboxDispatcher <<Component>> {
+    - outboxRepo: IOutboxRepository
+    - rabbitTemplate: RabbitTemplate
+    + pollAndDispatch(): void
+  }
+}
+
+' Relationships
+LearningAgreementWebController --> AgreementApplicationService : delegates
+AgreementApplicationService --> LearningAgreementRepository : invokes
+AgreementApplicationService --> IEquivalenceCatalogAdapter : calls
+AgreementApplicationService --> IOutboxRepository : writes
+LearningAgreement *-- CourseLineTableA : contains
+LearningAgreement *-- CourseLineTableB : contains
+LearningAgreement --> LearningAgreementStatus : state
+LearningAgreement ..> LearningAgreementApprovedEvent : fires
+LearningAgreementRepoJPA --|> AbstractRepositoryJPA : extends
+LearningAgreementRepoJPA ..|> LearningAgreementRepository : implements
+OutboxRepoJPA --|> AbstractRepositoryJPA : extends
+OutboxRepoJPA ..|> IOutboxRepository : implements
+EquivalenceRestAdapter ..|> IEquivalenceCatalogAdapter : implements
+OutboxDispatcher --> IOutboxRepository : polls
+OutboxRepoJPA ..> OutboxMessage : persists
+
+@enduml
+
