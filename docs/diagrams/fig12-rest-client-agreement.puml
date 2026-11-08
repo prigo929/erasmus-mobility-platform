@@ -1,0 +1,96 @@
+@startuml
+title Figure 12. Synchronous REST Integration - Client Side (Learning Agreement Context)
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 10
+skinparam roundCorner 8
+skinparam classAttributeIconSize 0
+
+skinparam package {
+  BackgroundColor #F7FAFC
+  BorderColor #CBD5E0
+  FontSize 11
+  FontStyle bold
+}
+
+skinparam class {
+  BackgroundColor #FFF8EE
+  BorderColor #8D5B4C
+  FontSize 9.5
+  HeaderBackgroundColor #FCEBD9
+}
+
+skinparam note {
+  BackgroundColor #FEFCBF
+  BorderColor #D69E2E
+  FontSize 9
+}
+
+package "ro.uaic.feaa.erasmus.agreement.application" {
+  class AgreementApplicationService {
+    - agreementRepo: LearningAgreementRepository
+    - equivalenceAdapter: IEquivalenceCatalogAdapter
+    + validateAndSubmitAgreement(agreementId: UUID): AgreementSubmissionResult
+    + verifyCourseEquivalences(agreementId: UUID): List<EquivalenceVerificationResult>
+  }
+}
+
+package "ro.uaic.feaa.erasmus.agreement.domain.ports" {
+  interface IEquivalenceCatalogAdapter <<interface>> {
+    + checkEquivalence(sendCourseCode: String, hostCourseCode: String): EquivalenceVerificationResult
+    + getEquivalenceDetails(equivalenceId: UUID): Optional<EquivalenceDetailsVO>
+  }
+
+  class EquivalenceVerificationResult <<ValueObject>> {
+    - sendCourseCode: String
+    - hostCourseCode: String
+    - recognizedCredits: int
+    - isPreApproved: boolean
+    - expirationDate: LocalDate
+    + isValid(): boolean
+  }
+}
+
+package "ro.uaic.feaa.erasmus.agreement.infrastructure.adapters" {
+  class EquivalenceRestAdapter {
+    - restTemplate: RestTemplate
+    - equivalenceServiceBaseUrl: String
+    + checkEquivalence(sendCourseCode: String, hostCourseCode: String): EquivalenceVerificationResult
+    + getEquivalenceDetails(equivalenceId: UUID): Optional<EquivalenceDetailsVO>
+    - mapToDomain(dto: EquivalenceResponseDTO): EquivalenceVerificationResult
+  }
+
+  class EquivalenceResponseDTO {
+    + equivalenceId: UUID
+    + sendCode: String
+    + hostCode: String
+    + credits: int
+    + status: String
+    + validUntil: String
+  }
+}
+
+package "External: Equivalence Context (HTTP Endpoint)" {
+  interface "REST API Endpoint\nGET /api/v1/equivalences/verify" as ExternalRestEndpoint <<OHS>>
+}
+
+' Relationships
+AgreementApplicationService --> IEquivalenceCatalogAdapter : invokes
+AgreementApplicationService ..> EquivalenceVerificationResult : uses
+EquivalenceRestAdapter ..|> IEquivalenceCatalogAdapter : implements
+EquivalenceRestAdapter --> EquivalenceResponseDTO : deserializes
+EquivalenceRestAdapter ..> ExternalRestEndpoint : sends HTTP GET request
+
+note right of IEquivalenceCatalogAdapter
+  Domain Port decoupling the Core Domain
+  from external communication mechanisms.
+  The core domain owns the contract.
+end note
+
+note bottom of EquivalenceRestAdapter
+  Infrastructure Adapter handles technical network
+  concerns: HTTP client, timeout budgets (2000 ms),
+  and JSON payload translation into domain Value Objects.
+end note
+
+@enduml

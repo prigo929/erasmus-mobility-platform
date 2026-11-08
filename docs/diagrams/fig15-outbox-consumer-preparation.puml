@@ -1,0 +1,133 @@
+@startuml
+title Figure 15. Asynchronous Outbox Integration - Consumer Side (Mobility Preparation Context)
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 10
+skinparam roundCorner 8
+skinparam classAttributeIconSize 0
+
+skinparam package {
+  BackgroundColor #F7FAFC
+  BorderColor #CBD5E0
+  FontSize 11
+  FontStyle bold
+}
+
+skinparam class {
+  BackgroundColor #FFF8EE
+  BorderColor #8D5B4C
+  FontSize 9.5
+  HeaderBackgroundColor #FCEBD9
+}
+
+skinparam note {
+  BackgroundColor #FEFCBF
+  BorderColor #D69E2E
+  FontSize 9
+}
+
+package "External: Message Broker" {
+  queue "Queue: mobility.preparation.agreement.approved" as InboundQueue
+}
+
+package "ro.uaic.feaa.erasmus.preparation.infrastructure.messaging" {
+  class AgreementApprovedMessageReceiver <<RabbitListener, Consumer>> {
+    - preparationService: PreparationApplicationService
+    - objectMapper: ObjectMapper
+    + onMessage(payload: String, deliveryTag: long, channel: Channel): void
+  }
+
+  class AgreementApprovedPayloadDTO {
+    + eventId: UUID
+    + agreementId: UUID
+    + studentId: UUID
+    + hostUniversityId: UUID
+    + approvedCredits: int
+    + occurredOn: String
+  }
+}
+
+package "ro.uaic.feaa.erasmus.preparation.application" {
+  class PreparationApplicationService {
+    - checklistRepo: MobilityChecklistRepository
+    - processedEventRepo: IProcessedEventRepository
+    + initializeChecklistFromApprovedAgreement(cmd: InitializeChecklistCommand): void
+  }
+
+  class InitializeChecklistCommand {
+    - eventId: UUID
+    - agreementId: UUID
+    - studentId: UUID
+    - hostUniversityId: UUID
+  }
+}
+
+package "ro.uaic.feaa.erasmus.preparation.domain" {
+  class MobilityChecklist <<AggregateRoot>> {
+    - id: ChecklistId
+    - studentId: StudentId
+    - agreementId: AgreementId
+    - tasks: List<ChecklistTask>
+    + initializeDefaultPreparationTasks(): void
+    + addTask(task: ChecklistTask): void
+  }
+
+  class ChecklistTask <<Entity>> {
+    - taskId: TaskId
+    - title: String
+    - status: TaskStatus
+    - deadline: LocalDate
+    + markSubmitted(): void
+  }
+
+  interface MobilityChecklistRepository <<interface>> {
+    + save(checklist: MobilityChecklist): void
+    + findByAgreementId(agreementId: AgreementId): Optional<MobilityChecklist>
+  }
+
+  interface IProcessedEventRepository <<interface>> {
+    + existsById(eventId: UUID): boolean
+    + recordEvent(eventId: UUID, processedAt: Instant): void
+  }
+}
+
+package "ro.uaic.feaa.erasmus.preparation.infrastructure.persistence" {
+  class MobilityChecklistRepoJPA {
+    # em: EntityManager
+    + save(checklist: MobilityChecklist): void
+    + findByAgreementId(agreementId: AgreementId): Optional<MobilityChecklist>
+  }
+
+  class ProcessedEventRepoJPA {
+    # em: EntityManager
+    + existsById(eventId: UUID): boolean
+    + recordEvent(eventId: UUID, processedAt: Instant): void
+  }
+}
+
+' Relationships
+InboundQueue ..> AgreementApprovedMessageReceiver : delivers message
+AgreementApprovedMessageReceiver --> AgreementApprovedPayloadDTO : deserializes
+AgreementApprovedMessageReceiver --> PreparationApplicationService : dispatches command
+PreparationApplicationService --> IProcessedEventRepository : checks idempotency
+PreparationApplicationService --> MobilityChecklistRepository : persists checklist
+PreparationApplicationService ..> MobilityChecklist : constructs
+MobilityChecklist *-- ChecklistTask : contains
+MobilityChecklistRepoJPA ..|> MobilityChecklistRepository : implements
+ProcessedEventRepoJPA ..|> IProcessedEventRepository : implements
+
+note left of AgreementApprovedMessageReceiver
+  Idempotent Consumer Pattern:
+  Broker redeliveries can occur on network drops.
+  The listener safely confirms delivery (ACK) only
+  after the local database transaction finishes.
+end note
+
+note bottom of PreparationApplicationService
+  Guard Rule:
+  If processedEventRepo.existsById(eventId) is true,
+  the command exits silently. No duplicate tasks
+  enter the student workspace.
+end note
+
+@enduml

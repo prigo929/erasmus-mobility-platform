@@ -1,0 +1,169 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1520 640" width="100%" height="100%" style="background-color: #FBF8F1; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#2D3748" />
+    </marker>
+    <marker id="gen-arrow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <polygon points="0,1 11,6 0,11" fill="#FFF9F2" stroke="#2D3748" stroke-width="1.4" />
+    </marker>
+    <marker id="impl-arrow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <polygon points="0,1 11,6 0,11" fill="#FFF9F2" stroke="#2D3748" stroke-width="1.4" />
+    </marker>
+    <filter id="shadow" x="-3%" y="-3%" width="106%" height="106%">
+      <feDropShadow dx="2" dy="3" stdDeviation="3" flood-opacity="0.10" />
+    </filter>
+  </defs>
+
+  <!-- Title -->
+  <text x="30" y="32" font-size="18" font-weight="bold" fill="#1A202C">Figure 13. Synchronous REST Integration - Server Side (Equivalence Management Context)</text>
+  <text x="30" y="50" font-size="11.5" fill="#5A4A3E">Open Host Service REST Controller Exposing Academic Equivalences via Domain Repository and JPA Infrastructure</text>
+
+  <!-- Presentation Layer Box -->
+  <g transform="translate(30, 80)">
+    <rect x="0" y="0" width="410" height="490" rx="6" fill="#F7FAFC" stroke="#CBD5E0" stroke-width="1.2" />
+    <text x="14" y="22" font-size="12" font-weight="bold" fill="#4A5568">Presentation Layer: equivalence.presentation</text>
+
+    <!-- Class: EquivalenceApiRest -->
+    <g transform="translate(15, 40)">
+      <rect x="0" y="0" width="380" height="200" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.5" filter="url(#shadow)" />
+      <circle cx="16" cy="16" r="6" fill="#0EA5E9" />
+      <text x="16" y="19" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#FFFFFF">C</text>
+      <text x="190" y="15" text-anchor="middle" font-size="9" font-style="italic" fill="#7A583A">«RestController, OpenHostService»</text>
+      <text x="190" y="28" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">EquivalenceApiRest</text>
+      <line x1="0" y1="36" x2="380" y2="36" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="10" y="52" font-size="9" fill="#2D3748">- equivalenceService: EquivalenceApplicationService</text>
+      <line x1="0" y1="60" x2="380" y2="60" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="10" y="78" font-size="9" fill="#2D3748">+ verifyEquivalence(sendCode: String, hostCode: String):</text>
+      <text x="25" y="94" font-size="9" fill="#2D3748">ResponseEntity&lt;EquivalenceResponseDTO&gt;</text>
+      <text x="10" y="112" font-size="9" fill="#2D3748">+ getEquivalenceById(id: UUID):</text>
+      <text x="25" y="128" font-size="9" fill="#2D3748">ResponseEntity&lt;EquivalenceResponseDTO&gt;</text>
+      <text x="10" y="146" font-size="9" fill="#2D3748">+ listActiveByPartner(partnerId: String):</text>
+      <text x="25" y="162" font-size="9" fill="#2D3748">ResponseEntity&lt;List&lt;EquivalenceResponseDTO&gt;&gt;</text>
+      <text x="10" y="180" font-size="8.5" fill="#7A583A">- toDTO(result: EquivalenceCheckResult): EquivalenceResponseDTO</text>
+    </g>
+
+    <!-- Class: EquivalenceResponseDTO -->
+    <g transform="translate(15, 270)">
+      <rect x="0" y="0" width="380" height="190" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.5" filter="url(#shadow)" />
+      <circle cx="16" cy="16" r="6" fill="#F59E0B" />
+      <text x="16" y="19" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#FFFFFF">D</text>
+      <text x="190" y="15" text-anchor="middle" font-size="9" font-style="italic" fill="#7A583A">«DTO, PublishedLanguage»</text>
+      <text x="190" y="28" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">EquivalenceResponseDTO</text>
+      <line x1="0" y1="36" x2="380" y2="36" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="10" y="52" font-size="9" fill="#2D3748">+ equivalenceId: UUID</text>
+      <text x="10" y="70" font-size="9" fill="#2D3748">+ sendCourseCode: String</text>
+      <text x="10" y="88" font-size="9" fill="#2D3748">+ hostCourseCode: String</text>
+      <text x="10" y="106" font-size="9" fill="#2D3748">+ recognizedECTS: int</text>
+      <text x="10" y="124" font-size="9" fill="#2D3748">+ status: String</text>
+      <text x="10" y="142" font-size="9" fill="#2D3748">+ validUntil: LocalDate</text>
+      <text x="10" y="160" font-size="9" fill="#2D3748">+ partnerUniversityId: UUID</text>
+      <text x="10" y="178" font-size="8.5" fill="#7A583A">+ isVerified(): boolean</text>
+    </g>
+  </g>
+
+  <!-- Application Layer Box -->
+  <g transform="translate(470, 80)">
+    <rect x="0" y="0" width="410" height="250" rx="6" fill="#F7FAFC" stroke="#CBD5E0" stroke-width="1.2" />
+    <text x="14" y="22" font-size="12" font-weight="bold" fill="#4A5568">Application Layer: equivalence.application</text>
+
+    <!-- Class: EquivalenceApplicationService -->
+    <g transform="translate(15, 40)">
+      <rect x="0" y="0" width="380" height="180" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.5" filter="url(#shadow)" />
+      <circle cx="16" cy="16" r="6" fill="#0EA5E9" />
+      <text x="16" y="19" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#FFFFFF">C</text>
+      <text x="190" y="15" text-anchor="middle" font-size="9" font-style="italic" fill="#7A583A">«ApplicationService»</text>
+      <text x="190" y="28" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">EquivalenceApplicationService</text>
+      <line x1="0" y1="36" x2="380" y2="36" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="10" y="52" font-size="9" fill="#2D3748">- equivalenceRepo: AcademicEquivalenceRepository</text>
+      <text x="10" y="68" font-size="9" fill="#2D3748">- auditLogger: SecurityAuditLogger</text>
+      <line x1="0" y1="76" x2="380" y2="76" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="10" y="94" font-size="9" fill="#2D3748">+ checkEquivalence(send: String, host: String): EquivalenceCheckResult</text>
+      <text x="10" y="112" font-size="9" fill="#2D3748">+ getEquivalence(id: UUID): Optional&lt;AcademicEquivalence&gt;</text>
+      <text x="10" y="130" font-size="9" fill="#2D3748">+ registerEquivalence(cmd: RegisterEquivalenceCommand): UUID</text>
+      <text x="10" y="148" font-size="8.5" fill="#7A583A">- validateCreditsInvariant(sendECTS: int, hostECTS: int): void</text>
+      <text x="10" y="166" font-size="8.5" fill="#7A583A">- checkValidityWindow(window: ValidityWindow): boolean</text>
+    </g>
+  </g>
+
+  <!-- Domain Layer Box -->
+  <g transform="translate(910, 80)">
+    <rect x="0" y="0" width="580" height="250" rx="6" fill="#F7FAFC" stroke="#CBD5E0" stroke-width="1.2" />
+    <text x="14" y="22" font-size="12" font-weight="bold" fill="#4A5568">Domain Layer: equivalence.domain</text>
+
+    <!-- Interface: AcademicEquivalenceRepository -->
+    <g transform="translate(15, 40)">
+      <rect x="0" y="0" width="550" height="180" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.5" filter="url(#shadow)" />
+      <circle cx="16" cy="16" r="6" fill="#10B981" />
+      <text x="16" y="19" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#FFFFFF">I</text>
+      <text x="275" y="15" text-anchor="middle" font-size="9" font-style="italic" fill="#7A583A">«interface, RepositoryPort»</text>
+      <text x="275" y="28" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">AcademicEquivalenceRepository</text>
+      <line x1="0" y1="36" x2="550" y2="36" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="12" y="52" font-size="9" fill="#7A583A">/* Repository Port defining persistence contracts for Aggregate */</text>
+      <line x1="0" y1="60" x2="550" y2="60" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="12" y="78" font-size="9" fill="#2D3748">+ findByCourseCodes(sendCode: String, hostCode: String): Optional&lt;AcademicEquivalence&gt;</text>
+      <text x="12" y="96" font-size="9" fill="#2D3748">+ findById(id: EquivalenceId): Optional&lt;AcademicEquivalence&gt;</text>
+      <text x="12" y="114" font-size="9" fill="#2D3748">+ findActiveByPartner(partnerUniversityId: UUID): List&lt;AcademicEquivalence&gt;</text>
+      <text x="12" y="132" font-size="9" fill="#2D3748">+ save(equivalence: AcademicEquivalence): void</text>
+      <text x="12" y="150" font-size="9" fill="#2D3748">+ existsActiveEquivalence(sendCode: String, hostCode: String, date: LocalDate): boolean</text>
+    </g>
+  </g>
+
+  <!-- Infrastructure Layer Box -->
+  <g transform="translate(470, 360)">
+    <rect x="0" y="0" width="1020" height="210" rx="6" fill="#F7FAFC" stroke="#CBD5E0" stroke-width="1.2" />
+    <text x="14" y="22" font-size="12" font-weight="bold" fill="#4A5568">Infrastructure Layer: equivalence.infrastructure.persistence</text>
+
+    <!-- AbstractRepositoryJPA -->
+    <g transform="translate(25, 40)">
+      <rect x="0" y="0" width="280" height="140" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.5" filter="url(#shadow)" />
+      <circle cx="16" cy="16" r="6" fill="#0EA5E9" />
+      <text x="16" y="19" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#FFFFFF">A</text>
+      <text x="140" y="15" text-anchor="middle" font-size="9" font-style="italic" fill="#7A583A">«abstract»</text>
+      <text x="140" y="28" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">AbstractRepositoryJPA</text>
+      <line x1="0" y1="36" x2="280" y2="36" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="10" y="52" font-size="9" fill="#2D3748"># em: EntityManager</text>
+      <text x="10" y="68" font-size="8.5" fill="#7A583A"># entityClass: Class&lt;T&gt;</text>
+      <line x1="0" y1="76" x2="280" y2="76" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="10" y="94" font-size="9" fill="#2D3748"># find(id: Object): T</text>
+      <text x="10" y="112" font-size="9" fill="#2D3748"># persist(entity: T): void</text>
+      <text x="10" y="130" font-size="9" fill="#2D3748"># merge(entity: T): T</text>
+    </g>
+
+    <!-- AcademicEquivalenceRepoJPA -->
+    <g transform="translate(360, 40)">
+      <rect x="0" y="0" width="620" height="140" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.5" filter="url(#shadow)" />
+      <circle cx="16" cy="16" r="6" fill="#0EA5E9" />
+      <text x="16" y="19" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#FFFFFF">C</text>
+      <text x="310" y="15" text-anchor="middle" font-size="9" font-style="italic" fill="#7A583A">«RepositoryImplementation»</text>
+      <text x="310" y="28" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A202C">AcademicEquivalenceRepoJPA</text>
+      <line x1="0" y1="36" x2="620" y2="36" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="10" y="52" font-size="8.5" fill="#7A583A">/* Extends base EntityManager persistence mechanics */</text>
+      <line x1="0" y1="60" x2="620" y2="60" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="10" y="78" font-size="9" fill="#2D3748">+ findByCourseCodes(sendCode: String, hostCode: String): Optional&lt;AcademicEquivalence&gt;</text>
+      <text x="10" y="96" font-size="9" fill="#2D3748">+ findById(id: EquivalenceId): Optional&lt;AcademicEquivalence&gt;</text>
+      <text x="10" y="114" font-size="9" fill="#2D3748">+ findActiveByPartner(partnerUniversityId: UUID): List&lt;AcademicEquivalence&gt;</text>
+      <text x="10" y="132" font-size="9" fill="#2D3748">+ save(equivalence: AcademicEquivalence): void</text>
+    </g>
+  </g>
+
+  <!-- Connectors -->
+  <!-- EquivalenceApiRest -> EquivalenceApplicationService -->
+  <line x1="410" y1="180" x2="485" y2="180" stroke="#2D3748" stroke-width="1.4" marker-end="url(#arrow)" />
+  <text x="430" y="172" font-size="9" fill="#2D3748" font-weight="bold">delegates</text>
+
+  <!-- EquivalenceApplicationService -> AcademicEquivalenceRepository -->
+  <line x1="865" y1="180" x2="925" y2="180" stroke="#2D3748" stroke-width="1.4" marker-end="url(#arrow)" />
+  <text x="875" y="172" font-size="9" fill="#2D3748" font-weight="bold">invokes</text>
+
+  <!-- AcademicEquivalenceRepoJPA -> AbstractRepositoryJPA (extends) -->
+  <line x1="360" y1="460" x2="305" y2="460" stroke="#2D3748" stroke-width="1.4" marker-end="url(#gen-arrow)" />
+  <text x="315" y="452" font-size="8.5" fill="#2D3748">extends</text>
+
+  <!-- AcademicEquivalenceRepoJPA -> AcademicEquivalenceRepository (implements upward) -->
+  <line x1="1180" y1="400" x2="1180" y2="260" stroke="#2D3748" stroke-width="1.4" stroke-dasharray="5,5" marker-end="url(#impl-arrow)" />
+  <text x="1188" y="340" font-size="9" fill="#2D3748" font-weight="bold">implements</text>
+
+  <!-- EquivalenceApiRest -> EquivalenceResponseDTO -->
+  <line x1="205" y1="240" x2="205" y2="270" stroke="#2D3748" stroke-width="1.4" marker-end="url(#arrow)" />
+  <text x="212" y="258" font-size="8.5" fill="#2D3748">serializes</text>
+</svg>

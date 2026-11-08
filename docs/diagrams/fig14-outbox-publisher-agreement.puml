@@ -1,0 +1,124 @@
+@startuml
+title Figure 14. Asynchronous Outbox Integration - Producer Side (Learning Agreement Context)
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 10
+skinparam roundCorner 8
+skinparam classAttributeIconSize 0
+
+skinparam package {
+  BackgroundColor #F7FAFC
+  BorderColor #CBD5E0
+  FontSize 11
+  FontStyle bold
+}
+
+skinparam class {
+  BackgroundColor #FFF8EE
+  BorderColor #8D5B4C
+  FontSize 9.5
+  HeaderBackgroundColor #FCEBD9
+}
+
+skinparam note {
+  BackgroundColor #FEFCBF
+  BorderColor #D69E2E
+  FontSize 9
+}
+
+package "ro.uaic.feaa.erasmus.agreement.application" {
+  class AgreementApplicationService {
+    - agreementRepo: LearningAgreementRepository
+    - outboxRepo: IOutboxRepository
+    - eventSerializer: EventJsonSerializer
+    + approveAgreement(agreementId: UUID, coordinatorId: UUID): void
+  }
+}
+
+package "ro.uaic.feaa.erasmus.agreement.domain" {
+  class LearningAgreement <<AggregateRoot>> {
+    - id: AgreementId
+    - status: LearningAgreementStatus
+    - totalCreditsTableA: ECTSCredits
+    - totalCreditsTableB: ECTSCredits
+    + approve(coordinatorId: FacultyCoordinatorId): LearningAgreementApprovedEvent
+  }
+
+  class LearningAgreementApprovedEvent <<DomainEvent>> {
+    - eventId: UUID
+    - agreementId: UUID
+    - studentId: UUID
+    - hostUniversityId: UUID
+    - approvedCredits: int
+    - occurredOn: Instant
+  }
+
+  interface LearningAgreementRepository <<interface>> {
+    + findById(id: AgreementId): Optional<LearningAgreement>
+    + save(agreement: LearningAgreement): void
+  }
+
+  interface IOutboxRepository <<interface>> {
+    + save(message: OutboxMessage): void
+    + findPendingMessages(limit: int): List<OutboxMessage>
+    + markAsPublished(messageId: UUID, publishedAt: Instant): void
+  }
+}
+
+package "ro.uaic.feaa.erasmus.agreement.infrastructure.outbox" {
+  class OutboxMessage <<Entity>> {
+    - id: UUID
+    - aggregateType: String
+    - aggregateId: UUID
+    - eventType: String
+    - payloadJson: String
+    - status: OutboxStatus
+    - createdAt: Instant
+    - publishedAt: Instant
+  }
+
+  class OutboxRepoJPA {
+    # em: EntityManager
+    + save(message: OutboxMessage): void
+    + findPendingMessages(limit: int): List<OutboxMessage>
+    + markAsPublished(messageId: UUID, publishedAt: Instant): void
+  }
+
+  class OutboxDispatcher <<Component, PollingWorker>> {
+    - outboxRepo: IOutboxRepository
+    - messageBrokerTemplate: RabbitTemplate
+    - exchangeName: String
+    - routingKey: String
+    + pollAndDispatch(): void
+  }
+}
+
+package "External: Message Broker (RabbitMQ / JMS)" {
+  queue "Topic Exchange: erasmus.events.topic\nRouting Key: agreement.approved" as MessageQueue
+}
+
+' Relationships
+AgreementApplicationService --> LearningAgreementRepository : saves aggregate
+AgreementApplicationService --> IOutboxRepository : saves event record
+AgreementApplicationService ..> LearningAgreementApprovedEvent : generates
+LearningAgreement ..> LearningAgreementApprovedEvent : creates on approval
+OutboxRepoJPA ..|> IOutboxRepository : implements
+OutboxDispatcher --> IOutboxRepository : polls pending records
+OutboxDispatcher ..> MessageQueue : publishes AMQP messages
+OutboxRepoJPA ..> OutboxMessage : manages entity
+
+note top of AgreementApplicationService
+  Atomic Transactional Boundary:
+  The aggregate state and the outbox event record
+  are written to the same relational database in
+  one single local ACID transaction. Distributed
+  two-phase locking is eliminated.
+end note
+
+note bottom of OutboxDispatcher
+  The background scheduler runs every 2 seconds.
+  It reads unprocessed envelopes, deposits them into
+  the external message broker, and marks them published.
+end note
+
+@enduml

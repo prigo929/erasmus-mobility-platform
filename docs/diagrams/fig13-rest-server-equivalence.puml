@@ -1,0 +1,104 @@
+@startuml
+title Figure 13. Synchronous REST Integration - Server Side (Equivalence Management Context)
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 10
+skinparam roundCorner 8
+skinparam classAttributeIconSize 0
+
+skinparam package {
+  BackgroundColor #F7FAFC
+  BorderColor #CBD5E0
+  FontSize 11
+  FontStyle bold
+}
+
+skinparam class {
+  BackgroundColor #FFF8EE
+  BorderColor #8D5B4C
+  FontSize 9.5
+  HeaderBackgroundColor #FCEBD9
+}
+
+skinparam note {
+  BackgroundColor #FEFCBF
+  BorderColor #D69E2E
+  FontSize 9
+}
+
+package "ro.uaic.feaa.erasmus.equivalence.presentation" {
+  class EquivalenceApiRest <<RestController, OHS>> {
+    - equivalenceService: EquivalenceApplicationService
+    + verifyEquivalence(sendCode: String, hostCode: String): ResponseEntity<EquivalenceResponseDTO>
+    + getEquivalenceById(id: UUID): ResponseEntity<EquivalenceResponseDTO>
+  }
+
+  class EquivalenceResponseDTO {
+    + equivalenceId: UUID
+    + sendCourseCode: String
+    + hostCourseCode: String
+    + recognizedCredits: int
+    + status: String
+    + validUntil: LocalDate
+  }
+}
+
+package "ro.uaic.feaa.erasmus.equivalence.application" {
+  class EquivalenceApplicationService {
+    - equivalenceRepo: AcademicEquivalenceRepository
+    + checkEquivalence(sendCode: String, hostCode: String): EquivalenceCheckResult
+    + getEquivalence(id: UUID): Optional<AcademicEquivalence>
+  }
+}
+
+package "ro.uaic.feaa.erasmus.equivalence.domain" {
+  class AcademicEquivalence <<AggregateRoot>> {
+    - id: EquivalenceId
+    - sendCourse: CourseSyllabus
+    - hostCourse: CourseSyllabus
+    - recognizedCredits: ECTSCredits
+    - validity: ValidityWindow
+    - status: EquivalenceStatus
+    + isCurrentlyValid(now: LocalDate): boolean
+    + matchesCourses(send: String, host: String): boolean
+  }
+
+  interface AcademicEquivalenceRepository <<interface>> {
+    + findByCourseCodes(sendCode: String, hostCode: String): Optional<AcademicEquivalence>
+    + findById(id: EquivalenceId): Optional<AcademicEquivalence>
+    + save(equivalence: AcademicEquivalence): void
+  }
+}
+
+package "ro.uaic.feaa.erasmus.equivalence.infrastructure.persistence" {
+  abstract class AbstractRepositoryJPA <<abstract>> {
+    # em: EntityManager
+  }
+
+  class AcademicEquivalenceRepoJPA {
+    + findByCourseCodes(sendCode: String, hostCode: String): Optional<AcademicEquivalence>
+    + findById(id: EquivalenceId): Optional<AcademicEquivalence>
+    + save(equivalence: AcademicEquivalence): void
+  }
+}
+
+' Relationships
+EquivalenceApiRest --> EquivalenceApplicationService : delegates to
+EquivalenceApiRest ..> EquivalenceResponseDTO : serializes
+EquivalenceApplicationService --> AcademicEquivalenceRepository : loads data via
+EquivalenceApplicationService ..> AcademicEquivalence : executes query on
+AcademicEquivalenceRepoJPA --|> AbstractRepositoryJPA : extends
+AcademicEquivalenceRepoJPA ..|> AcademicEquivalenceRepository : implements
+
+note right of EquivalenceApiRest
+  Open Host Service (OHS) exposing a standardized
+  REST API interface for external context consumers.
+  Shields internal domain representations via DTO translation.
+end note
+
+note bottom of AcademicEquivalenceRepoJPA
+  JPA implementation executes optimized queries
+  against relational database tables using EntityManager.
+end note
+
+@enduml
