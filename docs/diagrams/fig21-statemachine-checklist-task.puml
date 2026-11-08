@@ -1,0 +1,66 @@
+@startuml
+title Figure 21. State Machine Diagram - ChecklistTask Entity (Student 3: Schipor Ana-Maria)
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 10
+skinparam state {
+  BackgroundColor #FFF8EE
+  BorderColor #8D5B4C
+  FontSize 10
+  HeaderBackgroundColor #FCEBD9
+}
+
+[*] --> INITIALIZED : instantiateFromTemplate(taskType, deadline)
+
+state INITIALIZED {
+  INITIALIZED : entry / setInitialDeadline(deadline)
+}
+
+INITIALIZED --> PENDING_STUDENT_ACTION : assignToStudent(studentId)
+
+state PENDING_STUDENT_ACTION {
+  PENDING_STUDENT_ACTION : entry / notifyStudentViaDashboard()
+}
+
+PENDING_STUDENT_ACTION --> SUBMITTED_FOR_VERIFICATION : uploadDocumentProof(docUri) [isValidChecksum()]
+PENDING_STUDENT_ACTION --> OVERDUE : after(deadline) / triggerOverdueAlert()
+PENDING_STUDENT_ACTION --> ABANDONED : abandon(cancellationReason)
+
+state SUBMITTED_FOR_VERIFICATION {
+  SUBMITTED_FOR_VERIFICATION : entry / lockProofDocument()
+  SUBMITTED_FOR_VERIFICATION : entry / notifyCoordinator()
+}
+
+SUBMITTED_FOR_VERIFICATION --> COMPLETED : verifyAndApprove(officerId)
+SUBMITTED_FOR_VERIFICATION --> PENDING_STUDENT_ACTION : rejectProof(rejectionReason)
+SUBMITTED_FOR_VERIFICATION --> OVERDUE : after(deadline) / triggerOverdueAlert()
+SUBMITTED_FOR_VERIFICATION --> ABANDONED : abandon(cancellationReason)
+
+state OVERDUE {
+  OVERDUE : entry / sendEscalationNoticeToDRI()
+  OVERDUE : entry / flagStudentDossierAtRisk()
+}
+
+OVERDUE --> SUBMITTED_FOR_VERIFICATION : uploadLateProof(docUri) [allowsLateSubmission()]
+OVERDUE --> ABANDONED : cancelMobility()
+
+state COMPLETED {
+  COMPLETED : entry / publish(TaskCompletedEvent)
+  COMPLETED : entry / updateDossierProgressCounter()
+}
+
+state ABANDONED {
+  ABANDONED : entry / revokePermissions()
+}
+
+COMPLETED --> [*]
+ABANDONED --> [*]
+
+note right of PENDING_STUDENT_ACTION
+  Temporal Transition Rule:
+  after(deadline) triggers automatic
+  transition to OVERDUE state.
+end note
+
+@enduml
+

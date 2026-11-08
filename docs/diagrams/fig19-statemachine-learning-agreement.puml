@@ -1,0 +1,74 @@
+@startuml
+title Figure 19. State Machine Diagram - LearningAgreement Aggregate (Student 1: Prigoreanu Alin-Gabriel)
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 10
+skinparam state {
+  BackgroundColor #FFF8EE
+  BorderColor #8D5B4C
+  FontSize 10
+  HeaderBackgroundColor #FCEBD9
+}
+
+[*] --> DRAFT : createDraft()
+
+state DRAFT {
+  DRAFT : entry / initializeEmptyCourseTables()
+}
+
+DRAFT --> SUBMITTED : submit() [hasCreditParity() && credits >= 30]
+DRAFT --> CANCELLED : cancel()
+
+state SUBMITTED {
+  SUBMITTED : entry / lockCourseLinesForEditing()
+}
+
+SUBMITTED --> UNDER_REVIEW : assignCoordinator(coordinatorId)
+
+state UNDER_REVIEW {
+  UNDER_REVIEW : entry / startReviewTimer()
+}
+
+UNDER_REVIEW --> UNDER_REVIEW : after(5 days) / triggerEscalationAlert()
+UNDER_REVIEW --> DRAFT : requestChanges(rejectionReason)
+UNDER_REVIEW --> APPROVED_BY_FACULTY : approve(coordinatorId) [meetsDegreeRequirements()]
+UNDER_REVIEW --> CANCELLED : cancel()
+
+state APPROVED_BY_FACULTY {
+  APPROVED_BY_FACULTY : entry / publish(LearningAgreementApprovedEvent)
+  APPROVED_BY_FACULTY : entry / transmitViaEWP()
+}
+
+APPROVED_BY_FACULTY --> CONFIRMED_BY_HOST : confirmByHost(hostSignatureRef)
+APPROVED_BY_FACULTY --> AMENDED : requestAmendment(reason)
+APPROVED_BY_FACULTY --> CANCELLED : cancel()
+
+state CONFIRMED_BY_HOST {
+  CONFIRMED_BY_HOST : entry / lockTripartiteContract()
+}
+
+CONFIRMED_BY_HOST --> AMENDED : requestAmendment(reason)
+CONFIRMED_BY_HOST --> CANCELLED : cancel()
+
+state AMENDED {
+  AMENDED : entry / unlockCourseLinesForRevision()
+}
+
+AMENDED --> SUBMITTED : resubmitAmendedDraft() [hasCreditParity()]
+AMENDED --> CANCELLED : cancel()
+
+state CANCELLED {
+  CANCELLED : entry / cascadeCancellationToPrepTasks()
+}
+
+CANCELLED --> [*]
+CONFIRMED_BY_HOST --> [*] : concludeExchange()
+
+note right of UNDER_REVIEW
+  Temporal Transition Rule:
+  after(5 days) notifies DRI officer
+  if academic review exceeds threshold.
+end note
+
+@enduml
+

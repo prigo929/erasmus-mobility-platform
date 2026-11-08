@@ -1,0 +1,57 @@
+@startuml
+title Figure 20. State Machine Diagram - AcademicEquivalence Aggregate (Student 2: Bîrgovan A. Mihai-Daniel)
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "Helvetica", "Arial", sans-serif
+skinparam defaultFontSize 10
+skinparam state {
+  BackgroundColor #FFF8EE
+  BorderColor #8D5B4C
+  FontSize 10
+  HeaderBackgroundColor #FCEBD9
+}
+
+[*] --> PROPOSED : proposeEquivalence(sendCourse, hostCourse)
+
+state PROPOSED {
+  PROPOSED : entry / logProposalAudit()
+}
+
+PROPOSED --> UNDER_EVALUATION : initiateEvaluation(evaluatorCommittee)
+PROPOSED --> RETIRED : rejectProposal(reason)
+
+state UNDER_EVALUATION {
+  UNDER_EVALUATION : entry / runSyllabusComparisonService()
+}
+
+UNDER_EVALUATION --> APPROVED : approve() [similarityScore >= 0.75 && creditsMatch]
+UNDER_EVALUATION --> RETIRED : reject(evaluationNotes)
+
+state APPROVED {
+  APPROVED : entry / publish(EquivalenceApprovedEvent)
+}
+
+APPROVED --> ACTIVE : activate(validityWindow)
+
+state ACTIVE {
+  ACTIVE : entry / indexInSearchCatalog()
+}
+
+ACTIVE --> RETIRED : retire(reason)
+ACTIVE --> RETIRED : after(validityWindow.endDate) / flagExpired()
+
+state RETIRED {
+  RETIRED : entry / removeFromActiveCatalog()
+  RETIRED : entry / archiveHistoricalRecord()
+}
+
+RETIRED --> [*]
+
+note right of ACTIVE
+  Temporal Expiration Rule:
+  after(validityWindow.endDate)
+  automatically retires equivalence
+  preventing outdated syllabus reuse.
+end note
+
+@enduml
+

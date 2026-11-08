@@ -1,0 +1,155 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1520 860" width="100%" height="100%" style="background-color: #FBF8F1; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#2D3748" />
+    </marker>
+    <marker id="red-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#C53030" />
+    </marker>
+    <filter id="shadow" x="-3%" y="-3%" width="106%" height="106%">
+      <feDropShadow dx="2" dy="2" stdDeviation="2.5" flood-opacity="0.10" />
+    </filter>
+  </defs>
+
+  <!-- Title -->
+  <text x="30" y="32" font-size="18" font-weight="bold" fill="#1A202C">Figure 19. State Machine Diagram: LearningAgreement Aggregate Lifecycle</text>
+  <text x="30" y="50" font-size="11.5" fill="#5A4A3E">Author: Prigoreanu Alin-Gabriel (Student 1). Guarded Invariants, Entry Actions, and Temporal Escalation</text>
+
+  <!-- Initial State Node -->
+  <circle cx="70" cy="150" r="12" fill="#1A202C" />
+  <line x1="82" y1="150" x2="135" y2="150" stroke="#2D3748" stroke-width="1.6" marker-end="url(#arrow)" />
+  <text x="108" y="142" font-size="8.5" text-anchor="middle" fill="#2D3748">createDraft()</text>
+
+  <!-- State 1: DRAFT -->
+  <g transform="translate(140, 100)">
+    <rect x="0" y="0" width="220" height="100" rx="10" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1.6" filter="url(#shadow)" />
+    <text x="110" y="24" text-anchor="middle" font-size="12" font-weight="bold" fill="#1A202C">DRAFT</text>
+    <line x1="0" y1="34" x2="220" y2="34" stroke="#8D5B4C" stroke-width="0.8" />
+    <text x="10" y="52" font-size="9" fill="#7A583A">entry / initCourseTables()</text>
+    <text x="10" y="68" font-size="8.5" fill="#2D3748">Allows adding/removing</text>
+    <text x="10" y="82" font-size="8.5" fill="#2D3748">course lines Table A &amp; B</text>
+  </g>
+
+  <!-- Transition DRAFT -> SUBMITTED -->
+  <line x1="360" y1="150" x2="445" y2="150" stroke="#2D3748" stroke-width="1.6" marker-end="url(#arrow)" />
+  <text x="402" y="138" font-size="8.5" text-anchor="middle" font-weight="bold" fill="#2D3748">submit()</text>
+  <text x="402" y="168" font-size="8" text-anchor="middle" fill="#9C4221">[Σ A == Σ B &gt;= 30]</text>
+
+  <!-- State 2: SUBMITTED -->
+  <g transform="translate(450, 100)">
+    <rect x="0" y="0" width="220" height="100" rx="10" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1.6" filter="url(#shadow)" />
+    <text x="110" y="24" text-anchor="middle" font-size="12" font-weight="bold" fill="#1A202C">SUBMITTED</text>
+    <line x1="0" y1="34" x2="220" y2="34" stroke="#8D5B4C" stroke-width="0.8" />
+    <text x="10" y="52" font-size="9" fill="#7A583A">entry / lockCourseLines()</text>
+    <text x="10" y="68" font-size="8.5" fill="#2D3748">Frozen from direct editing</text>
+    <text x="10" y="82" font-size="8.5" fill="#2D3748">Queued for coordinator</text>
+  </g>
+
+  <!-- Transition SUBMITTED -> UNDER_REVIEW -->
+  <line x1="670" y1="150" x2="755" y2="150" stroke="#2D3748" stroke-width="1.6" marker-end="url(#arrow)" />
+  <text x="712" y="142" font-size="8.5" text-anchor="middle" fill="#2D3748">assignCoordinator()</text>
+
+  <!-- State 3: UNDER_REVIEW -->
+  <g transform="translate(760, 90)">
+    <rect x="0" y="0" width="250" height="120" rx="10" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1.6" filter="url(#shadow)" />
+    <text x="125" y="24" text-anchor="middle" font-size="12" font-weight="bold" fill="#1A202C">UNDER_REVIEW</text>
+    <line x1="0" y1="34" x2="250" y2="34" stroke="#8D5B4C" stroke-width="0.8" />
+    <text x="10" y="52" font-size="9" fill="#7A583A">entry / startReviewTimer()</text>
+    <text x="10" y="68" font-size="8.5" fill="#2D3748">Academic review by Home</text>
+    <text x="10" y="82" font-size="8.5" fill="#2D3748">Faculty Coordinator</text>
+    <text x="10" y="100" font-size="8.5" font-weight="bold" fill="#C53030">after(5 days) / triggerAlert()</text>
+  </g>
+
+  <!-- Self Loop on UNDER_REVIEW for Temporal Escalation -->
+  <path d="M 850 90 C 850 40 920 40 920 90" fill="none" stroke="#C53030" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#red-arrow)" />
+  <text x="885" y="32" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#C53030">after(5 days) / alertDRI()</text>
+
+  <!-- Loopback for Changes Requested: UNDER_REVIEW -> DRAFT (Route cleanly along y=240) -->
+  <path d="M 800 210 L 800 240 L 250 240 L 250 200" fill="none" stroke="#C53030" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#red-arrow)" />
+  <text x="525" y="232" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#C53030">requestChanges(rejectionNotes)</text>
+
+  <!-- Transition UNDER_REVIEW -> APPROVED_BY_FACULTY -->
+  <line x1="1010" y1="150" x2="1095" y2="150" stroke="#2D3748" stroke-width="1.6" marker-end="url(#arrow)" />
+  <text x="1052" y="142" font-size="8.5" text-anchor="middle" font-weight="bold" fill="#2D3748">approve()</text>
+
+  <!-- State 4: APPROVED_BY_FACULTY -->
+  <g transform="translate(1100, 90)">
+    <rect x="0" y="0" width="260" height="120" rx="10" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1.6" filter="url(#shadow)" />
+    <text x="130" y="24" text-anchor="middle" font-size="12" font-weight="bold" fill="#1A202C">APPROVED_BY_FACULTY</text>
+    <line x1="0" y1="34" x2="260" y2="34" stroke="#8D5B4C" stroke-width="0.8" />
+    <text x="10" y="52" font-size="9" fill="#7A583A">entry / publish(ApprovedEvent)</text>
+    <text x="10" y="68" font-size="9" fill="#7A583A">entry / transmitViaEWP()</text>
+    <text x="10" y="86" font-size="8.5" fill="#2D3748">Digital institutional seal stamped.</text>
+    <text x="10" y="100" font-size="8.5" fill="#2D3748">Ready for partner university.</text>
+  </g>
+
+  <!-- Transition APPROVED_BY_FACULTY -> CONFIRMED_BY_HOST -->
+  <line x1="1230" y1="210" x2="1230" y2="350" stroke="#2D3748" stroke-width="1.6" marker-end="url(#arrow)" />
+  <text x="1240" y="280" font-size="8.5" font-weight="bold" fill="#2D3748">confirmByHost(signature)</text>
+
+  <!-- State 5: CONFIRMED_BY_HOST -->
+  <g transform="translate(1100, 350)">
+    <rect x="0" y="0" width="260" height="110" rx="10" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1.6" filter="url(#shadow)" />
+    <text x="130" y="24" text-anchor="middle" font-size="12" font-weight="bold" fill="#1A202C">CONFIRMED_BY_HOST</text>
+    <line x1="0" y1="34" x2="260" y2="34" stroke="#8D5B4C" stroke-width="0.8" />
+    <text x="10" y="52" font-size="9" fill="#7A583A">entry / lockTripartiteContract()</text>
+    <text x="10" y="68" font-size="8.5" fill="#2D3748">Complete tripartite agreement.</text>
+    <text x="10" y="82" font-size="8.5" fill="#2D3748">Exchange proceeds abroad.</text>
+  </g>
+
+  <!-- State 6: AMENDED (Bottom Center) -->
+  <g transform="translate(560, 480)">
+    <rect x="0" y="0" width="250" height="100" rx="10" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1.6" filter="url(#shadow)" />
+    <text x="125" y="24" text-anchor="middle" font-size="12" font-weight="bold" fill="#1A202C">AMENDED</text>
+    <line x1="0" y1="34" x2="250" y2="34" stroke="#8D5B4C" stroke-width="0.8" />
+    <text x="10" y="52" font-size="9" fill="#7A583A">entry / unlockForRevision()</text>
+    <text x="10" y="68" font-size="8.5" fill="#2D3748">Table A2 / B2 adjustments</text>
+    <text x="10" y="82" font-size="8.5" fill="#2D3748">during mobility semester</text>
+  </g>
+
+  <!-- Transition CONFIRMED_BY_HOST -> AMENDED -->
+  <path d="M 1100 410 L 810 520" fill="none" stroke="#2D3748" stroke-width="1.5" marker-end="url(#arrow)" />
+  <text x="965" y="450" font-size="8.5" font-weight="bold" fill="#2D3748">requestAmendment()</text>
+
+  <!-- Resubmit AMENDED -> SUBMITTED (Routed cleanly around without overlapping requestChanges) -->
+  <path d="M 685 480 L 685 300 L 560 300 L 560 200" fill="none" stroke="#2D3748" stroke-width="1.5" marker-end="url(#arrow)" />
+  <text x="695" y="360" font-size="8.5" font-weight="bold" fill="#2D3748">resubmit()</text>
+
+  <!-- State 7: CANCELLED (Terminal Bottom Left) -->
+  <g transform="translate(140, 560)">
+    <rect x="0" y="0" width="240" height="90" rx="10" fill="#FFF5F5" stroke="#C53030" stroke-width="1.6" filter="url(#shadow)" />
+    <text x="120" y="24" text-anchor="middle" font-size="12" font-weight="bold" fill="#9B2C2C">CANCELLED</text>
+    <line x1="0" y1="34" x2="240" y2="34" stroke="#C53030" stroke-width="0.8" />
+    <text x="10" y="52" font-size="9" fill="#C53030">entry / cascadeToPreparation()</text>
+    <text x="10" y="68" font-size="8.5" fill="#9B2C2C">Contract voided permanently.</text>
+  </g>
+
+  <!-- Cancel transitions to CANCELLED -->
+  <line x1="200" y1="200" x2="200" y2="560" stroke="#C53030" stroke-width="1.4" stroke-dasharray="5,4" marker-end="url(#red-arrow)" />
+  <text x="160" y="380" font-size="8.5" font-weight="bold" fill="#C53030">cancel()</text>
+
+  <!-- Final State Terminal Circle -->
+  <circle cx="260" cy="720" r="14" fill="none" stroke="#1A202C" stroke-width="2" />
+  <circle cx="260" cy="720" r="8" fill="#1A202C" />
+  <line x1="260" y1="650" x2="260" y2="706" stroke="#2D3748" stroke-width="1.6" marker-end="url(#arrow)" />
+
+  <!-- Conclude Exchange from CONFIRMED_BY_HOST to Final Terminal Circle -->
+  <circle cx="1230" cy="550" r="14" fill="none" stroke="#1A202C" stroke-width="2" />
+  <circle cx="1230" cy="550" r="8" fill="#1A202C" />
+  <line x1="1230" y1="460" x2="1230" y2="536" stroke="#2D3748" stroke-width="1.6" marker-end="url(#arrow)" />
+  <text x="1240" y="500" font-size="8.5" fill="#2D3748">concludeExchange()</text>
+
+  <!-- Java Enum Specification Note Box (Bottom Right) -->
+  <g transform="translate(880, 600)">
+    <rect x="0" y="0" width="600" height="190" rx="4" fill="#FEFCBF" stroke="#D69E2E" stroke-width="1" />
+    <path d="M 590 0 L 600 10 L 590 10 Z" fill="#B7791F" />
+    <text x="16" y="24" font-size="10.5" font-weight="bold" fill="#744210">Java Enum Definition &amp; Invariant Guard Rules</text>
+    <text x="16" y="48" font-size="9" fill="#744210">public enum LearningAgreementStatus {</text>
+    <text x="30" y="66" font-size="9" fill="#744210">DRAFT, SUBMITTED, UNDER_REVIEW, APPROVED_BY_FACULTY,</text>
+    <text x="30" y="84" font-size="9" fill="#744210">CONFIRMED_BY_HOST, AMENDED, CANCELLED</text>
+    <text x="16" y="102" font-size="9" fill="#744210">}</text>
+    <text x="16" y="126" font-size="9" fill="#744210">1. Guard: submit() requires (hasCreditParity() &amp;&amp; totalECTS &gt;= 30.0).</text>
+    <text x="16" y="146" font-size="9" fill="#744210">2. Escalation: after(5 days) in UNDER_REVIEW triggers non-blocking coordinator alert.</text>
+    <text x="16" y="166" font-size="8.5" font-style="italic" fill="#8C5015">[Guarantees student rights under European Commission EWP standards]</text>
+  </g>
+</svg>

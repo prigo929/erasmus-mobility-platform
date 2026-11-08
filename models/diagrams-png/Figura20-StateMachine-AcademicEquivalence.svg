@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1520 860" width="100%" height="100%" style="background-color: #FBF8F1; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#2D3748" />
+    </marker>
+    <marker id="red-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#C53030" />
+    </marker>
+    <filter id="shadow" x="-3%" y="-3%" width="106%" height="106%">
+      <feDropShadow dx="2" dy="2" stdDeviation="2.5" flood-opacity="0.10" />
+    </filter>
+  </defs>
+
+  <text x="30" y="32" font-size="18" font-weight="bold" fill="#1A202C">Figure 20. State Machine Diagram: AcademicEquivalence Aggregate Lifecycle</text>
+  <text x="30" y="50" font-size="11.5" fill="#5A4A3E">Author: Bîrgovan A. Mihai-Daniel (Student 2). Curricular Parity Guards, Catalog Publication, and Temporal Expiration</text>
+
+  <!-- Initial State Node -->
+  <circle cx="70" cy="150" r="12" fill="#1A202C" />
+  <line x1="82" y1="150" x2="135" y2="150" stroke="#2D3748" stroke-width="1.6" marker-end="url(#arrow)" />
+  <text x="108" y="142" font-size="8.5" text-anchor="middle" fill="#2D3748">propose()</text>
+
+  <!-- State 1: PROPOSED -->
+  <g transform="translate(140, 100)">
+    <rect x="0" y="0" width="230" height="100" rx="10" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1.6" filter="url(#shadow)" />
+    <text x="115" y="24" text-anchor="middle" font-size="12" font-weight="bold" fill="#1A202C">PROPOSED</text>
+    <line x1="0" y1="34" x2="230" y2="34" stroke="#8D5B4C" stroke-width="0.8" />
+    <text x="10" y="52" font-size="9" fill="#7A583A">entry / attachCourseSyllabi()</text>
+    <text x="10" y="68" font-size="8.5" fill="#2D3748">Course codes and descriptions</text>
+    <text x="10" y="82" font-size="8.5" fill="#2D3748">submitted for peer evaluation</text>
+  </g>
+
+  <!-- Transition PROPOSED -> UNDER_EVALUATION -->
+  <line x1="370" y1="150" x2="465" y2="150" stroke="#2D3748" stroke-width="1.6" marker-end="url(#arrow)" />
+  <text x="417" y="142" font-size="8.5" text-anchor="middle" fill="#2D3748">assignEvaluator()</text>
+
+  <!-- State 2: UNDER_EVALUATION -->
+  <g transform="translate(470, 90)">
+    <rect x="0" y="0" width="260" height="120" rx="10" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1.6" filter="url(#shadow)" />
+    <text x="130" y="24" text-anchor="middle" font-size="12" font-weight="bold" fill="#1A202C">UNDER_EVALUATION</text>
+    <line x1="0" y1="34" x2="260" y2="34" stroke="#8D5B4C" stroke-width="0.8" />
+    <text x="10" y="52" font-size="9" fill="#7A583A">entry / notifyDepartmentHead()</text>
+    <text x="10" y="68" font-size="8.5" fill="#2D3748">Department professor assesses</text>
+    <text x="10" y="82" font-size="8.5" fill="#2D3748">content overlap and ECTS fit</text>
+    <text x="10" y="100" font-size="8.5" fill="#2D3748">do / computeCurricularParity()</text>
+  </g>
+
+  <!-- Clarification Request Loopback: UNDER_EVALUATION -> PROPOSED -->
+  <path d="M 520 210 L 520 240 L 250 240 L 250 200" fill="none" stroke="#C53030" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#red-arrow)" />
+  <text x="385" y="232" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#C53030">requestClarification(syllabusDetails)</text>
+
+  <!-- Transition UNDER_EVALUATION -> APPROVED (Wider spacing and multi-line guard) -->
+  <line x1="730" y1="150" x2="845" y2="150" stroke="#2D3748" stroke-width="1.6" marker-end="url(#arrow)" />
+  <text x="787" y="132" font-size="8.5" text-anchor="middle" font-weight="bold" fill="#2D3748">approve()</text>
+  <text x="787" y="145" font-size="7.5" text-anchor="middle" fill="#9C4221">[overlap &gt;= 80%]</text>
+  <text x="787" y="157" font-size="7.5" text-anchor="middle" fill="#9C4221">[&amp;&amp; creditsMatch]</text>
+
+  <!-- State 3: APPROVED -->
+  <g transform="translate(850, 90)">
+    <rect x="0" y="0" width="250" height="120" rx="10" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1.6" filter="url(#shadow)" />
+    <text x="125" y="24" text-anchor="middle" font-size="12" font-weight="bold" fill="#1A202C">APPROVED</text>
+    <line x1="0" y1="34" x2="250" y2="34" stroke="#8D5B4C" stroke-width="0.8" />
+    <text x="10" y="52" font-size="9" fill="#7A583A">entry / createValidityWindow()</text>
+    <text x="10" y="68" font-size="8.5" fill="#2D3748">Academic parity certified.</text>
+    <text x="10" y="82" font-size="8.5" fill="#2D3748">Pending institutional seal</text>
+    <text x="10" y="98" font-size="8.5" fill="#2D3748">and catalog indexing.</text>
+  </g>
+
+  <!-- Transition APPROVED -> ACTIVE -->
+  <line x1="1100" y1="150" x2="1195" y2="150" stroke="#2D3748" stroke-width="1.6" marker-end="url(#arrow)" />
+  <text x="1147" y="142" font-size="8.5" text-anchor="middle" font-weight="bold" fill="#2D3748">publishToCatalog()</text>
+
+  <!-- State 4: ACTIVE (Top Right) -->
+  <g transform="translate(1200, 90)">
+    <rect x="0" y="0" width="270" height="120" rx="10" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="1.6" filter="url(#shadow)" />
+    <text x="135" y="24" text-anchor="middle" font-size="12" font-weight="bold" fill="#1A202C">ACTIVE</text>
+    <line x1="0" y1="34" x2="270" y2="34" stroke="#8D5B4C" stroke-width="0.8" />
+    <text x="10" y="52" font-size="9" fill="#7A583A">entry / indexInRestCatalog()</text>
+    <text x="10" y="68" font-size="8.5" fill="#2D3748">Available for instant validation</text>
+    <text x="10" y="82" font-size="8.5" fill="#2D3748">via EquivalenceApiRest endpoint.</text>
+    <text x="10" y="100" font-size="8.5" font-weight="bold" fill="#C53030">after(validityEndDate) / expire()</text>
+  </g>
+
+  <!-- State 5: RETIRED (Bottom Right / Terminal State) -->
+  <g transform="translate(1200, 390)">
+    <rect x="0" y="0" width="270" height="110" rx="10" fill="#FFF5F5" stroke="#C53030" stroke-width="1.6" filter="url(#shadow)" />
+    <text x="135" y="24" text-anchor="middle" font-size="12" font-weight="bold" fill="#9B2C2C">RETIRED</text>
+    <line x1="0" y1="34" x2="270" y2="34" stroke="#C53030" stroke-width="0.8" />
+    <text x="10" y="52" font-size="9" fill="#C53030">entry / removeFromCatalog()</text>
+    <text x="10" y="68" font-size="8.5" fill="#9B2C2C">Archived for audit purposes.</text>
+    <text x="10" y="82" font-size="8.5" fill="#9B2C2C">No longer valid for new drafts.</text>
+  </g>
+
+  <!-- Transition ACTIVE -> RETIRED (Temporal or Manual) -->
+  <line x1="1335" y1="210" x2="1335" y2="390" stroke="#C53030" stroke-width="1.6" marker-end="url(#red-arrow)" />
+  <text x="1345" y="300" font-size="8.5" font-weight="bold" fill="#C53030">retire(reason) | after(validityWindow)</text>
+
+  <!-- Rejection Transition UNDER_EVALUATION -> RETIRED -->
+  <path d="M 600 210 L 600 445 L 1200 445" fill="none" stroke="#C53030" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#red-arrow)" />
+  <text x="900" y="438" font-size="8.5" font-weight="bold" fill="#C53030">reject(discrepancyNotes)</text>
+
+  <!-- Terminal Final Node -->
+  <circle cx="1335" cy="570" r="14" fill="none" stroke="#1A202C" stroke-width="2" />
+  <circle cx="1335" cy="570" r="8" fill="#1A202C" />
+  <line x1="1335" y1="500" x2="1335" y2="556" stroke="#2D3748" stroke-width="1.6" marker-end="url(#arrow)" />
+
+  <!-- Java Enum Specification Note Box -->
+  <g transform="translate(140, 560)">
+    <rect x="0" y="0" width="650" height="200" rx="4" fill="#FEFCBF" stroke="#D69E2E" stroke-width="1" />
+    <path d="M 640 0 L 650 10 L 640 10 Z" fill="#B7791F" />
+    <text x="16" y="24" font-size="10.5" font-weight="bold" fill="#744210">Java Enum Definition &amp; Curricular Invariant Rules</text>
+    <text x="16" y="48" font-size="9" fill="#744210">public enum EquivalenceStatus {</text>
+    <text x="30" y="66" font-size="9" fill="#744210">PROPOSED, UNDER_EVALUATION, APPROVED, ACTIVE, RETIRED</text>
+    <text x="16" y="84" font-size="9" fill="#744210">}</text>
+    <text x="16" y="110" font-size="9" fill="#744210">1. Guard: approve() enforces (contentOverlapPercentage &gt;= 80 &amp;&amp; sendECTS == hostECTS).</text>
+    <text x="16" y="130" font-size="9" fill="#744210">2. Temporal: ValidityWindow defines startDate and endDate (typically 3 academic years).</text>
+    <text x="16" y="150" font-size="9" fill="#744210">3. Catalog: Only ACTIVE equivalences are returned by EquivalenceApiRest HTTP GET endpoints.</text>
+    <text x="16" y="170" font-size="8.5" font-style="italic" fill="#8C5015">[Maintains academic rigor and prevents credit deficit under Bologna Process standards]</text>
+  </g>
+</svg>
