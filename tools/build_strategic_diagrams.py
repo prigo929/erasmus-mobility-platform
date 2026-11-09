@@ -347,3 +347,4 @@ fig9b_svg_path.write_text(fig9b_svg, encoding="utf-8")
 render_svg_to_png(fig9b_svg_path, fig9b_png_path)
 
 print("All missing visual diagrams generated successfully!")
+
