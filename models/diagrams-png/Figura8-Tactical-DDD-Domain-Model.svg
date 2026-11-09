@@ -292,47 +292,45 @@
     <path d="M 0 0 L 250 0 L 250 24 L 235 32 L 0 32 Z" fill="#EFE5D5" stroke="#8D5B4C" stroke-width="1.2" />
     <text x="15" y="20" font-size="11.5" font-weight="bold" fill="#4A3728">Mobility Preparation (Supporting)</text>
 
-    <!-- Aggregate Root: MobilityDossier -->
+    <!-- Aggregate Root: MobilityChecklist -->
     <g transform="translate(20, 45)">
-      <rect x="0" y="0" width="250" height="180" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.6" />
+      <rect x="0" y="0" width="250" height="195" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.6" />
       <circle cx="18" cy="18" r="7" fill="#84CC16" />
       <text x="18" y="22" text-anchor="middle" font-size="9" font-weight="bold" fill="#FFFFFF">C</text>
       <text x="125" y="16" text-anchor="middle" font-size="9" font-style="italic" fill="#7A583A">«Aggregate Root»</text>
-      <text x="125" y="29" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#1A202C">MobilityDossier</text>
+      <text x="125" y="29" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#1A202C">MobilityChecklist</text>
       <line x1="0" y1="36" x2="250" y2="36" stroke="#8D5B4C" stroke-width="0.8" />
-      <text x="10" y="50" font-size="8.5" fill="#2D3748">- id: MobilityId</text>
+      <text x="10" y="50" font-size="8.5" fill="#2D3748">- id: ChecklistId</text>
       <text x="10" y="64" font-size="8.5" fill="#2D3748">- studentId: StudentId</text>
-      <text x="10" y="78" font-size="8.5" fill="#2D3748">- partnerUniversityId: String</text>
-      <text x="10" y="92" font-size="8.5" fill="#2D3748">- period: AcademicPeriod</text>
-      <text x="10" y="106" font-size="8.5" fill="#2D3748">- grantAmount: GrantAmount</text>
-      <text x="10" y="120" font-size="8.5" fill="#2D3748">- status: MobilityStatus</text>
-      <line x1="0" y1="128" x2="250" y2="128" stroke="#8D5B4C" stroke-width="0.8" />
-      <text x="10" y="142" font-size="8.5" fill="#2D3748">+ initializeChecklist(tplId: String): void</text>
-      <text x="10" y="156" font-size="8.5" fill="#2D3748">+ cancelMobility(reason: String): void</text>
-      <text x="10" y="170" font-size="8.5" fill="#2D3748">+ markPrepared(): MobilityPreparedEvent</text>
+      <text x="10" y="78" font-size="8.5" fill="#2D3748">- agreementId: AgreementId</text>
+      <text x="10" y="92" font-size="8.5" fill="#2D3748">- tasks: List&lt;ChecklistTask&gt;</text>
+      <line x1="0" y1="102" x2="250" y2="102" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="10" y="116" font-size="8.5" fill="#2D3748">+ initializeDefaultPreparationTasks(): void</text>
+      <text x="10" y="130" font-size="8.5" fill="#2D3748">+ completeTask(taskId: TaskId): void</text>
+      <text x="10" y="144" font-size="8.5" fill="#2D3748">+ areMandatoryTasksComplete(): boolean</text>
+      <text x="10" y="158" font-size="8.5" fill="#2D3748">+ flagOverdueTasks(asOf: LocalDate): void</text>
     </g>
 
-    <!-- Aggregate Root: ChecklistTask -->
+    <!-- Internal Entity: ChecklistTask -->
     <g transform="translate(290, 45)">
       <rect x="0" y="0" width="255" height="215" rx="4" fill="#FFF9F2" stroke="#8D5B4C" stroke-width="1.6" />
       <circle cx="18" cy="18" r="7" fill="#84CC16" />
       <text x="18" y="22" text-anchor="middle" font-size="9" font-weight="bold" fill="#FFFFFF">C</text>
-      <text x="127" y="16" text-anchor="middle" font-size="9" font-style="italic" fill="#7A583A">«Aggregate Root»</text>
+      <text x="127" y="16" text-anchor="middle" font-size="9" font-style="italic" fill="#7A583A">«Internal Entity»</text>
       <text x="127" y="29" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#1A202C">ChecklistTask</text>
       <line x1="0" y1="36" x2="255" y2="36" stroke="#8D5B4C" stroke-width="0.8" />
-      <text x="10" y="50" font-size="8.5" fill="#2D3748">- id: UUID</text>
-      <text x="10" y="64" font-size="8.5" fill="#2D3748">- mobilityId: MobilityId</text>
-      <text x="10" y="78" font-size="8.5" fill="#2D3748">- studentId: StudentId</text>
-      <text x="10" y="92" font-size="8.5" fill="#2D3748">- taskCode: String</text>
-      <text x="10" y="106" font-size="8.5" fill="#2D3748">- title: String</text>
-      <text x="10" y="120" font-size="8.5" fill="#2D3748">- deadline: LocalDate</text>
-      <text x="10" y="134" font-size="8.5" fill="#2D3748">- status: TaskStatus</text>
-      <text x="10" y="148" font-size="8.5" fill="#2D3748">- document: DocumentAttachment</text>
-      <text x="10" y="162" font-size="8.5" fill="#2D3748">- isMandatory: boolean</text>
-      <line x1="0" y1="170" x2="255" y2="170" stroke="#8D5B4C" stroke-width="0.8" />
-      <text x="10" y="184" font-size="8.5" fill="#2D3748">+ uploadDocument(ref: String, hash: String): void</text>
-      <text x="10" y="198" font-size="8.5" fill="#2D3748">+ verifyAndComplete(officer: String): TaskCompletedEvent</text>
-      <text x="10" y="210" font-size="8.5" fill="#2D3748">+ markOverdue(): TaskOverdueEvent</text>
+      <text x="10" y="50" font-size="8.5" fill="#2D3748">- taskId: TaskId</text>
+      <text x="10" y="64" font-size="8.5" fill="#2D3748">- taskType: TaskType</text>
+      <text x="10" y="78" font-size="8.5" fill="#2D3748">- title: String</text>
+      <text x="10" y="92" font-size="8.5" fill="#2D3748">- deadline: LocalDate</text>
+      <text x="10" y="106" font-size="8.5" fill="#2D3748">- status: TaskStatus</text>
+      <text x="10" y="120" font-size="8.5" fill="#2D3748">- proofDocumentUri: String</text>
+      <line x1="0" y1="128" x2="255" y2="128" stroke="#8D5B4C" stroke-width="0.8" />
+      <text x="10" y="142" font-size="8.5" fill="#2D3748">+ assignToStudent(): void</text>
+      <text x="10" y="156" font-size="8.5" fill="#2D3748">+ attachProof(uri: String): void</text>
+      <text x="10" y="170" font-size="8.5" fill="#2D3748">+ markSubmitted(): void</text>
+      <text x="10" y="184" font-size="8.5" fill="#2D3748">+ markCompleted(): void</text>
+      <text x="10" y="198" font-size="8.5" fill="#2D3748">+ markOverdue(): void</text>
     </g>
 
     <!-- Value Object: DocumentAttachment -->
@@ -347,7 +345,10 @@
       <text x="10" y="58" font-size="8.5" fill="#2D3748">- checksumSha256: String</text>
       <text x="10" y="70" font-size="8.5" fill="#2D3748">- storageUri: String</text>
     </g>
-    <path d="M 290 250 L 270 250" stroke="#1A202C" stroke-width="1.2" marker-start="url(#diamond)" />
+    <!-- Composition: MobilityChecklist encapsulates ChecklistTask -->
+    <path d="M 270 140 L 290 140" stroke="#1A202C" stroke-width="1.4" marker-start="url(#diamond)" />
+    <text x="272" y="134" font-size="7.5" font-weight="bold" fill="#1A202C">1</text>
+    <text x="283" y="134" font-size="7.5" font-weight="bold" fill="#1A202C">*</text>
 
     <!-- Value Object: GrantAmount -->
     <g transform="translate(20, 325)">
