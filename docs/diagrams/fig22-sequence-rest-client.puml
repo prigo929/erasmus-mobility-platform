@@ -9,7 +9,7 @@ actor "Student" as Student
 boundary "Web Browser UI" as UI
 control "LearningAgreementWebController" as Controller
 participant "AgreementApplicationService" as AppService
-participant "LearningAgreementRepo" as Repo
+participant "LearningAgreementRepository" as Repo
 participant "LearningAgreement" as Aggregate
 participant "IEquivalenceCatalogAdapter\n(Domain Port)" as Port
 participant "EquivalenceRestAdapter\n(Infrastructure)" as RestAdapter
@@ -18,10 +18,10 @@ boundary "External HTTP Server\n(Equivalence Context)" as RemoteServer
 Student -> UI : Click "Verify Equivalences & Submit"
 activate UI
 
-UI -> Controller : POST /api/v1/agreements/{id}/validate-and-submit
+UI -> Controller : POST /api/v1/agreements/{id}/submit
 activate Controller
 
-Controller -> AppService : validateAndSubmitAgreement(agreementId)
+Controller -> AppService : verifyCourses(agreementId)
 activate AppService
 
 AppService -> Repo : findById(agreementId)
@@ -48,12 +48,17 @@ loop for each CourseLine in Table A
   deactivate Port
 end
 
-AppService -> Aggregate : validateEctsBalance()
+AppService -> Aggregate : hasCreditParity()
 activate Aggregate
 Aggregate --> AppService : true (Credit Parity Invariant Met)
 
+AppService --> Controller : List<EquivalenceVerificationResult>
+deactivate AppService
+
+Controller -> AppService : submitDraft(agreementId)
+activate AppService
 AppService -> Aggregate : submit()
-Aggregate --> AppService : LearningAgreementSubmittedEvent
+Aggregate --> AppService : void
 deactivate Aggregate
 
 AppService -> Repo : save(agreement)
@@ -61,7 +66,7 @@ activate Repo
 Repo --> AppService : void
 deactivate Repo
 
-AppService --> Controller : SubmissionResult(SUCCESS)
+AppService --> Controller : void
 deactivate AppService
 
 Controller --> UI : 200 OK (Agreement Submitted)

@@ -31,7 +31,7 @@ state UNDER_REVIEW {
 
 UNDER_REVIEW --> UNDER_REVIEW : after(5 days) / triggerEscalationAlert()
 UNDER_REVIEW --> DRAFT : requestChanges(rejectionReason)
-UNDER_REVIEW --> APPROVED_BY_FACULTY : approve(coordinatorId) [meetsDegreeRequirements()]
+UNDER_REVIEW --> APPROVED_BY_FACULTY : approve(coordinatorId) [hasCreditParity() && credits >= 30]
 UNDER_REVIEW --> CANCELLED : cancel()
 
 state APPROVED_BY_FACULTY {

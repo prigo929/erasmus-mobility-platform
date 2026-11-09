@@ -25,3 +25,12 @@ out/
 
 # Visual Studio Code
 .vscode/
+
+# Python generator caches
+__pycache__/
+*.py[cod]
+
+# Local environment and temporary files
+.env
+.env.*
+*.log

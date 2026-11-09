@@ -1,0 +1,889 @@
+<?xml version='1.0' encoding='utf-8'?>
+<xmi:XMI xmlns:uml="http://www.eclipse.org/uml2/2.1.0/UML" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1" xmi:version="2.1">
+  <uml:Model xmi:id="id_ed1d2bfee9cf5d5fa9487f55b7a7d00d" name="ErasmusModel">
+    <packagedElement xmi:type="uml:Package" xmi:id="id_3a1c7ec7c7ae5f32a0db4a37ecc90e0a" name="agreement">
+      <packagedElement xmi:type="uml:Package" xmi:id="id_45f96b7edf6658349b1d4ff977957b9c" name="presentation">
+        <packagedElement xmi:type="uml:Class" xmi:id="id_8308b9edf52f53bdabf3eeeb9ae892f1" name="LearningAgreementWebController">
+          <ownedAttribute xmi:id="id_62d306317f735c9ea68482e2ac4c0acc" name="agreementService" visibility="private" type="id_e94f3795049b54ee8fb92b6ea45d2715" />
+          <ownedOperation xmi:id="id_dfec88e6ace95ef094f27c41506ff4d2" name="submitDraft" visibility="public">
+            <ownedParameter xmi:id="id_14f2d9881ddb56b79e1435cc248ebe25" name="agreementId">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_34ac324820da50e4a4df9a26e456b3c0" direction="return">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#ResponseEntity&lt;Void&gt;" />
+            </ownedParameter>
+          </ownedOperation>
+          <ownedOperation xmi:id="id_57501c8ca7d256bfb446d8087a79daea" name="verifyEquivalences" visibility="public">
+            <ownedParameter xmi:id="id_cea03c627bb854eba9a7007a2e97f175" name="agreementId">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_dfc5034f3f395ca5b8fe37253b99ef93" direction="return">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#ResponseEntity&lt;List&lt;EquivalenceVerificationResult&gt;&gt;" />
+            </ownedParameter>
+          </ownedOperation>
+          <ownedOperation xmi:id="id_81c120ddd14855949bb973de4e9f46f2" name="approveByCoordinator" visibility="public">
+            <ownedParameter xmi:id="id_a360108f2e61512da50b39d16f51c585" name="agreementId">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_24aeecc0d860506dabc4521f76e65fa5" name="coordinatorId">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_b7406dab65765bf3bdb63bf8035ab1a2" direction="return">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#ResponseEntity&lt;Void&gt;" />
+            </ownedParameter>
+          </ownedOperation>
+          <ownedOperation xmi:id="id_c97db8e074775ebc93f7405ca4cc5f06" name="getAgreementSummary" visibility="public">
+            <ownedParameter xmi:id="id_5670297939905a38a975e8f9c41dfd88" name="agreementId">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_81e9dd0fa5965a5fb609b8eae916f0c6" direction="return">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#ResponseEntity&lt;AgreementSummaryDTO&gt;" />
+            </ownedParameter>
+          </ownedOperation>
+        </packagedElement>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Package" xmi:id="id_17a055a5a85b508190b2978e5e7b9c5c" name="application">
+        <packagedElement xmi:type="uml:Class" xmi:id="id_e94f3795049b54ee8fb92b6ea45d2715" name="AgreementApplicationService">
+          <ownedAttribute xmi:id="id_ec8a19ec4fec5aa59cee7d0df7b7e11b" name="agreementRepo" visibility="private" type="id_47f62885ada75f80ad3d95868c6c48f8" />
+          <ownedAttribute xmi:id="id_060c92b74cb35d51a80e786da569ffd6" name="outboxRepo" visibility="private" type="id_a5791f86b09452679ca8608a2e098272" />
+          <ownedAttribute xmi:id="id_dd597da3af645515a15616135f5c8793" name="equivalenceAdapter" visibility="private" type="id_1e850d449f325eda8247c1c6956bdac3" />
+          <ownedAttribute xmi:id="id_7db758235e665de398e28accdd5620b5" name="eventSerializer" visibility="private">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#EventJsonSerializer" />
+          </ownedAttribute>
+          <ownedOperation xmi:id="id_d90c3fde0a785b2ab47987ab3895a364" name="submitDraft" visibility="public">
+            <ownedParameter xmi:id="id_e2afc033d2615c21ba599e415dc3eade" name="agreementId">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+            </ownedParameter>
+          </ownedOperation>
+          <ownedOperation xmi:id="id_b1d1056162f157c29e598424a93be590" name="approveAgreement" visibility="public">
+            <ownedParameter xmi:id="id_657202db9e3155e1ac8770f12539b9ed" name="agreementId">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_7a7e62cf7d98589cacd78c68d19ba1d9" name="coordinatorId">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+            </ownedParameter>
+          </ownedOperation>
+          <ownedOperation xmi:id="id_9589108f36e4591a9e9754933589695d" name="verifyCourses" visibility="public">
+            <ownedParameter xmi:id="id_00369cd598d455269729b9f967b76e58" name="agreementId">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_c5e8a68a788f52f8b4f7570ca3695239" direction="return">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#List&lt;EquivalenceVerificationResult&gt;" />
+            </ownedParameter>
+          </ownedOperation>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="id_47362e191f7f54c09a48b1f1e65ba592" name="SubmitAgreementCommand">
+          <ownedAttribute xmi:id="id_3af74996703c5a899ef254535989fb76" name="agreementId" visibility="public">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+          </ownedAttribute>
+          <ownedAttribute xmi:id="id_7b87c7cfd07e58cc903edb781c876e84" name="studentId" visibility="public">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+          </ownedAttribute>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="id_41deeb19832459eeb1daaf1debbbcea2" name="AgreementSummaryDTO">
+          <ownedAttribute xmi:id="id_ffb9dbd8642d5bfb8ef7e6ca707b889c" name="agreementId" visibility="public">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+          </ownedAttribute>
+          <ownedAttribute xmi:id="id_c5a87760bf3b5881bedbb7ffa0f95b2e" name="status" visibility="public">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String" />
+          </ownedAttribute>
+          <ownedAttribute xmi:id="id_d4c0b5c81e6c5b64876882f282d1da87" name="totalTableA" visibility="public">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#int" />
+          </ownedAttribute>
+          <ownedAttribute xmi:id="id_128dcfc064935273b3a6f716223338f0" name="totalTableB" visibility="public">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#int" />
+          </ownedAttribute>
+        </packagedElement>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Package" xmi:id="id_b09be12ec319570f86ceae9931ca5795" name="domain">
+        <packagedElement xmi:type="uml:Class" xmi:id="id_b0224dba8c4e5f328005c5e1bb41ca60" name="LearningAgreement">
+          <ownedAttribute xmi:id="id_ea37a6e2776d5d0da84cd5fa4d59e759" name="id" visibility="private" type="id_85910103a9f95aec88f156f47c935a61" />
+          <ownedAttribute xmi:id="id_6de6287685635005a048357c5dd28597" name="studentId" visibility="private">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#StudentId" />
+          </ownedAttribute>
+          <ownedAttribute xmi:id="id_3fdbc4a17e1252d18f0edb3d06bbfabe" name="academicYear" visibility="private">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#AcademicYear" />
+          </ownedAttribute>
+          <ownedAttribute xmi:id="id_5cf62f79e61752a89d59adf1528d1dc8" name="status" visibility="private" type="id_27521adb8c9a5a25937755a2a249f29b" />
+          <ownedAttribute xmi:id="id_66485d1c2f435179a5e79719b0827f96" name="linesTableA" visibility="private">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#List&lt;CourseLineTableA&gt;" />
+          </ownedAttribute>
+          <ownedAttribute xmi:id="id_4d4de39c59755d3ab93993043399f7be" name="linesTableB" visibility="private">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#List&lt;CourseLineTableB&gt;" />
+          </ownedAttribute>
+          <ownedOperation xmi:id="id_38bf57a6c7b65e1b95c42a1d7366d7cf" name="submit" visibility="public" />
+          <ownedOperation xmi:id="id_d98b7259896a5c2a92e03064d0c75f58" name="approve" visibility="public">
+            <ownedParameter xmi:id="id_d196842b61be50afbbe612abce0a7f7c" name="coordinatorId">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_f09a2f842b2f543d9e7433d4b445d4e4" direction="return" type="id_0e25e48deb1757b489d366c3f38cdf60" />
+          </ownedOperation>
+          <ownedOperation xmi:id="id_f67f9ceb13ea5e87b961f17d6511a08a" name="assignCoordinator" visibility="public">
+            <ownedParameter xmi:id="id_938ef659b0b65b4ab3d307bf52140a53" name="coordinatorId">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+            </ownedParameter>
+          </ownedOperation>
+          <ownedOperation xmi:id="id_87b1735300f458c2bba4678396954684" name="requestChanges" visibility="public">
+            <ownedParameter xmi:id="id_4e667d388f9f5c26948039dffc8edbf5" name="reason">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String" />
+            </ownedParameter>
+          </ownedOperation>
+          <ownedOperation xmi:id="id_c5811ecf18285f86ad6d08a2662150e1" name="confirmByHost" visibility="public">
+            <ownedParameter xmi:id="id_4ae4dcac5956595da9f363decd43dc3a" name="signatureRef">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String" />
+            </ownedParameter>
+          </ownedOperation>
+          <ownedOperation xmi:id="id_3f30f6bebcfe56e993d8d714b9a469b4" name="requestAmendment" visibility="public">
+            <ownedParameter xmi:id="id_e61b63ddf7bf5c37a90a00548bd97f1d" name="reason">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String" />
+            </ownedParameter>
+          </ownedOperation>
+          <ownedOperation xmi:id="id_be6a1e01438d5eceb96ba3dad2deb31f" name="resubmitAmendedDraft" visibility="public" />
+          <ownedOperation xmi:id="id_0c1e5e9a13e45410a184787665785394" name="cancel" visibility="public" />
+          <ownedOperation xmi:id="id_3ca7a4696aaa59ca9f60ec3620607f81" name="calculateTotalCreditsTableA" visibility="public">
+            <ownedParameter xmi:id="id_4898edfb33105fbda7510695d1255d9f" direction="return" type="id_d5dadf3d931d5b79874afdd1fbc04bb5" />
+          </ownedOperation>
+          <ownedOperation xmi:id="id_70d1dad8c2e85f2ab5d54078b7e47493" name="calculateTotalCreditsTableB" visibility="public">
+            <ownedParameter xmi:id="id_2999f64789515b229efbaa2a0d63625d" direction="return" type="id_d5dadf3d931d5b79874afdd1fbc04bb5" />
+          </ownedOperation>
+          <ownedOperation xmi:id="id_2dec2539f6325844b1dc4374ee8f18da" name="hasCreditParity" visibility="public">
+            <ownedParameter xmi:id="id_235d98a2ed9a52849fbb9b19132222a9" direction="return">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#boolean" />
+            </ownedParameter>
+          </ownedOperation>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="id_9b45bfc0f5a25b04ae5527bd628d1a7a" name="CourseLineTableA">
+          <ownedAttribute xmi:id="id_a15516e428e2548cb7bad51798a51028" name="lineId" visibility="private">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+          </ownedAttribute>
+          <ownedAttribute xmi:id="id_545e40f830755d8f8e27aa9efab7e9df" name="hostCourseCode" visibility="private">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String" />
+          </ownedAttribute>
+          <ownedAttribute xmi:id="id_bea2a915f40352639732500d6e92570e" name="courseTitle" visibility="private">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String" />
+          </ownedAttribute>
+          <ownedAttribute xmi:id="id_bbcf8ab2f9b35bc29860880f71532608" name="credits" visibility="private" type="id_d5dadf3d931d5b79874afdd1fbc04bb5" />
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="id_77072a9337d35f02901c0d408377530b" name="CourseLineTableB">
+          <ownedAttribute xmi:id="id_b26a0556f790593dabf15e924ef72256" name="lineId" visibility="private">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+          </ownedAttribute>
+          <ownedAttribute xmi:id="id_932a41467b3752d3a52691747efaa400" name="homeCourseCode" visibility="private">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String" />
+          </ownedAttribute>
+          <ownedAttribute xmi:id="id_549da33bf4c35f45abb355702e8409e1" name="equivalentCourseTitle" visibility="private">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String" />
+          </ownedAttribute>
+          <ownedAttribute xmi:id="id_ddbbcc413adf5f38a6889d63172d54ed" name="credits" visibility="private" type="id_d5dadf3d931d5b79874afdd1fbc04bb5" />
+        </packagedElement>
+        <packagedElement xmi:type="uml:Enumeration" xmi:id="id_27521adb8c9a5a25937755a2a249f29b" name="LearningAgreementStatus">
+          <ownedLiteral xmi:id="id_1484e23d88515442a5cb0d63983bbdea" name="DRAFT" />
+          <ownedLiteral xmi:id="id_058b227321c45bfb9cf90747e8d88214" name="SUBMITTED" />
+          <ownedLiteral xmi:id="id_1f485c5f4d425424a3d633dca2087915" name="UNDER_REVIEW" />
+          <ownedLiteral xmi:id="id_55456fbb18f159ff9e9489ad3a6faf47" name="APPROVED_BY_FACULTY" />
+          <ownedLiteral xmi:id="id_ae70b879fe145080b1573adbee61cdc6" name="CONFIRMED_BY_HOST" />
+          <ownedLiteral xmi:id="id_dd57bf3e01ee5322928e4dda80b2b4aa" name="AMENDED" />
+          <ownedLiteral xmi:id="id_133aec4bd9555c568564a26772db8386" name="CANCELLED" />
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="id_85910103a9f95aec88f156f47c935a61" name="AgreementId">
+          <ownedAttribute xmi:id="id_3a5bf150874b59a49751b59c9a9e967f" name="value" visibility="private">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+          </ownedAttribute>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="id_d5dadf3d931d5b79874afdd1fbc04bb5" name="ECTSCredits">
+          <ownedAttribute xmi:id="id_54d64ec2a7e556b786cd6fec5e89f5db" name="value" visibility="private">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#int" />
+          </ownedAttribute>
+          <ownedOperation xmi:id="id_a9f6225d9d9f5e04b5adce549163800d" name="isMinimumMet" visibility="public">
+            <ownedParameter xmi:id="id_5dbdcec2bb6b54de8ed2967363170fea" direction="return">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#boolean" />
+            </ownedParameter>
+          </ownedOperation>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Interface" xmi:id="id_47f62885ada75f80ad3d95868c6c48f8" name="LearningAgreementRepository">
+          <ownedOperation xmi:id="id_b7906e5eca9659b4b60f1c63d0f05e78" name="findById" visibility="public">
+            <ownedParameter xmi:id="id_ee0b6e04b2a05144a0b58994c0a04b79" name="id" type="id_85910103a9f95aec88f156f47c935a61" />
+            <ownedParameter xmi:id="id_6dfb3183861d54ef9e05f2dbdc947a31" direction="return">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Optional&lt;LearningAgreement&gt;" />
+            </ownedParameter>
+          </ownedOperation>
+          <ownedOperation xmi:id="id_b3f382fec65d5b1c801278ed78bcea5a" name="save" visibility="public">
+            <ownedParameter xmi:id="id_0ec857c33d825cb68df011bb80d79d57" name="agreement" type="id_b0224dba8c4e5f328005c5e1bb41ca60" />
+          </ownedOperation>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Interface" xmi:id="id_1e850d449f325eda8247c1c6956bdac3" name="IEquivalenceCatalogAdapter">
+          <ownedOperation xmi:id="id_d638bc154ff452f1b07aa928b00fc20c" name="checkEquivalence" visibility="public">
+            <ownedParameter xmi:id="id_68806e3f1c1b546c953adfe98e781dab" name="sendCode">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_250e349ae4e8557a8b13e61083fa0b18" name="hostCode">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_885a7d47b27254948a05830c5466f3fe" direction="return">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#EquivalenceVerificationResult" />
+            </ownedParameter>
+          </ownedOperation>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Interface" xmi:id="id_a5791f86b09452679ca8608a2e098272" name="IOutboxRepository">
+          <ownedOperation xmi:id="id_703142f230665502b2af783f5b9254a1" name="save" visibility="public">
+            <ownedParameter xmi:id="id_a43da0dcb2bd543a8b05fc5129d0b064" name="message" type="id_2e33af7b7739545bb0d03849d77ecfc6" />
+          </ownedOperation>
+          <ownedOperation xmi:id="id_0e919028ed605ddcb1a77b8043836644" name="findPendingMessages" visibility="public">
+            <ownedParameter xmi:id="id_0bfeb32382df54ae94915cc9986d8449" name="limit">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#int" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_3c22910974855434b26b5d22cdbcfa3a" direction="return">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#List&lt;OutboxMessage&gt;" />
+            </ownedParameter>
+          </ownedOperation>
+          <ownedOperation xmi:id="id_bf9b2c07da035e40b272890137cc3632" name="markAsPublished" visibility="public">
+            <ownedParameter xmi:id="id_d6954d2831625516a57d8ab48263d464" name="id">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_3639b7287ef051e9bf6da05f8635bdb7" name="at">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Instant" />
+            </ownedParameter>
+          </ownedOperation>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="id_0e25e48deb1757b489d366c3f38cdf60" name="LearningAgreementApprovedEvent">
+          <ownedAttribute xmi:id="id_2f0e3ede0d565709ba35b11bf4009e42" name="eventId" visibility="public">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+          </ownedAttribute>
+          <ownedAttribute xmi:id="id_d4be5721a5f457418cb643476e05be0c" name="agreementId" visibility="public">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+          </ownedAttribute>
+          <ownedAttribute xmi:id="id_6a788023fe7a5f19992eef90ce628a8d" name="studentId" visibility="public">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+          </ownedAttribute>
+          <ownedAttribute xmi:id="id_fd7301b387925c40b676f1a001afa098" name="occurredOn" visibility="public">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Instant" />
+          </ownedAttribute>
+        </packagedElement>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Package" xmi:id="id_32255eff5ede58c49c4fc5e99a8c1ae8" name="infrastructure">
+        <packagedElement xmi:type="uml:Class" xmi:id="id_99947a6ef0dc5dac9964b0d840c1dcfe" name="AbstractRepositoryJPA" isAbstract="true">
+          <ownedAttribute xmi:id="id_212ac63ba3625f9898a2a3c2e6b94e48" name="em" visibility="protected">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#EntityManager" />
+          </ownedAttribute>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="id_7c3d5e05215c5882b88a8d2451bc3f52" name="LearningAgreementRepoJPA">
+          <ownedOperation xmi:id="id_7a8298877f275fcfa8de33dd1bf075c6" name="findById" visibility="public">
+            <ownedParameter xmi:id="id_a9339648d79956f2b935072e903cabe8" name="id" type="id_85910103a9f95aec88f156f47c935a61" />
+            <ownedParameter xmi:id="id_8252b51f9fea548d9401252141760d81" direction="return">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Optional&lt;LearningAgreement&gt;" />
+            </ownedParameter>
+          </ownedOperation>
+          <ownedOperation xmi:id="id_709016930f3f57ebbb92a3ba54c7e352" name="save" visibility="public">
+            <ownedParameter xmi:id="id_dfcf96919eea5924993b02d51204c93f" name="agreement" type="id_b0224dba8c4e5f328005c5e1bb41ca60" />
+          </ownedOperation>
+          <generalization xmi:id="id_bd90e2e4bb5b515ea5aaf80e8574d83a" general="id_99947a6ef0dc5dac9964b0d840c1dcfe" />
+          <interfaceRealization xmi:id="id_162d42f374c657d0b3b1dafc01544d4e" supplier="id_47f62885ada75f80ad3d95868c6c48f8" client="id_7c3d5e05215c5882b88a8d2451bc3f52" />
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="id_08bc8ff99c89587ba506e610acd7f0f4" name="OutboxRepoJPA">
+          <ownedOperation xmi:id="id_29aaf0c911f85f01bf001fea0599ea5b" name="save" visibility="public">
+            <ownedParameter xmi:id="id_1e900d526d48551fbf34e2b7f64b2dda" name="message" type="id_2e33af7b7739545bb0d03849d77ecfc6" />
+          </ownedOperation>
+          <ownedOperation xmi:id="id_c70e65c4b5ed5a229e8aeffbb9fcb705" name="findPendingMessages" visibility="public">
+            <ownedParameter xmi:id="id_a28ccb4fb27c5926b0553dcc20abb26c" name="limit">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#int" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_9638cb0e77df54b693cd8e3bf9cda9ed" direction="return">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#List&lt;OutboxMessage&gt;" />
+            </ownedParameter>
+          </ownedOperation>
+          <ownedOperation xmi:id="id_3f613d7696425ac3902c32dbea738d47" name="markAsPublished" visibility="public">
+            <ownedParameter xmi:id="id_2e00398d23a15b74868f119f8179b3a4" name="id">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_d925717a38e058f393305a5b0c666b3f" name="at">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Instant" />
+            </ownedParameter>
+          </ownedOperation>
+          <generalization xmi:id="id_a26f69df515b5f19900503b628e4241f" general="id_99947a6ef0dc5dac9964b0d840c1dcfe" />
+          <interfaceRealization xmi:id="id_c6d78dcf035d5db39e8cfb660b9ca8a0" supplier="id_a5791f86b09452679ca8608a2e098272" client="id_08bc8ff99c89587ba506e610acd7f0f4" />
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="id_2e33af7b7739545bb0d03849d77ecfc6" name="OutboxMessage">
+          <ownedAttribute xmi:id="id_fed3e36635085dad8c8e852dc022f9ad" name="id" visibility="private">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+          </ownedAttribute>
+          <ownedAttribute xmi:id="id_ff3bce87afaa5872b03833376373dc71" name="aggregateId" visibility="private">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+          </ownedAttribute>
+          <ownedAttribute xmi:id="id_f09e3395abf35e378feb9f80c453a0ef" name="payloadJson" visibility="private">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String" />
+          </ownedAttribute>
+          <ownedAttribute xmi:id="id_6f7853e8dcae5108981b77ab9f789b32" name="status" visibility="private">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#OutboxStatus" />
+          </ownedAttribute>
+          <ownedOperation xmi:id="id_1b2be2b274445eddabbfbd40549dab55" name="fromEvent" visibility="public">
+            <ownedParameter xmi:id="id_25d98fbd08925788aca5d782184f4ba9" name="event" type="id_0e25e48deb1757b489d366c3f38cdf60" />
+            <ownedParameter xmi:id="id_72936d0a458b52b383bdbe46d5f4c2e1" direction="return" type="id_2e33af7b7739545bb0d03849d77ecfc6" />
+          </ownedOperation>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="id_c6b6de3b9b7c54aab9f77b1f87a4b4f1" name="EquivalenceRestAdapter">
+          <ownedAttribute xmi:id="id_8ec8fabafd0755568d2de1dd7cfcdb8e" name="restTemplate" visibility="private">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#RestTemplate" />
+          </ownedAttribute>
+          <ownedAttribute xmi:id="id_f944e17067c351d688c63f3f53bd2c7c" name="equivalenceUrl" visibility="private">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String" />
+          </ownedAttribute>
+          <ownedOperation xmi:id="id_f72b8315718f5a41bb450dfd5aa9aab0" name="checkEquivalence" visibility="public">
+            <ownedParameter xmi:id="id_56444a5eec2a5bf3a1d5f8b87ee18f72" name="sendCode">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_efa09b1baad45332bdc5891da75ab9ec" name="hostCode">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_b9f3ed336ebc543fa8de307759a717e9" direction="return">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#EquivalenceVerificationResult" />
+            </ownedParameter>
+          </ownedOperation>
+          <interfaceRealization xmi:id="id_120657e5f1275c86a8b3bfcdb65051ff" supplier="id_1e850d449f325eda8247c1c6956bdac3" client="id_c6b6de3b9b7c54aab9f77b1f87a4b4f1" />
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="id_83186efac94b580e9e192777e3405116" name="OutboxDispatcher">
+          <ownedAttribute xmi:id="id_381640a32c155f7e8c7d02ecb6b801fc" name="outboxRepo" visibility="private" type="id_a5791f86b09452679ca8608a2e098272" />
+          <ownedAttribute xmi:id="id_edf4b35f875d566aaaaf52fd20418334" name="rabbitTemplate" visibility="private">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#RabbitTemplate" />
+          </ownedAttribute>
+          <ownedOperation xmi:id="id_d519e0ce58df5a11bf826e3e6efd43b3" name="pollAndDispatch" visibility="public" />
+        </packagedElement>
+      </packagedElement>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Package" xmi:id="id_e4c5dd1d29a559078e027a5a76184b07" name="equivalence">
+      <packagedElement xmi:type="uml:Package" xmi:id="id_bb1d1565bdd5535c92d58512ffa227b1" name="presentation">
+        <packagedElement xmi:type="uml:Class" xmi:id="id_b8d434caa4915e98a2491d65cf97ae7a" name="EquivalenceApiRest">
+          <ownedAttribute xmi:id="id_0bf51acc39ec55aea81eaea6f655c3fb" name="equivalenceService" visibility="private" type="id_3db31e7f2353549c9480152a2ead25ad" />
+          <ownedOperation xmi:id="id_5e02f0e31d785c3d833230afc04b9c02" name="verifyEquivalence" visibility="public">
+            <ownedParameter xmi:id="id_b11ec1daaf7458c582b6c856c83b0ed3" name="sendCode">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_4a3a1829a925560a8bc057e767186471" name="hostCode">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_dbd901b93298585393bed7d14fb1126b" direction="return">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#ResponseEntity&lt;EquivalenceResponseDTO&gt;" />
+            </ownedParameter>
+          </ownedOperation>
+          <ownedOperation xmi:id="id_c92d85e85ae25905a013e6f1f03ca21d" name="getEquivalenceById" visibility="public">
+            <ownedParameter xmi:id="id_86ae38b874745869be81af827e4ced3c" name="id">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_81e79ad1134e52ac9002115bc02e77cd" direction="return">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#ResponseEntity&lt;EquivalenceResponseDTO&gt;" />
+            </ownedParameter>
+          </ownedOperation>
+          <ownedOperation xmi:id="id_8a16c06752685d3490cbdc61eebfa22f" name="registerNewEquivalence" visibility="public">
+            <ownedParameter xmi:id="id_11b6096d34fe51ef87840d315c2fb8b5" name="req">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#RegisterEquivalenceRequest" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_5a31c998bc6657caa9c8855e48a3435e" direction="return">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#ResponseEntity&lt;UUID&gt;" />
+            </ownedParameter>
+          </ownedOperation>
+        </packagedElement>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Package" xmi:id="id_fef58685280f53f89785513722c10563" name="application">
+        <packagedElement xmi:type="uml:Class" xmi:id="id_3db31e7f2353549c9480152a2ead25ad" name="EquivalenceApplicationService">
+          <ownedAttribute xmi:id="id_37e8846b57c05aa1b27a32dac1182a0a" name="equivalenceRepo" visibility="private" type="id_c3ca711acd3d5b6483bf60c2ab7ed10b" />
+          <ownedOperation xmi:id="id_880acedace1c503aba69b16de5ef9b65" name="checkEquivalence" visibility="public">
+            <ownedParameter xmi:id="id_14e5d725c1bc5cea8adb771ae9de99b1" name="sendCode">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_b5e759a47ae45cb3a4647c57cf8054b5" name="hostCode">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_403d29a135ea530b93b72afbe0d6542b" direction="return">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#EquivalenceCheckResult" />
+            </ownedParameter>
+          </ownedOperation>
+          <ownedOperation xmi:id="id_725a2a7cd2b7544a850c3cdb33c2883a" name="registerEquivalence" visibility="public">
+            <ownedParameter xmi:id="id_ef5511c61c805c6089467b1f07715adb" name="cmd" type="id_305530e247935ae3ab560665e1931742" />
+            <ownedParameter xmi:id="id_72725fe8bd7157f2b092ea6f94e87510" direction="return">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+            </ownedParameter>
+          </ownedOperation>
+          <ownedOperation xmi:id="id_62c9620e8cbf524cb4df964777b5c38c" name="retireEquivalence" visibility="public">
+            <ownedParameter xmi:id="id_93e4c54197b95cd2b4513daaef1b59f6" name="id">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_839274d7bc7d50b3aea1318232dc3f3d" name="reason">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String" />
+            </ownedParameter>
+          </ownedOperation>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="id_305530e247935ae3ab560665e1931742" name="RegisterEquivalenceCommand">
+          <ownedAttribute xmi:id="id_8db3cbeed7f9579ead9fb33d60deab8a" name="sendCourseCode" visibility="public">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String" />
+          </ownedAttribute>
+          <ownedAttribute xmi:id="id_5e37c7d130d15ac8a3f228e207db4bb1" name="hostCourseCode" visibility="public">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String" />
+          </ownedAttribute>
+          <ownedAttribute xmi:id="id_48fa6190ff755fdc9ee419ab4872831c" name="credits" visibility="public">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#int" />
+          </ownedAttribute>
+          <ownedAttribute xmi:id="id_ed4e2f05fa8b542b92be3c43a519b3d7" name="validityYears" visibility="public">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#int" />
+          </ownedAttribute>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="id_6a0b423c4f0a529b8bb50f7a5e769140" name="EquivalenceResponseDTO">
+          <ownedAttribute xmi:id="id_3da538fcb4f0581f9b17d090db43a14b" name="equivalenceId" visibility="public">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+          </ownedAttribute>
+          <ownedAttribute xmi:id="id_8795286c99b65e1da0d366eb3782befb" name="sendCode" visibility="public">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String" />
+          </ownedAttribute>
+          <ownedAttribute xmi:id="id_672f85122e7659b1b54e953895d6ea9e" name="hostCode" visibility="public">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String" />
+          </ownedAttribute>
+          <ownedAttribute xmi:id="id_21c529d4fd3b5c1ca36b3c91e6861281" name="recognizedCredits" visibility="public">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#int" />
+          </ownedAttribute>
+          <ownedAttribute xmi:id="id_c3682774ea695e599a4a644075eec545" name="status" visibility="public">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String" />
+          </ownedAttribute>
+          <ownedAttribute xmi:id="id_224cdaa6cc0f584a8d25672f6ce4bb41" name="validUntil" visibility="public">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#LocalDate" />
+          </ownedAttribute>
+        </packagedElement>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Package" xmi:id="id_59ed547ff64f58ef925bd7239b79d14d" name="domain">
+        <packagedElement xmi:type="uml:Class" xmi:id="id_787e0a7a064359a7b003c835041fd695" name="AcademicEquivalence">
+          <ownedAttribute xmi:id="id_a858c55e583452c4aa7686d716c6870e" name="id" visibility="private" type="id_01213ce8ded355758c47ca66c6d1196f" />
+          <ownedAttribute xmi:id="id_583bc724b8b75257a647a7c4e17c37e2" name="sendCourse" visibility="private" type="id_19fa674cf09f5cfa9594dbaf2f3f1256" />
+          <ownedAttribute xmi:id="id_ce29cd332bbc500d853d874131655f47" name="hostCourse" visibility="private" type="id_19fa674cf09f5cfa9594dbaf2f3f1256" />
+          <ownedAttribute xmi:id="id_1dddc0e36aff530c802c7040e7cd578e" name="recognizedCredits" visibility="private" type="id_786e85276e9f575e9add94a7aa82ac1a" />
+          <ownedAttribute xmi:id="id_263c907fb2e754ad953118ea8f924784" name="validityWindow" visibility="private" type="id_464e03973dd35e4e8b7f21ccef1c681e" />
+          <ownedAttribute xmi:id="id_3206fbbeecea5d708e034f890b91ece1" name="status" visibility="private" type="id_cc83fa885cf7534689838dc992412652" />
+          <ownedOperation xmi:id="id_440d664e35ae5839995b3c5b5fe82bfd" name="isCurrentlyValid" visibility="public">
+            <ownedParameter xmi:id="id_bd22a7768cb5586da925e81c9b244c52" name="asOf">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#LocalDate" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_9a367b8ce81a5c56bc82989236c27cdb" direction="return">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#boolean" />
+            </ownedParameter>
+          </ownedOperation>
+          <ownedOperation xmi:id="id_f9aef29a2c1c5eddb204e45d3102299b" name="matchesCourses" visibility="public">
+            <ownedParameter xmi:id="id_fca0e9aaab425a1fa9b839e59119c4ac" name="send">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_e2e329c66e8d5a4a88cab937093ccd69" name="host">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_c25281fedf3658e9b8c4b84077000d23" direction="return">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#boolean" />
+            </ownedParameter>
+          </ownedOperation>
+          <ownedOperation xmi:id="id_3bf48cb679b35f4e80d77d7d1362f20d" name="retire" visibility="public">
+            <ownedParameter xmi:id="id_450eb200c59e5270b94c2f8c6af45310" name="effectiveDate">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#LocalDate" />
+            </ownedParameter>
+          </ownedOperation>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="id_19fa674cf09f5cfa9594dbaf2f3f1256" name="CourseSyllabus">
+          <ownedAttribute xmi:id="id_c0aa981975715245964d2cb06c2ea2a4" name="code" visibility="private" type="id_9fe5dd8a76135fc9985b156a30ef58e8" />
+          <ownedAttribute xmi:id="id_d95bb5a5a2d959e29400e2866c7c541e" name="courseName" visibility="private">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String" />
+          </ownedAttribute>
+          <ownedAttribute xmi:id="id_5af743e564c957abaf28a06bf6f0a84d" name="credits" visibility="private" type="id_786e85276e9f575e9add94a7aa82ac1a" />
+          <ownedAttribute xmi:id="id_fc0c9cc2b5cb500d98182ee4768ec41c" name="universityId" visibility="private">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+          </ownedAttribute>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Enumeration" xmi:id="id_cc83fa885cf7534689838dc992412652" name="EquivalenceStatus">
+          <ownedLiteral xmi:id="id_64a0cae9e917561b8916c8a3dbb2c27d" name="PROPOSED" />
+          <ownedLiteral xmi:id="id_fe2207b46897528c822a217bc90f72b6" name="UNDER_EVALUATION" />
+          <ownedLiteral xmi:id="id_9b48d737fe9b5edfac65ac9b1a224556" name="APPROVED" />
+          <ownedLiteral xmi:id="id_d4291a6a66015ffd91a3e753ca9074ce" name="ACTIVE" />
+          <ownedLiteral xmi:id="id_671b5739cb4b59fe87cef7702c87d7ce" name="RETIRED" />
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="id_01213ce8ded355758c47ca66c6d1196f" name="EquivalenceId">
+          <ownedAttribute xmi:id="id_f2879e1722c8537f85db12abc2eaed1f" name="value" visibility="private">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+          </ownedAttribute>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="id_9fe5dd8a76135fc9985b156a30ef58e8" name="CourseCode">
+          <ownedAttribute xmi:id="id_0c201f72074459f2a1d86fcda63e28d5" name="value" visibility="private">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String" />
+          </ownedAttribute>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="id_786e85276e9f575e9add94a7aa82ac1a" name="ECTSCredits">
+          <ownedAttribute xmi:id="id_35092161299d5dadbd1fe5580bf4fa41" name="value" visibility="private">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#int" />
+          </ownedAttribute>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="id_464e03973dd35e4e8b7f21ccef1c681e" name="ValidityWindow">
+          <ownedAttribute xmi:id="id_2345fab0c0f3544fa00e00cb2d2a23bd" name="startDate" visibility="private">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#LocalDate" />
+          </ownedAttribute>
+          <ownedAttribute xmi:id="id_fc3172d4606b5ce99e21a4409ee2a63b" name="endDate" visibility="private">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#LocalDate" />
+          </ownedAttribute>
+          <ownedOperation xmi:id="id_16ee3937e6905521a0cef50136f33d1f" name="isWithinWindow" visibility="public">
+            <ownedParameter xmi:id="id_42b4a2589656536cb42ee5e728bdf0e2" name="date">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#LocalDate" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_c4acc6a0ded051dc89d9e0699873c042" direction="return">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#boolean" />
+            </ownedParameter>
+          </ownedOperation>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Interface" xmi:id="id_c3ca711acd3d5b6483bf60c2ab7ed10b" name="AcademicEquivalenceRepository">
+          <ownedOperation xmi:id="id_33233c11125d55569ea85e89d990f31a" name="findByCourseCodes" visibility="public">
+            <ownedParameter xmi:id="id_e1beea361f0552229f5cb8b8bfac1d92" name="sendCode">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_177fafca3b7657e29b3c1b3884ad8c70" name="hostCode">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_57ffd87eec96583da5177d8c0f5d5459" direction="return">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Optional&lt;AcademicEquivalence&gt;" />
+            </ownedParameter>
+          </ownedOperation>
+          <ownedOperation xmi:id="id_b7657c4da6c751bdaf6c591fae913aee" name="findById" visibility="public">
+            <ownedParameter xmi:id="id_a9b407435baf512083a9b7e94c28542c" name="id" type="id_01213ce8ded355758c47ca66c6d1196f" />
+            <ownedParameter xmi:id="id_010a71d269175bec951580928ae86e13" direction="return">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Optional&lt;AcademicEquivalence&gt;" />
+            </ownedParameter>
+          </ownedOperation>
+          <ownedOperation xmi:id="id_2220f7d24340532184a24ad7386ae012" name="save" visibility="public">
+            <ownedParameter xmi:id="id_9912a791cec3537388241b52cbc903f2" name="equivalence" type="id_787e0a7a064359a7b003c835041fd695" />
+          </ownedOperation>
+        </packagedElement>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Package" xmi:id="id_3bbda18702675754803787df53d740bd" name="infrastructure">
+        <packagedElement xmi:type="uml:Class" xmi:id="id_0f084be913485e5091935ac4f44290d3" name="AbstractRepositoryJPA" isAbstract="true">
+          <ownedAttribute xmi:id="id_6781fa8f369d52ae93afb535d7586de7" name="em" visibility="protected">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#EntityManager" />
+          </ownedAttribute>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="id_6ff9980aa44b500bbcaa521e424cbabb" name="AcademicEquivalenceRepoJPA">
+          <ownedOperation xmi:id="id_2581355ac4ea5a29b03992c8d2adaf08" name="findByCourseCodes" visibility="public">
+            <ownedParameter xmi:id="id_ff25ccef82eb58658eb60570fed5df22" name="sendCode">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_ee66d7b076d45b6f9336070f94e83e36" name="hostCode">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_e5afdd26ad2357098c017474c8b4f8c5" direction="return">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Optional&lt;AcademicEquivalence&gt;" />
+            </ownedParameter>
+          </ownedOperation>
+          <ownedOperation xmi:id="id_3e3478e4b7085d4199511ed0d2cb0741" name="findById" visibility="public">
+            <ownedParameter xmi:id="id_24e36085e16d5d528d1a7918ca270d54" name="id" type="id_01213ce8ded355758c47ca66c6d1196f" />
+            <ownedParameter xmi:id="id_daba52acea8f57e88b7b8fb7bdf81630" direction="return">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Optional&lt;AcademicEquivalence&gt;" />
+            </ownedParameter>
+          </ownedOperation>
+          <ownedOperation xmi:id="id_07fc925a8c1659d887853df70f5cfc20" name="save" visibility="public">
+            <ownedParameter xmi:id="id_0a27819fa2885f39b20bf26952662a60" name="equivalence" type="id_787e0a7a064359a7b003c835041fd695" />
+          </ownedOperation>
+          <generalization xmi:id="id_0d2f925895cd5d76a5eb63164b26cb51" general="id_0f084be913485e5091935ac4f44290d3" />
+          <interfaceRealization xmi:id="id_d073453c18145fdb869af06f46f81070" supplier="id_c3ca711acd3d5b6483bf60c2ab7ed10b" client="id_6ff9980aa44b500bbcaa521e424cbabb" />
+        </packagedElement>
+      </packagedElement>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Package" xmi:id="id_ee7a3b5be5ab5c3a829527780eb0bd3d" name="preparation">
+      <packagedElement xmi:type="uml:Package" xmi:id="id_2273946595e5504782b7d1cb0f389e35" name="presentation">
+        <packagedElement xmi:type="uml:Class" xmi:id="id_6b69544f83735ec49d549dfccaf3779a" name="MobilityChecklistWebController">
+          <ownedAttribute xmi:id="id_e9bae52092555c16b9b7053de2515758" name="preparationService" visibility="private" type="id_6fa3260ce5a05e4290110ff8c46a37e3" />
+          <ownedOperation xmi:id="id_c854dbf578d65b7386472307154b5767" name="getStudentChecklist" visibility="public">
+            <ownedParameter xmi:id="id_d2f284b2b00f5b7a8eea07c14ff800b9" name="studentId">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_a2f5a9cf255c5e37a67a9bc5e14915f3" direction="return">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#ResponseEntity&lt;ChecklistSummaryDTO&gt;" />
+            </ownedParameter>
+          </ownedOperation>
+          <ownedOperation xmi:id="id_0fde6c0a642657979b271bbac2fd4cc9" name="completeTask" visibility="public">
+            <ownedParameter xmi:id="id_0d181dfebf8e58cf863d6d2785b67c1e" name="checklistId">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_330dfba3683459cda3dda3b47476744e" name="taskId">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_b15211f1da8051dbaca9ec32c82e232a" direction="return">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#ResponseEntity&lt;Void&gt;" />
+            </ownedParameter>
+          </ownedOperation>
+          <ownedOperation xmi:id="id_87b091a09982598286f2bde7e8f8fced" name="uploadTaskProof" visibility="public">
+            <ownedParameter xmi:id="id_3229d91967cf52d1b5be5af4841b2803" name="taskId">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_56bbf8cf18dc5102879715abcd76f4c4" name="file">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#MultipartFile" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_336019bb1d655720a2660a31e2c4e04c" direction="return">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#ResponseEntity&lt;String&gt;" />
+            </ownedParameter>
+          </ownedOperation>
+        </packagedElement>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Package" xmi:id="id_e34d334a861450379c0cca98cf2ad130" name="application">
+        <packagedElement xmi:type="uml:Class" xmi:id="id_6fa3260ce5a05e4290110ff8c46a37e3" name="PreparationApplicationService">
+          <ownedAttribute xmi:id="id_2eaae11b15e35e1f909ef91b2fdc3a58" name="checklistRepo" visibility="private" type="id_2ecd2a3033db50d7ba0282fc5087c93c" />
+          <ownedAttribute xmi:id="id_1935a93b4df15dec86e92d230104f88a" name="processedEventRepo" visibility="private" type="id_aa56882f25f45ae797115824a87b0eb0" />
+          <ownedOperation xmi:id="id_172215ab2c455ab9abc18c8f5b6da5a9" name="initializeChecklistFromApprovedAgreement" visibility="public">
+            <ownedParameter xmi:id="id_47b2fd091c475325a0538c3e587cd3c8" name="cmd" type="id_b7692c74bed153b6a51f7a1de9cc092a" />
+          </ownedOperation>
+          <ownedOperation xmi:id="id_d5f1b7354e8554fca767df6c25da608f" name="markTaskComplete" visibility="public">
+            <ownedParameter xmi:id="id_b7c5b19230265c2cabd530874ff268b0" name="checklistId">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_d0218cc8e41753978a73b54edd2b12f3" name="taskId">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+            </ownedParameter>
+          </ownedOperation>
+          <ownedOperation xmi:id="id_bc1d554beaa55deb9b207c44b7cc07f6" name="attachDocumentProof" visibility="public">
+            <ownedParameter xmi:id="id_437b7c0b57c85520aecf3d0085f7da5d" name="taskId">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_37575d399fa057fa9020687261b67689" name="docRef">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String" />
+            </ownedParameter>
+          </ownedOperation>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="id_b7692c74bed153b6a51f7a1de9cc092a" name="InitializeChecklistCommand">
+          <ownedAttribute xmi:id="id_494773d8be9a5429a26665f3c5df1f13" name="eventId" visibility="public">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+          </ownedAttribute>
+          <ownedAttribute xmi:id="id_aca41897588d58d3bd8195ff2871fa3f" name="agreementId" visibility="public">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+          </ownedAttribute>
+          <ownedAttribute xmi:id="id_a3b427104ffd523a9447b9576370ee3b" name="studentId" visibility="public">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+          </ownedAttribute>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="id_af0493516bf15d05b0ac78d1d507c49c" name="ChecklistSummaryDTO">
+          <ownedAttribute xmi:id="id_cdeb9c42d61856f39668097e64504214" name="checklistId" visibility="public">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+          </ownedAttribute>
+          <ownedAttribute xmi:id="id_cb88c0fc4eb355d9bd28ddf41cff22e3" name="completedCount" visibility="public">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#int" />
+          </ownedAttribute>
+          <ownedAttribute xmi:id="id_c1afb535698a56878e8b700d03f98e2e" name="pendingCount" visibility="public">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#int" />
+          </ownedAttribute>
+          <ownedAttribute xmi:id="id_edc073d9fb945be88b6d6e02d6853951" name="isReadyForDeparture" visibility="public">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#boolean" />
+          </ownedAttribute>
+        </packagedElement>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Package" xmi:id="id_9244f51840fd52ed82c10499f66b2c43" name="domain">
+        <packagedElement xmi:type="uml:Class" xmi:id="id_1d354a0a2b2155e1a80188fb9b9b688c" name="MobilityChecklist">
+          <ownedAttribute xmi:id="id_ae0a6f9111c457df92f770de802b00dc" name="id" visibility="private" type="id_d8ab5158235a58cf94c83bca7fb4aec0" />
+          <ownedAttribute xmi:id="id_78c5b7a09d1850da9706d2855379f73c" name="studentId" visibility="private">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#StudentId" />
+          </ownedAttribute>
+          <ownedAttribute xmi:id="id_969274f6588a5961af9100840864404d" name="agreementId" visibility="private" type="id_85910103a9f95aec88f156f47c935a61" />
+          <ownedAttribute xmi:id="id_6d1015a84ce65756ba9b57ee3a3330cc" name="tasks" visibility="private">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#List&lt;ChecklistTask&gt;" />
+          </ownedAttribute>
+          <ownedOperation xmi:id="id_748bd0eba7155620bfa40b232e5d054c" name="initializeDefaultPreparationTasks" visibility="public" />
+          <ownedOperation xmi:id="id_f1b086df33455597a46dd3c7cf139694" name="completeTask" visibility="public">
+            <ownedParameter xmi:id="id_dc1df2e2dde25c489078bc2a31ec029e" name="taskId" type="id_2f7f23dd71cb599693c4a5f1992a8980" />
+          </ownedOperation>
+          <ownedOperation xmi:id="id_cbfe00457fcb578e8fc4f8b41481c873" name="areMandatoryTasksComplete" visibility="public">
+            <ownedParameter xmi:id="id_2a554a96a1b25961bfb5adc616268e35" direction="return">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#boolean" />
+            </ownedParameter>
+          </ownedOperation>
+          <ownedOperation xmi:id="id_436f5d5b832c542d8c882e1da8870ba2" name="flagOverdueTasks" visibility="public">
+            <ownedParameter xmi:id="id_e1d943f28d1350dcbc3f3c264de128ef" name="asOf">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#LocalDate" />
+            </ownedParameter>
+          </ownedOperation>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="id_0c8e3d4834155ee396721f75322aca89" name="ChecklistTask">
+          <ownedAttribute xmi:id="id_c77ddd38e23456e4a2db23d9676c8e9f" name="taskId" visibility="private" type="id_2f7f23dd71cb599693c4a5f1992a8980" />
+          <ownedAttribute xmi:id="id_967e5a442f895f77972c47eadd36e084" name="taskType" visibility="private" type="id_170393d3f7865c18a100183e3971ebbe" />
+          <ownedAttribute xmi:id="id_4414777ceda7517f9cf8ebc807b49b6c" name="title" visibility="private">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String" />
+          </ownedAttribute>
+          <ownedAttribute xmi:id="id_19c5a41d26dd527899c51bfc5ffeb078" name="status" visibility="private" type="id_e17ca0465fde51e2956ba4ee5adfb986" />
+          <ownedAttribute xmi:id="id_8b1fb5a5fdeb52128970dbd3c3816593" name="deadline" visibility="private">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#LocalDate" />
+          </ownedAttribute>
+          <ownedAttribute xmi:id="id_2f2468d2084c5c9e9795a5c46c2e439a" name="proofDocumentUri" visibility="private">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String" />
+          </ownedAttribute>
+          <ownedOperation xmi:id="id_818df8fd4c78595d8b0aa45068672889" name="markSubmitted" visibility="public" />
+          <ownedOperation xmi:id="id_d5f289be3c62511e8e64d501bc655e84" name="markCompleted" visibility="public" />
+          <ownedOperation xmi:id="id_1e08b021df7d5a22991238820ab234bc" name="markOverdue" visibility="public" />
+        </packagedElement>
+        <packagedElement xmi:type="uml:Enumeration" xmi:id="id_e17ca0465fde51e2956ba4ee5adfb986" name="TaskStatus">
+          <ownedLiteral xmi:id="id_a6654cbd732958a794811716766b1b42" name="INITIALIZED" />
+          <ownedLiteral xmi:id="id_3d019cc93f875505b2ebc0ab9a2c070c" name="PENDING_STUDENT_ACTION" />
+          <ownedLiteral xmi:id="id_3d8d275596c953b49c313899f938548e" name="SUBMITTED_FOR_VERIFICATION" />
+          <ownedLiteral xmi:id="id_39a2af2bd69f5a119ec413f7049909ed" name="COMPLETED" />
+          <ownedLiteral xmi:id="id_f5dafc2f60945c769753a2f30248b2af" name="OVERDUE" />
+          <ownedLiteral xmi:id="id_49d6fd443b9d5b23a067f25f04174359" name="ABANDONED" />
+        </packagedElement>
+        <packagedElement xmi:type="uml:Enumeration" xmi:id="id_170393d3f7865c18a100183e3971ebbe" name="TaskType">
+          <ownedLiteral xmi:id="id_b444aad121a755d8b29ee67e7cd45e8a" name="LEARNING_AGREEMENT_COUNTERSIGN" />
+          <ownedLiteral xmi:id="id_6b7293c9b42459fd912111b6a0b86a43" name="HEALTH_INSURANCE_PROOF" />
+          <ownedLiteral xmi:id="id_041007b5040b5449a5fc94fcec275bc8" name="ACCOMMODATION_BOOKING" />
+          <ownedLiteral xmi:id="id_b97e06669246527ea4f06afd1227f146" name="VISA_CONFIRMATION" />
+          <ownedLiteral xmi:id="id_fa77556469665ac3aefc863194ae4b29" name="GRANT_AGREEMENT_SIGNATURE" />
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="id_d8ab5158235a58cf94c83bca7fb4aec0" name="ChecklistId">
+          <ownedAttribute xmi:id="id_7b4f0ee135555d579efabbbb8801c792" name="value" visibility="private">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+          </ownedAttribute>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="id_2f7f23dd71cb599693c4a5f1992a8980" name="TaskId">
+          <ownedAttribute xmi:id="id_66e8e2e1c8d359a9bfbdd18c659a5722" name="value" visibility="private">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+          </ownedAttribute>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Interface" xmi:id="id_2ecd2a3033db50d7ba0282fc5087c93c" name="MobilityChecklistRepository">
+          <ownedOperation xmi:id="id_6a53782274735c8da10e2e64f0af0e95" name="save" visibility="public">
+            <ownedParameter xmi:id="id_7caa71722f2153a08395de0ccf6c000f" name="checklist" type="id_1d354a0a2b2155e1a80188fb9b9b688c" />
+          </ownedOperation>
+          <ownedOperation xmi:id="id_0055b76a0d6e57b7a3c5e82dda2fcc7b" name="findByAgreementId" visibility="public">
+            <ownedParameter xmi:id="id_6398de49cf7a5a8b9afc9f8b128244d3" name="agreementId" type="id_85910103a9f95aec88f156f47c935a61" />
+            <ownedParameter xmi:id="id_cb9789cc96035b538d9471df6ec90e02" direction="return">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Optional&lt;MobilityChecklist&gt;" />
+            </ownedParameter>
+          </ownedOperation>
+          <ownedOperation xmi:id="id_766c26d637835a1992cf0603b120bcd3" name="findByStudentId" visibility="public">
+            <ownedParameter xmi:id="id_1ff3b7c17c9358109e9f9aac2114bd84" name="studentId">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#StudentId" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_d2bfe0a4c0e550e78abdf2fb530bd3a7" direction="return">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Optional&lt;MobilityChecklist&gt;" />
+            </ownedParameter>
+          </ownedOperation>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Interface" xmi:id="id_aa56882f25f45ae797115824a87b0eb0" name="IProcessedEventRepository">
+          <ownedOperation xmi:id="id_fc2950452ae956bfaf8f11e373479163" name="existsById" visibility="public">
+            <ownedParameter xmi:id="id_562b4219d0315b389567594d2e0a5953" name="eventId">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_933bde51e3bc5aa29ff294c6828e7aa1" direction="return">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#boolean" />
+            </ownedParameter>
+          </ownedOperation>
+          <ownedOperation xmi:id="id_f822570a06105a06814fbdbdbd2a4595" name="recordEvent" visibility="public">
+            <ownedParameter xmi:id="id_f727099caaa0533da118cf05375fca4e" name="eventId">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_74841a221b0e53bdb45367970589dad6" name="at">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Instant" />
+            </ownedParameter>
+          </ownedOperation>
+        </packagedElement>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Package" xmi:id="id_a30265f531245e38b8aa6adda57af104" name="infrastructure">
+        <packagedElement xmi:type="uml:Class" xmi:id="id_27e24e9741b652008375dea226916fdc" name="AbstractRepositoryJPA" isAbstract="true">
+          <ownedAttribute xmi:id="id_9cb2d2a3db235a2ab78289ceecb5cf24" name="em" visibility="protected">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#EntityManager" />
+          </ownedAttribute>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="id_d3cca4ffaea85191a4e25ad1206d23eb" name="MobilityChecklistRepoJPA">
+          <ownedOperation xmi:id="id_d7a5ce3f33bd5c83b6b58326dca45951" name="save" visibility="public">
+            <ownedParameter xmi:id="id_f14c015f22f15c208dcefebf6ec6229c" name="checklist" type="id_1d354a0a2b2155e1a80188fb9b9b688c" />
+          </ownedOperation>
+          <ownedOperation xmi:id="id_8de2ca819cef5e9f95cdc9a5a60be5e7" name="findByAgreementId" visibility="public">
+            <ownedParameter xmi:id="id_91efcd54096054a69bb357232ebcc582" name="agreementId" type="id_85910103a9f95aec88f156f47c935a61" />
+            <ownedParameter xmi:id="id_c8091cbeb9c15c738c51ab1e16af9221" direction="return">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Optional&lt;MobilityChecklist&gt;" />
+            </ownedParameter>
+          </ownedOperation>
+          <ownedOperation xmi:id="id_8424c1ba4fdc5d2aabc50fdd082106d1" name="findByStudentId" visibility="public">
+            <ownedParameter xmi:id="id_9a4e30765695568aa9ddf2ea2d8aff42" name="studentId">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#StudentId" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_51b4d9c102585933a198597717b23738" direction="return">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Optional&lt;MobilityChecklist&gt;" />
+            </ownedParameter>
+          </ownedOperation>
+          <generalization xmi:id="id_88a574ff475b5779a428a7cd94fd8bee" general="id_27e24e9741b652008375dea226916fdc" />
+          <interfaceRealization xmi:id="id_7092accda4875978a8ae17941a7c34e0" supplier="id_2ecd2a3033db50d7ba0282fc5087c93c" client="id_d3cca4ffaea85191a4e25ad1206d23eb" />
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="id_863b20351c265e6d935dbdf78e083ab5" name="ProcessedEventRepoJPA">
+          <ownedOperation xmi:id="id_3396adc537c951ada2df5cf7d5932107" name="existsById" visibility="public">
+            <ownedParameter xmi:id="id_6c1b60fa13ee5d6db235c1bc52c775f4" name="eventId">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_4d3e0c3af1e75c7798bff38b0087ffba" direction="return">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#boolean" />
+            </ownedParameter>
+          </ownedOperation>
+          <ownedOperation xmi:id="id_c54b9f71b7ab5de3bcefb4388a44680d" name="recordEvent" visibility="public">
+            <ownedParameter xmi:id="id_77997e9fe39354f2bd94f073a3a8d82f" name="eventId">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UUID" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_d577deb4f158503b917c2faf9c936670" name="at">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Instant" />
+            </ownedParameter>
+          </ownedOperation>
+          <generalization xmi:id="id_4b1c10ca7c0d5472b727b3a4ed602637" general="id_27e24e9741b652008375dea226916fdc" />
+          <interfaceRealization xmi:id="id_ebff29a1056a550e900d5c84bb708200" supplier="id_aa56882f25f45ae797115824a87b0eb0" client="id_863b20351c265e6d935dbdf78e083ab5" />
+        </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="id_135df47bc87252adb93b324766c8ef9c" name="AgreementApprovedMessageReceiver">
+          <ownedAttribute xmi:id="id_d315739531195c4c9eab2a745ef19a83" name="preparationService" visibility="private" type="id_6fa3260ce5a05e4290110ff8c46a37e3" />
+          <ownedAttribute xmi:id="id_eae1f9f7d67f5ad59bbdaa72f51c8095" name="objectMapper" visibility="private">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#ObjectMapper" />
+          </ownedAttribute>
+          <ownedOperation xmi:id="id_21f826c9528b5b0daa2adc101d8c788f" name="onMessage" visibility="public">
+            <ownedParameter xmi:id="id_95ffdcf580955a2595fb8da06c4fe30d" name="payload">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_6af10695cbe55439b13098d1aca8d212" name="tag">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#long" />
+            </ownedParameter>
+            <ownedParameter xmi:id="id_a0676c2a56235c51a807805088b5b11d" name="channel">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Channel" />
+            </ownedParameter>
+          </ownedOperation>
+        </packagedElement>
+      </packagedElement>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Dependency" xmi:id="id_f82e5cf30d8d5cd58ff0a723f5b624c5" name="LearningAgreementWebController_uses_AgreementApplicationService" client="id_8308b9edf52f53bdabf3eeeb9ae892f1" supplier="id_e94f3795049b54ee8fb92b6ea45d2715" />
+    <packagedElement xmi:type="uml:Dependency" xmi:id="id_9c8cc2f9b7e65c5e83d2081abf5e0cd6" name="AgreementApplicationService_uses_LearningAgreementRepository" client="id_e94f3795049b54ee8fb92b6ea45d2715" supplier="id_47f62885ada75f80ad3d95868c6c48f8" />
+    <packagedElement xmi:type="uml:Dependency" xmi:id="id_537fe11160d85ac98db55cf4a17df884" name="AgreementApplicationService_uses_IEquivalenceCatalogAdapter" client="id_e94f3795049b54ee8fb92b6ea45d2715" supplier="id_1e850d449f325eda8247c1c6956bdac3" />
+    <packagedElement xmi:type="uml:Dependency" xmi:id="id_0485e349c8bb5679bd901b2b54665365" name="AgreementApplicationService_uses_IOutboxRepository" client="id_e94f3795049b54ee8fb92b6ea45d2715" supplier="id_a5791f86b09452679ca8608a2e098272" />
+    <packagedElement xmi:type="uml:Association" xmi:id="id_684908e99ae35c228dfe1994872902d4" name="LearningAgreement_CourseLineTableA">
+      <ownedEnd xmi:id="id_60b8e74390595a9eb1d4bd8090334120" type="id_b0224dba8c4e5f328005c5e1bb41ca60" aggregation="composite" />
+      <ownedEnd xmi:id="id_69ff0a9c8a155b60a25bc628b6b2e560" type="id_9b45bfc0f5a25b04ae5527bd628d1a7a" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="id_89db882804225ae4b68c330b87143a2d" value="1" />
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="id_aaeeb8dd6c7d57edb870626aa708776d" value="*" />
+      </ownedEnd>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="id_8a4184caad2a578897477bd173485efb" name="LearningAgreement_CourseLineTableB">
+      <ownedEnd xmi:id="id_48582bd593175fd09c226ff8692d3042" type="id_b0224dba8c4e5f328005c5e1bb41ca60" aggregation="composite" />
+      <ownedEnd xmi:id="id_abd1928118ff5e6fa7eef3255860b55a" type="id_77072a9337d35f02901c0d408377530b" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="id_4da17e31f8c75746aa117f763e4b219e" value="1" />
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="id_c5174460b2655437b015e68d2a8a7f6d" value="*" />
+      </ownedEnd>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Dependency" xmi:id="id_3e93f031ddc8553f95c611585e106482" name="LearningAgreement_uses_LearningAgreementStatus" client="id_b0224dba8c4e5f328005c5e1bb41ca60" supplier="id_27521adb8c9a5a25937755a2a249f29b" />
+    <packagedElement xmi:type="uml:Dependency" xmi:id="id_61d2bfa1ee8d555d945eccb95a39de1c" name="LearningAgreement_uses_LearningAgreementApprovedEvent" client="id_b0224dba8c4e5f328005c5e1bb41ca60" supplier="id_0e25e48deb1757b489d366c3f38cdf60" />
+    <packagedElement xmi:type="uml:Dependency" xmi:id="id_3f1c2d46c1535047bdda3bbcc1d38b76" name="OutboxDispatcher_uses_IOutboxRepository" client="id_83186efac94b580e9e192777e3405116" supplier="id_a5791f86b09452679ca8608a2e098272" />
+    <packagedElement xmi:type="uml:Dependency" xmi:id="id_32f6f3f7de3854bc8bfc9af0a65935dc" name="OutboxRepoJPA_uses_OutboxMessage" client="id_08bc8ff99c89587ba506e610acd7f0f4" supplier="id_2e33af7b7739545bb0d03849d77ecfc6" />
+    <packagedElement xmi:type="uml:Dependency" xmi:id="id_b6e0fd251f205578b92f4447fd960fcf" name="EquivalenceApiRest_uses_EquivalenceApplicationService" client="id_b8d434caa4915e98a2491d65cf97ae7a" supplier="id_3db31e7f2353549c9480152a2ead25ad" />
+    <packagedElement xmi:type="uml:Dependency" xmi:id="id_193f23a0f4f75407ad7aff4c63ce2441" name="EquivalenceApplicationService_uses_AcademicEquivalenceRepository" client="id_3db31e7f2353549c9480152a2ead25ad" supplier="id_c3ca711acd3d5b6483bf60c2ab7ed10b" />
+    <packagedElement xmi:type="uml:Association" xmi:id="id_1ac84619952557f186feb18d51b1bafc" name="AcademicEquivalence_CourseSyllabus">
+      <ownedEnd xmi:id="id_eff9f36ebb1d50749f2cbd82d3f457f9" type="id_787e0a7a064359a7b003c835041fd695" aggregation="composite" />
+      <ownedEnd xmi:id="id_5ce001aca0e3593d8afdcad1a519b6f1" type="id_19fa674cf09f5cfa9594dbaf2f3f1256" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="id_c0fe47ab7290512da7dfff92a3932bc4" value="2" />
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="id_0a7a131549545790ae1c8daa72eeb93e" value="2" />
+      </ownedEnd>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Dependency" xmi:id="id_33adde69dc055ed48a4dd509c8f8996e" name="AcademicEquivalence_uses_EquivalenceStatus" client="id_787e0a7a064359a7b003c835041fd695" supplier="id_cc83fa885cf7534689838dc992412652" />
+    <packagedElement xmi:type="uml:Association" xmi:id="id_39e9d4a7ecda58c299b9d6d8bf22cfe8" name="AcademicEquivalence_ValidityWindow">
+      <ownedEnd xmi:id="id_e2a19b9eefb85932ba9386adfe026fff" type="id_787e0a7a064359a7b003c835041fd695" aggregation="composite" />
+      <ownedEnd xmi:id="id_7b64af1cc5b75f95a727ca870fcb6cf5" type="id_464e03973dd35e4e8b7f21ccef1c681e" aggregation="none" />
+    </packagedElement>
+    <packagedElement xmi:type="uml:Dependency" xmi:id="id_f939f9bd5eb05f688dac6024e100ec83" name="MobilityChecklistWebController_uses_PreparationApplicationService" client="id_6b69544f83735ec49d549dfccaf3779a" supplier="id_6fa3260ce5a05e4290110ff8c46a37e3" />
+    <packagedElement xmi:type="uml:Dependency" xmi:id="id_dc2e22c979ff5083a663312b5a438eae" name="AgreementApprovedMessageReceiver_uses_PreparationApplicationService" client="id_135df47bc87252adb93b324766c8ef9c" supplier="id_6fa3260ce5a05e4290110ff8c46a37e3" />
+    <packagedElement xmi:type="uml:Dependency" xmi:id="id_d8b2efd766895836ad83dec74be16cb1" name="PreparationApplicationService_uses_MobilityChecklistRepository" client="id_6fa3260ce5a05e4290110ff8c46a37e3" supplier="id_2ecd2a3033db50d7ba0282fc5087c93c" />
+    <packagedElement xmi:type="uml:Dependency" xmi:id="id_2ef98bdf0c395d80b5d319385d717d8b" name="PreparationApplicationService_uses_IProcessedEventRepository" client="id_6fa3260ce5a05e4290110ff8c46a37e3" supplier="id_aa56882f25f45ae797115824a87b0eb0" />
+    <packagedElement xmi:type="uml:Association" xmi:id="id_9479f505b43c5c7eabc47d65527d1897" name="MobilityChecklist_ChecklistTask">
+      <ownedEnd xmi:id="id_ae6f0eb8a54458bcb44674a0a72df288" type="id_1d354a0a2b2155e1a80188fb9b9b688c" aggregation="composite" />
+      <ownedEnd xmi:id="id_81070cf9ec9c56f2a2ddec0921dcb351" type="id_0c8e3d4834155ee396721f75322aca89" aggregation="none" />
+    </packagedElement>
+    <packagedElement xmi:type="uml:Dependency" xmi:id="id_d39eaece942f521b93feff334ed4a947" name="MobilityChecklist_uses_TaskStatus" client="id_1d354a0a2b2155e1a80188fb9b9b688c" supplier="id_e17ca0465fde51e2956ba4ee5adfb986" />
+    <packagedElement xmi:type="uml:Dependency" xmi:id="id_290eb63885525241abf58eb701709aad" name="ChecklistTask_uses_TaskType" client="id_0c8e3d4834155ee396721f75322aca89" supplier="id_170393d3f7865c18a100183e3971ebbe" />
+  </uml:Model>
+</xmi:XMI>

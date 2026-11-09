@@ -64,6 +64,12 @@ package "ro.uaic.feaa.erasmus.agreement.domain" {
     - linesTableB: List<CourseLineTableB>
     + submit(): void
     + approve(coordinatorId: UUID): LearningAgreementApprovedEvent
+    + assignCoordinator(coordinatorId: UUID): void
+    + requestChanges(reason: String): void
+    + confirmByHost(signatureRef: String): void
+    + requestAmendment(reason: String): void
+    + resubmitAmendedDraft(): void
+    + cancel(): void
     + calculateTotalCreditsTableA(): ECTSCredits
     + calculateTotalCreditsTableB(): ECTSCredits
     + hasCreditParity(): boolean
@@ -146,6 +152,7 @@ package "ro.uaic.feaa.erasmus.agreement.infrastructure" {
     - aggregateId: UUID
     - payloadJson: String
     - status: OutboxStatus
+    + fromEvent(event: LearningAgreementApprovedEvent): OutboxMessage
   }
 
   class EquivalenceRestAdapter {
@@ -166,8 +173,8 @@ LearningAgreementWebController --> AgreementApplicationService : delegates
 AgreementApplicationService --> LearningAgreementRepository : invokes
 AgreementApplicationService --> IEquivalenceCatalogAdapter : calls
 AgreementApplicationService --> IOutboxRepository : writes
-LearningAgreement *-- CourseLineTableA : contains
-LearningAgreement *-- CourseLineTableB : contains
+LearningAgreement *-- "1..*" CourseLineTableA : contains
+LearningAgreement *-- "1..*" CourseLineTableB : contains
 LearningAgreement --> LearningAgreementStatus : state
 LearningAgreement ..> LearningAgreementApprovedEvent : fires
 LearningAgreementRepoJPA --|> AbstractRepositoryJPA : extends

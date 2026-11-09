@@ -35,7 +35,7 @@ deactivate DB
 ProcessedEventRepo --> AppService : false (New Event)
 deactivate ProcessedEventRepo
 
-AppService -> Aggregate : new MobilityChecklist(agreementId, studentId)
+AppService -> Aggregate : new MobilityChecklist(checklistId, studentId, agreementId)
 activate Aggregate
 AppService -> Aggregate : initializeDefaultPreparationTasks()
 Aggregate --> AppService : checklist initialized with 5 standard tasks
