@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 960" width="100%" height="100%" style="background-color: #FBF8F1; font-family: Roboto, -apple-system, BlinkMacSystemFont, sans-serif;">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#2D3748" />
+    </marker>
+    <marker id="outbox-arrow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <polygon points="0,2 10,6 0,10" fill="#9C4221" />
+    </marker>
+    <filter id="shadow" x="-3%" y="-3%" width="106%" height="106%">
+      <feDropShadow dx="2" dy="2" stdDeviation="2.5" flood-opacity="0.10" />
+    </filter>
+  </defs>
+
+  <!-- Title -->
+  <text x="40" y="38" font-size="20" font-weight="bold" fill="#1A202C">Figura 1. Strategic DDD Context Map (Bounded Contexts &amp; Integration Contracts)</text>
+  <text x="40" y="60" font-size="12" fill="#5A4A3E">Erasmus Mobility Platform: Core vs. Supporting Subdomains, Shared Kernel &amp; Decoupled Integration Contracts</text>
+
+  <!-- ==================== SUPPORTING SUBDOMAIN 1: Equivalence Management (Top Center) ==================== -->
+  <g transform="translate(480, 90)">
+    <rect x="0" y="0" width="440" height="150" rx="10" fill="#EBF4FF" stroke="#3182CE" stroke-width="1.8" filter="url(#shadow)" />
+    <rect x="0" y="0" width="440" height="34" rx="10" fill="#3182CE" />
+    <text x="220" y="22" text-anchor="middle" font-size="13" font-weight="bold" fill="#FFFFFF">Gestiunea Echivalărilor Academice (Supporting Subdomain)</text>
+    <text x="20" y="58" font-size="11.5" font-weight="bold" fill="#2B6CB0">AcademicEquivalence (Aggregate Root)</text>
+    <text x="20" y="76" font-size="10.5" fill="#2D3748">• CourseSyllabus (Value Object: tematici, credite, ore)</text>
+    <text x="20" y="94" font-size="10.5" fill="#2D3748">• ValidityWindow (Value Object: interval calendaristic)</text>
+    <text x="20" y="112" font-size="10.5" fill="#2D3748">• SyllabusEvaluationService (Domain Service: similitudine >= 80%)</text>
+    <text x="20" y="132" font-size="10" font-style="italic" fill="#718096">Contract de expunere: REST Open Host Service (/api/v1/equivalences/verify)</text>
+  </g>
+
+  <!-- ==================== CORE DOMAIN: Learning Agreement Management (Center) ==================== -->
+  <g transform="translate(450, 330)">
+    <rect x="0" y="0" width="500" height="180" rx="10" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="2.2" filter="url(#shadow)" />
+    <rect x="0" y="0" width="500" height="36" rx="10" fill="#8D5B4C" />
+    <text x="250" y="23" text-anchor="middle" font-size="14" font-weight="bold" fill="#FFFFFF">Managementul Contractelor de Studii (Core Domain)</text>
+    <text x="20" y="62" font-size="12" font-weight="bold" fill="#9C4221">LearningAgreement (Aggregate Root)</text>
+    <text x="20" y="82" font-size="11" fill="#2D3748">• CourseLineTableA (Internal Child Entity: materii universitate gazdă)</text>
+    <text x="20" y="100" font-size="11" fill="#2D3748">• CourseLineTableB (Internal Child Entity: discipline echivalate acasă)</text>
+    <text x="20" y="118" font-size="11" fill="#2D3748">• ECTSParityService (Domain Service: sum(TableA) == sum(TableB) >= 30)</text>
+    <text x="20" y="138" font-size="10.5" font-weight="bold" fill="#2D3748">Tranzacție ACID locală:</text>
+    <text x="20" y="156" font-size="10" fill="#7A583A">Salvare stare agregat + scriere LearningAgreementApprovedEvent în tabela Outbox</text>
+  </g>
+
+  <!-- ==================== SUPPORTING SUBDOMAIN 2: Mobility Preparation (Right Bottom) ==================== -->
+  <g transform="translate(850, 600)">
+    <rect x="0" y="0" width="480" height="170" rx="10" fill="#EBF8FF" stroke="#319795" stroke-width="1.8" filter="url(#shadow)" />
+    <rect x="0" y="0" width="480" height="34" rx="10" fill="#319795" />
+    <text x="240" y="22" text-anchor="middle" font-size="13" font-weight="bold" fill="#FFFFFF">Pregătirea Mobilității &amp; Onboarding (Supporting Subdomain)</text>
+    <text x="20" y="58" font-size="11.5" font-weight="bold" fill="#234E52">MobilityChecklist (Aggregate Root)</text>
+    <text x="20" y="76" font-size="10.5" fill="#2D3748">• ChecklistTask (Child Entity: sarcină administrativă individuală)</text>
+    <text x="20" y="94" font-size="10.5" fill="#2D3748">• Invariant: areMandatoryTasksComplete() [Poarta de plecare fizică]</text>
+    <text x="20" y="114" font-size="10.5" fill="#2D3748">• IProcessedEventRepository (Port de persistență: verificare idempotență)</text>
+    <text x="20" y="134" font-size="10" font-style="italic" fill="#718096">Consumator asincron idempotent: NominationMessageReceiver</text>
+  </g>
+
+  <!-- ==================== SHARED KERNEL (Bottom Center) ==================== -->
+  <g transform="translate(470, 780)">
+    <rect x="0" y="0" width="460" height="120" rx="10" fill="#FEFCBF" stroke="#D69E2E" stroke-width="1.8" filter="url(#shadow)" />
+    <rect x="0" y="0" width="460" height="30" rx="10" fill="#D69E2E" />
+    <text x="230" y="20" text-anchor="middle" font-size="12" font-weight="bold" fill="#1A202C">«Shared Kernel» Tipuri Imutabile Comune</text>
+    <text x="20" y="52" font-size="10.5" font-weight="bold" fill="#744210">• StudentId (Value Object: UUID)</text>
+    <text x="20" y="70" font-size="10.5" font-weight="bold" fill="#744210">• AgreementId / ChecklistId / EquivalenceId (Value Objects)</text>
+    <text x="20" y="88" font-size="10.5" font-weight="bold" fill="#744210">• AcademicPeriod (Value Object: endDate >= startDate)</text>
+    <text x="20" y="106" font-size="10.5" font-weight="bold" fill="#744210">• ECTSCredits (Value Object: credite nenegative, prag minim 30)</text>
+  </g>
+
+  <!-- ==================== GENERIC SUBDOMAIN 1: Securitate & Audit GDPR (Left Bottom) ==================== -->
+  <g transform="translate(50, 600)">
+    <rect x="0" y="0" width="350" height="120" rx="10" fill="#EDF2F7" stroke="#718096" stroke-width="1.6" filter="url(#shadow)" />
+    <rect x="0" y="0" width="350" height="30" rx="10" fill="#718096" />
+    <text x="175" y="20" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFFFFF">Securitate &amp; Audit GDPR (Generic)</text>
+    <text x="15" y="52" font-size="10.5" fill="#2D3748">• Autentificare centralizată OAuth2 / EWP</text>
+    <text x="15" y="70" font-size="10.5" fill="#2D3748">• Jurnal de audit append-only semnat HMAC SHA-256</text>
+    <text x="15" y="88" font-size="10.5" fill="#2D3748">• Segregare acces PII (roluri Coordonator, Student, DRI)</text>
+  </g>
+
+  <!-- ==================== GENERIC SUBDOMAIN 2: Notificări & Alerte (Top Left) ==================== -->
+  <g transform="translate(50, 100)">
+    <rect x="0" y="0" width="350" height="110" rx="10" fill="#EDF2F7" stroke="#718096" stroke-width="1.6" filter="url(#shadow)" />
+    <rect x="0" y="0" width="350" height="30" rx="10" fill="#718096" />
+    <text x="175" y="20" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFFFFF">Serviciul de Notificări &amp; Alerte (Generic)</text>
+    <text x="15" y="52" font-size="10.5" fill="#2D3748">• Dispecer e-mail notificări scadențe</text>
+    <text x="15" y="70" font-size="10.5" fill="#2D3748">• Remindere sarcină nesoluționată (after 5 days)</text>
+    <text x="15" y="88" font-size="10.5" fill="#2D3748">• Notificări push pe portalul studentului</text>
+  </g>
+
+  <!-- ==================== INTEGRATION EDGES & LABELS ==================== -->
+  <!-- 1. Core <-> Equivalence (Customer / Supplier via REST) -->
+  <path d="M 660 330 L 660 245" fill="none" stroke="#2B6CB0" stroke-width="2" marker-end="url(#arrow)" />
+  <rect x="670" y="265" width="220" height="42" rx="6" fill="#FFFFFF" stroke="#2B6CB0" stroke-width="1" />
+  <text x="678" y="282" font-size="10" font-weight="bold" fill="#2B6CB0">Customer / Supplier (Sync REST)</text>
+  <text x="678" y="296" font-size="9" fill="#2D3748">LA = Customer [D] / EQ = Supplier [U]</text>
+
+  <!-- 2. Core -> Preparation (Domain Events via Transactional Outbox) -->
+  <path d="M 850 510 L 970 600" fill="none" stroke="#C53030" stroke-width="2.4" stroke-dasharray="6,4" marker-end="url(#outbox-arrow)" />
+  <rect x="880" y="535" width="230" height="42" rx="6" fill="#FFF5F5" stroke="#C53030" stroke-width="1" />
+  <text x="888" y="552" font-size="10" font-weight="bold" fill="#C53030">Evenimente de Domeniu (Outbox)</text>
+  <text x="888" y="566" font-size="9" fill="#2D3748">LearningAgreementApprovedEvent</text>
+
+  <!-- 3. Core -> Shared Kernel -->
+  <path d="M 700 510 L 700 775" fill="none" stroke="#B7791F" stroke-width="1.6" marker-end="url(#arrow)" />
+
+  <!-- 4. Equivalence -> Shared Kernel (curved) -->
+  <path d="M 910 240 C 1020 380 970 700 870 780" fill="none" stroke="#B7791F" stroke-width="1.4" stroke-dasharray="4,3" marker-end="url(#arrow)" />
+
+  <!-- 5. Preparation -> Shared Kernel -->
+  <path d="M 920 770 L 920 780" fill="none" stroke="#B7791F" stroke-width="1.6" marker-end="url(#arrow)" />
+
+  <!-- 6. Generic Integrations -->
+  <path d="M 450 400 L 250 215" fill="none" stroke="#718096" stroke-width="1.4" stroke-dasharray="4,3" marker-end="url(#arrow)" />
+  <text x="270" y="300" font-size="9" fill="#4A5568">Alerte întârziere review</text>
+
+  <path d="M 450 470 L 320 600" fill="none" stroke="#718096" stroke-width="1.4" stroke-dasharray="4,3" marker-end="url(#arrow)" />
+  <text x="310" y="535" font-size="9" fill="#4A5568">Jurnalizare semnare contract</text>
+
+  <!-- Explanatory note -->
+  <g transform="translate(50, 800)">
+    <rect x="0" y="0" width="370" height="85" rx="6" fill="#FFFFF0" stroke="#D69E2E" stroke-width="1" />
+    <text x="12" y="20" font-size="9.5" font-weight="bold" fill="#744210">Notă Arhitecturală (Regula Shared Kernel):</text>
+    <text x="12" y="38" font-size="9" fill="#2D3748">Nucleul partajat conține exclusiv tipuri imutabile de identitate</text>
+    <text x="12" y="52" font-size="9" fill="#2D3748">și intervale/credite. Niciun context nu accesează direct tabelele</text>
+    <text x="12" y="66" font-size="9" fill="#2D3748">altui subdomeniu; comunicarea este strict decuplată prin porturi.</text>
+  </g>
+</svg>

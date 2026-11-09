@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 700" width="100%" height="100%" style="background-color: #FBF8F1; font-family: Roboto, -apple-system, BlinkMacSystemFont, sans-serif;">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#2D3748" />
+    </marker>
+    <filter id="shadow" x="-3%" y="-3%" width="106%" height="106%">
+      <feDropShadow dx="2" dy="2" stdDeviation="2.5" flood-opacity="0.10" />
+    </filter>
+  </defs>
+
+  <!-- Title -->
+  <text x="30" y="34" font-size="18" font-weight="bold" fill="#1A202C">Figura 9b. Arhitectura Conceptuală pe 4 Straturi DDD cu Inversarea Dependențelor (DIP)</text>
+  <text x="30" y="52" font-size="11" fill="#5A4A3E">Separarea strictă a preocupărilor: Stratul Domain este complet decuplat de cadre tehnice și baze de date</text>
+
+  <!-- Layer 1: Presentation (Top) -->
+  <g transform="translate(100, 80)">
+    <rect x="0" y="0" width="900" height="90" rx="8" fill="#EDF2F7" stroke="#4A5568" stroke-width="1.6" filter="url(#shadow)" />
+    <text x="25" y="28" font-size="13" font-weight="bold" fill="#1A365D">1. User Interface &amp; Presentation Layer (Stratul de Prezentare)</text>
+    <text x="25" y="50" font-size="10.5" fill="#2D3748">• Spring @RestController (LearningAgreementWebController, EquivalenceApiRest)</text>
+    <text x="25" y="68" font-size="10.5" fill="#2D3748">• Validare request-uri HTTP, mapare DTO-uri &lt;-&gt; Command objects, serializare răspunsuri JSON</text>
+  </g>
+
+  <!-- Downward delegation arrow 1 -> 2 -->
+  <line x1="550" y1="170" x2="550" y2="215" stroke="#2D3748" stroke-width="1.8" marker-end="url(#arrow)" />
+  <text x="560" y="196" font-size="10" font-style="italic" fill="#718096">deleagă comanda</text>
+
+  <!-- Layer 2: Application Layer -->
+  <g transform="translate(100, 220)">
+    <rect x="0" y="0" width="900" height="100" rx="8" fill="#EBF8FF" stroke="#3182CE" stroke-width="1.6" filter="url(#shadow)" />
+    <text x="25" y="28" font-size="13" font-weight="bold" fill="#2B6CB0">2. Application Layer (Stratul de Aplicație / Orchestrate Use Cases)</text>
+    <text x="25" y="50" font-size="10.5" fill="#2D3748">• Application Services (AgreementApplicationService, PreparationApplicationService)</text>
+    <text x="25" y="68" font-size="10.5" fill="#2D3748">• Granițe tranzacționale declarative (@Transactional ACID), încărcare agregate din Repository</text>
+    <text x="25" y="86" font-size="10.5" fill="#2D3748">• Dispecerizare comenzi, scriere în tabela Outbox, zero logică de afaceri în serviciu</text>
+  </g>
+
+  <!-- Downward invocation arrow 2 -> 3 -->
+  <line x1="550" y1="320" x2="550" y2="365" stroke="#2D3748" stroke-width="1.8" marker-end="url(#arrow)" />
+  <text x="560" y="346" font-size="10" font-style="italic" fill="#718096">1. încarcă / 2. invocă operații pe agregat / 3. salvează</text>
+
+  <!-- Layer 3: Domain Layer (The Heart) -->
+  <g transform="translate(100, 370)">
+    <rect x="0" y="0" width="900" height="130" rx="8" fill="#FFF8EE" stroke="#8D5B4C" stroke-width="2.2" filter="url(#shadow)" />
+    <text x="25" y="28" font-size="14" font-weight="bold" fill="#9C4221">3. Domain Layer (Inima Sistemului - DDD Core)</text>
+    <text x="25" y="50" font-size="11" font-weight="bold" fill="#2D3748">• Agregate Rădăcină (LearningAgreement, AcademicEquivalence, MobilityChecklist)</text>
+    <text x="25" y="68" font-size="10.5" fill="#2D3748">• Entități Interne Copil (CourseLineTableA, CourseLineTableB, ChecklistTask)</text>
+    <text x="25" y="86" font-size="10.5" fill="#2D3748">• Value Objects Imutabile (StudentId, AgreementId, ECTSCredits, ValidityWindow)</text>
+    <text x="25" y="104" font-size="10.5" fill="#2D3748">• Porturi de Persistență (Interfețe Domain Repositories) &amp; Evenimente de Domeniu</text>
+    <text x="25" y="120" font-size="10" font-style="italic" fill="#7A583A">Complet decuplat: ZERO importuri tehnice de Spring, JPA, Hibernate, Jackson sau HTTP.</text>
+  </g>
+
+  <!-- Inverted arrow 4 -> 3 (Dependency Inversion Principle) -->
+  <line x1="550" y1="540" x2="550" y2="505" stroke="#2D3748" stroke-width="1.8" stroke-dasharray="5,4" marker-end="url(#arrow)" />
+  <text x="560" y="526" font-size="10" font-style="italic" fill="#718096">implementează porturile (DIP)</text>
+
+  <!-- Layer 4: Infrastructure Layer -->
+  <g transform="translate(100, 545)">
+    <rect x="0" y="0" width="900" height="110" rx="8" fill="#F7FAFC" stroke="#718096" stroke-width="1.6" filter="url(#shadow)" />
+    <text x="25" y="28" font-size="13" font-weight="bold" fill="#4A5568">4. Infrastructure Layer (Stratul de Infrastructură &amp; Persistență)</text>
+    <text x="25" y="50" font-size="10.5" fill="#2D3748">• Implementări JPA/Hibernate (LearningAgreementRepoJPA extinde AbstractRepositoryJPA)</text>
+    <text x="25" y="68" font-size="10.5" fill="#2D3748">• Adaptori REST Client (EquivalenceRestAdapter) pentru integrarea sincronă HTTP</text>
+    <text x="25" y="86" font-size="10.5" fill="#2D3748">• Broker de Mesaje &amp; Scheduler Outbox (OutboxDispatcher, AgreementApprovedMessageReceiver)</text>
+  </g>
+</svg>

@@ -96,43 +96,7 @@ The central aggregate `ChecklistTask` traverses the lifecycle: `INITIALIZED`, `P
 
 Data flows across Bounded Context boundaries through five coordinated transactional stages:
 
-```mermaid
-sequenceDiagram
-    autonumber
-    actor S as Student
-    actor HC as Home Academic Coordinator
-    participant MP as Mobility Preparation
-    participant EQ as Equivalence Management
-    participant LA as Learning Agreement (Core)
-    participant XC as Host Partner Coordinator
-
-    Note over MP: Stage 1: Nomination & Dossier Setup
-    HC->>MP: ConfirmNomination(StudentId, MobilityId)
-    MP->>MP: GenerateChecklist(CountryTemplate)
-    MP-->>S: Nomination Notification + Active Checklist
-
-    Note over EQ,LA: Stage 2: Equivalence Discovery
-    S->>EQ: SearchEquivalences(PartnerId, DegreeProgram)
-    EQ-->>S: Return Pre-Approved Mappings (Table A -> Table B)
-    opt Course Missing from Catalog
-        S->>EQ: ProposeNewEquivalence(Syllabus, HomeCourse)
-        HC->>EQ: ApproveProposedEquivalence(MappingRule)
-    end
-
-    Note over LA: Stage 3: Study Plan & Invariant Validation
-    S->>LA: CreateLA(MobilityId)
-    S->>LA: ManageCourseLines(Table A, Table B)
-    S->>LA: SubmitLA()
-    LA->>LA: CheckECTSBalance(Sum(ECTS_A) == Sum(ECTS_B) >= 30)
-    LA-->>S: State: SUBMITTED
-
-    Note over LA,XC: Stage 4: Tripartite Approval & Outbox
-    HC->>LA: ReviewLA() -> Approve(APPROVED_BY_FACULTY)
-    LA->>XC: Transmit via EWP Network (REST)
-    XC->>LA: ConfirmAndSign() -> CONFIRMED_BY_HOST
-    LA-)MP: Publish Domain Event: LearningAgreementApprovedEvent (Outbox)
-    MP->>MP: MarkTaskDone("Complete Learning Agreement") -> COMPLETED
-```
+![Figura 1b. Diagrama de Secvență a Fluxului Tranzacțional Principal Cross-Subdomenii](../models/diagrams-png/Figura1b-Main-Transaction-Flow-Sequence.png)
 
 ### Detailed Transaction Breakdown:
 

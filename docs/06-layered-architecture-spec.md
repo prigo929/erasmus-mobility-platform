@@ -15,29 +15,7 @@
 
 The system isolates domain logic from technical infrastructure using a four-layer architecture. Dependencies flow inward toward the domain. The domain model contains zero imports from web frameworks, SQL libraries, or messaging drivers.
 
-```text
-+-------------------------------------------------------+
-| 1. User Interface (Presentation) Layer                |
-|    REST Controllers, Request/Response DTOs            |
-+---------------------------+---------------------------+
-                            | delegates
-+---------------------------v---------------------------+
-| 2. Application Layer                                  |
-|    Application Services, Command Handlers, Ports      |
-+---------------------------+---------------------------+
-                            | 1. load / 3. execute / 4. save
-+---------------------------v---------------------------+
-| 3. Domain Layer (The Core Heart)                      |
-|    Aggregate Roots, Entities, Value Objects, Events   |
-|    Repository Interfaces (Ports)                      |
-+---------------------------^---------------------------+
-                            | implements (DIP)
-+---------------------------+---------------------------+
-| 4. Infrastructure Layer                               |
-|    Spring Data JPA Repositories, RabbitMQ Dispatchers |
-|    External REST Client Adapters                      |
-+-------------------------------------------------------+
-```
+![Figura 9b. Arhitectura Conceptuală pe 4 Straturi DDD cu Inversarea Dependențelor](../models/diagrams-png/Figura9b-Layered-Architecture-Conceptual-Layers.png)
 
 ### Layer Responsibilities and Constraints
 

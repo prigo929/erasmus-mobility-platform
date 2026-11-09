@@ -44,22 +44,22 @@ public enum LearningAgreementStatus {
 * **`AMENDED`**: Reopened during the mobility semester for exceptional course adjustments (Table A2 and Table B2).
 * **`CANCELLED`**: Permanently revoked due to student withdrawal, severe credit deficit, or administrative disqualification.
 
-### 2.2 Transitions and Invariant Guards
+### 2.2 Transitions and Invariant Guards (Tabelul de Tranziție a Stărilor)
 
-```
-[Initial] ---> DRAFT : createDraft()
-DRAFT ---> SUBMITTED : submit() [Guard: hasCreditParity() && totalECTS >= 30.0]
-SUBMITTED ---> UNDER_REVIEW : assignCoordinator(coordinatorId)
-UNDER_REVIEW ---> APPROVED_BY_FACULTY : approve()
-UNDER_REVIEW ---> DRAFT : requestChanges(rejectionNotes)
-UNDER_REVIEW ---> UNDER_REVIEW : after(5 business days) / alertDRI()
-APPROVED_BY_FACULTY ---> CONFIRMED_BY_HOST : confirmByHost(signatureToken)
-CONFIRMED_BY_HOST ---> AMENDED : requestAmendment()
-AMENDED ---> SUBMITTED : resubmit() [Guard: hasCreditParity()]
-{DRAFT, SUBMITTED, UNDER_REVIEW} ---> CANCELLED : cancel(cancellationReason)
-CONFIRMED_BY_HOST ---> [Final Terminal] : concludeExchange()
-CANCELLED ---> [Final Terminal]
-```
+| Stare Sursă | Eveniment Declanșator (Trigger / Metodă) | Condiție de Gardă (Guard) | Efect / Acțiune (Action / Output) | Stare Destinație |
+| :--- | :--- | :--- | :--- | :--- |
+| `[Stare Inițială]` | `createDraft()` | — | Instanțiere agregat cu liste de cursuri goale | `DRAFT` |
+| `DRAFT` | `submit()` | `hasCreditParity() && totalECTS >= 30.0` | Blocare editare linii curriculare (`lockCourseLines()`) | `SUBMITTED` |
+| `SUBMITTED` | `assignCoordinator(coordinatorId)` | `coordinatorId != null` | Alocare dosar pentru inspecție academică | `UNDER_REVIEW` |
+| `UNDER_REVIEW` | `approve(coordinatorId)` | `hasCreditParity()` | Emitere `LearningAgreementApprovedEvent` | `APPROVED_BY_FACULTY` |
+| `UNDER_REVIEW` | `requestChanges(rejectionNotes)` | — | Deblocare linii cursuri pentru remediere | `DRAFT` |
+| `UNDER_REVIEW` | `after(5 zile lucrătoare)` | — | Transmitere alertă escaladare către DRI | `UNDER_REVIEW` |
+| `APPROVED_BY_FACULTY` | `confirmByHost(signatureToken)` | `signatureToken != null` | Sigilare contract tripartit oficial | `CONFIRMED_BY_HOST` |
+| `CONFIRMED_BY_HOST` | `requestAmendment(reason)` | — | Deschidere sesiune de modificare curriculară | `AMENDED` |
+| `AMENDED` | `resubmitAmendedDraft()` | `hasCreditParity()` | Trimitere contract modificat la re-avizare | `SUBMITTED` |
+| `{DRAFT, SUBMITTED, UNDER_REVIEW}` | `cancel(reason)` | — | Anulare contract de studii | `CANCELLED` |
+| `CONFIRMED_BY_HOST` | `concludeExchange()` | — | Finalizare mobilitate cu recunoaștere credite | `[Stare Finală]` |
+| `CANCELLED` | — | — | Arhivare dosar anulat | `[Stare Finală]` |
 
 ### 2.3 Operational Mechanics
 
@@ -95,19 +95,19 @@ public enum EquivalenceStatus {
 * **`ACTIVE`**: Published in the catalog and open for automatic verification via REST endpoints.
 * **`RETIRED`**: Archived and no longer eligible for newly submitted learning agreements. Historical records remain preserved for audit compliance.
 
-### 3.2 Transitions and Invariant Guards
+### 3.2 Transitions and Invariant Guards (Tabelul de Tranziție a Stărilor)
 
-```
-[Initial] ---> PROPOSED : propose()
-PROPOSED ---> UNDER_EVALUATION : assignEvaluator(evaluatorId)
-UNDER_EVALUATION ---> PROPOSED : requestClarification(syllabusDetails)
-UNDER_EVALUATION ---> APPROVED : approve() [Guard: contentOverlap >= 80% && creditsMatch]
-UNDER_EVALUATION ---> RETIRED : reject(discrepancyNotes)
-APPROVED ---> ACTIVE : publishToCatalog() [entry / indexInRestCatalog()]
-ACTIVE ---> RETIRED : retire(reason)
-ACTIVE ---> RETIRED : after(validityWindow.endDate) / expire()
-RETIRED ---> [Final Terminal]
-```
+| Stare Sursă | Eveniment Declanșator (Trigger / Metodă) | Condiție de Gardă (Guard) | Efect / Acțiune (Action / Output) | Stare Destinație |
+| :--- | :--- | :--- | :--- | :--- |
+| `[Stare Inițială]` | `propose()` | — | Înregistrare propunere nouă de echivalare | `PROPOSED` |
+| `PROPOSED` | `assignEvaluator(evaluatorId)` | `evaluatorId != null` | Alocare către profesorul titular de disciplină | `UNDER_EVALUATION` |
+| `UNDER_EVALUATION` | `requestClarification(details)` | — | Solicitare silabă detaliată de la universitatea gazdă | `PROPOSED` |
+| `UNDER_EVALUATION` | `approve()` | `contentOverlap >= 80% && creditsMatch` | Validare decizie de recunoaștere | `APPROVED` |
+| `UNDER_EVALUATION` | `reject(discrepancyNotes)` | — | Respingere echivalare din lipsă de acoperire | `RETIRED` |
+| `APPROVED` | `publishToCatalog()` | — | Indexare în catalogul public REST (`indexInRestCatalog()`) | `ACTIVE` |
+| `ACTIVE` | `retire(reason)` | — | Retragere manuală din catalog | `RETIRED` |
+| `ACTIVE` | `after(validityWindow.endDate)` | `asOf > validityWindow.endDate` | Expirare automată la încheierea ciclului academic | `RETIRED` |
+| `RETIRED` | — | — | Arhivare istorică a regulii | `[Stare Finală]` |
 
 ### 3.3 Operational Mechanics
 
@@ -145,20 +145,20 @@ public enum TaskStatus {
 * **`OVERDUE`**: The statutory deadline passed without approved documentation.
 * **`ABANDONED`**: Voided due to mobility cancellation or formal waiver.
 
-### 4.2 Transitions and Invariant Guards
+### 4.2 Transitions and Invariant Guards (Tabelul de Tranziție a Stărilor)
 
-```
-[Initial] ---> INITIALIZED : instantiate()
-INITIALIZED ---> PENDING_STUDENT_ACTION : assignToStudent() [entry / sendReminderEmail()]
-PENDING_STUDENT_ACTION ---> SUBMITTED_FOR_VERIFICATION : uploadProof(fileRef)
-SUBMITTED_FOR_VERIFICATION ---> PENDING_STUDENT_ACTION : rejectProof(notes)
-SUBMITTED_FOR_VERIFICATION ---> COMPLETED : validateProof() [entry / checkAllChecklistTasks()]
-PENDING_STUDENT_ACTION ---> OVERDUE : after(deadline) / sendUrgentEscalation()
-OVERDUE ---> SUBMITTED_FOR_VERIFICATION : uploadLateProof(fileRef)
-{INITIALIZED, PENDING_STUDENT_ACTION, OVERDUE} ---> ABANDONED : abandon()
-COMPLETED ---> [Final Terminal]
-ABANDONED ---> [Final Terminal]
-```
+| Stare Sursă | Eveniment Declanșator (Trigger / Metodă) | Condiție de Gardă (Guard) | Efect / Acțiune (Action / Output) | Stare Destinație |
+| :--- | :--- | :--- | :--- | :--- |
+| `[Stare Inițială]` | `instantiate()` | — | Creare sarcină conform template-ului de țară | `INITIALIZED` |
+| `INITIALIZED` | `assignToStudent()` | — | Alocare în contul studentului și expediere e-mail | `PENDING_STUDENT_ACTION` |
+| `PENDING_STUDENT_ACTION` | `uploadProof(fileRef)` | `fileRef != null` | Atașare document PDF justificativ | `SUBMITTED_FOR_VERIFICATION` |
+| `SUBMITTED_FOR_VERIFICATION` | `rejectProof(notes)` | — | Solicitare reîncărcare document conform | `PENDING_STUDENT_ACTION` |
+| `SUBMITTED_FOR_VERIFICATION` | `validateProof()` | — | Verificare completare dosar (`checkAllChecklistTasks()`) | `COMPLETED` |
+| `PENDING_STUDENT_ACTION` | `after(deadline)` | `currentDate > deadline` | Trimitere notificare urgentă de depășire termen | `OVERDUE` |
+| `OVERDUE` | `uploadLateProof(fileRef)` | `fileRef != null` | Încărcare tardivă pentru analiză | `SUBMITTED_FOR_VERIFICATION` |
+| `{INITIALIZED, PENDING, OVERDUE}` | `abandon()` | — | Anulare sarcină în caz de retragere | `ABANDONED` |
+| `COMPLETED` | — | — | Sarcină îndeplinită cu succes | `[Stare Finală]` |
+| `ABANDONED` | — | — | Sarcină clasată | `[Stare Finală]` |
 
 ### 4.3 Operational Mechanics
 

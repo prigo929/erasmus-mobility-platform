@@ -9,48 +9,7 @@
 
 The strategic architecture decomposes the problem domain into three core operational Bounded Contexts, an integration Shared Kernel, and two supporting generic subdomains:
 
-```mermaid
-flowchart TD
-    subgraph CoreContext ["Learning Agreement Management (Core Domain)"]
-        LA_AR["LearningAgreement (Aggregate Root)"]
-        LineA["CourseLineTableA (Internal Entity)"]
-        LineB["CourseLineTableB (Internal Entity)"]
-    end
-
-    subgraph EquivalenceContext ["Equivalence Management (Supporting Subdomain)"]
-        EQ_AR["AcademicEquivalence (Aggregate Root)"]
-        Syllabus["CourseSyllabus (Value Object)"]
-    end
-
-    subgraph PreparationContext ["Mobility Preparation (Supporting Subdomain)"]
-        Checklist_AR["MobilityChecklist (Aggregate Root)"]
-        Task_Child["ChecklistTask (Child Entity)"]
-    end
-
-    subgraph SharedKernel ["Shared Kernel"]
-        SK1["StudentId (Value Object)"]
-        SK2["MobilityId (Value Object)"]
-        SK3["AcademicPeriod (Value Object)"]
-        SK4["ECTSCredits (Value Object)"]
-    end
-
-    subgraph GenericContexts ["Generic Subdomains"]
-        Notif["Notification Service (Asynchronous Messaging)"]
-        Sec["Security & GDPR Audit (RBAC / Append-Only Ledger)"]
-    end
-
-    %% Integration Contracts
-    CoreContext -->|Uses| SharedKernel
-    EquivalenceContext -->|Uses| SharedKernel
-    PreparationContext -->|Uses| SharedKernel
-
-    CoreContext -.->|Sync REST Port/Adapter: Search Equivalences| EquivalenceContext
-    CoreContext == Transactional Outbox ==>|Async Domain Event: LA Approved / Cancelled| PreparationContext
-    PreparationContext -.->|Trigger Alert| Notif
-    CoreContext -.->|Trigger Alert| Notif
-    CoreContext -.->|Write Audit Trail| Sec
-    EquivalenceContext -.->|Write Audit Trail| Sec
-```
+![Figura 1. Strategic DDD Context Map (Bounded Contexts & Integration Contracts)](../models/diagrams-png/Figura1-Strategic-DDD-Context-Map.png)
 
 ### Formal Integration Contracts:
 1. **Shared Kernel:** The three Bounded Contexts share a minimal set of immutable identity and measurement Value Objects: `StudentId`, `MobilityId`, `AcademicPeriod`, and `ECTSCredits`. Modifications to these types require cross-team consensus.

@@ -1,21 +1,11 @@
 """
 Build the master Word document (DOCX) for Erasmus Mobility Platform Project Deliverable P1.
-Structured strictly according to the reference course guide ModelProiect2026N8.pdf:
-- Chapter 1: Defining and Structuring Functional and Non-Functional Requirements
-  1.1 Brief Description of Main Requirements (Problem domain, 3 subdomains)
-      Table 1.1 Measurable Non-Functional Requirements Matrix (SLA)
-  1.2 Structuring and Detailing Functional Requirements
-      1.2.1 Strategic DDD & Context Mapping (Context Map, Table 1.2 Ubiquitous Language Glossary)
-      1.2.2 Business Process Flow Across Bounded Contexts: Activity Diagram (Figure 2)
-      1.2.3 Use Case Diagrams (Figures 3, 4, 5)
-      1.2.4 Use Case Narrative Descriptions (SVDPI Format: UC01, UC02, UC03)
-      1.2.5 Executable BDD Specifications in Gherkin Language (.feature)
-- Chapter 2: Tactical Domain-Driven Design Model (Figure 8, Table 2.1 Invariants Matrix)
-- Chapter 3: Layered Architecture and Repository Hierarchy (Figures 9, 10, 11)
-- Chapter 4: Bounded Context Integration Mechanics (Figures 12, 13, 14, 15)
-- Chapter 5: Consolidated Structural Package Models (Figures 16, 17, 18)
-- Chapter 6: Dynamic System Behavior (Figures 19-21 State Machines, Figures 22-25 Sequence Diagrams)
-- Chapter 7: Technical Annex (Java 23/25 Domain Skeleton & JUnit 5 Tests)
+Features:
+- Font: Roboto throughout all headings, paragraphs, bullet points, tables, and captions.
+- Monospace font: Roboto Mono / Consolas for BDD Gherkin and Java code blocks.
+- Embedded high-resolution PNG diagrams for all 25 figures (including Figura 1 Context Map, Figura 1b Transaction Flow, and Figura 9b Layered Architecture).
+- Formal UML State Transition Tables for the 3 aggregate lifecycles.
+- Structured strictly according to the reference course guide ModelProiect2026N8.pdf.
 """
 
 from pathlib import Path
@@ -41,6 +31,9 @@ HEX_HEADER_BG = "1A365D"
 HEX_ALT_ROW = "F7FAFC"
 HEX_CODE_BG = "F7FAFC"
 
+FONT_MAIN = "Roboto"
+FONT_CODE = "Roboto Mono"
+
 def set_cell_shading(cell, color_hex):
     shading_xml = f'<w:shd {nsdecls("w")} w:val="clear" w:color="auto" w:fill="{color_hex}"/>'
     cell._tc.get_or_add_tcPr().append(parse_xml(shading_xml))
@@ -61,7 +54,7 @@ def add_heading_1(doc, text):
     h.paragraph_format.space_after = Pt(6)
     h.paragraph_format.keep_with_next = True
     for r in h.runs:
-        r.font.name = 'Calibri'
+        r.font.name = FONT_MAIN
         r.font.size = Pt(16)
         r.font.bold = True
         r.font.color.rgb = COLOR_PRIMARY
@@ -73,7 +66,7 @@ def add_heading_2(doc, text):
     h.paragraph_format.space_after = Pt(4)
     h.paragraph_format.keep_with_next = True
     for r in h.runs:
-        r.font.name = 'Calibri'
+        r.font.name = FONT_MAIN
         r.font.size = Pt(13)
         r.font.bold = True
         r.font.color.rgb = COLOR_SECONDARY
@@ -85,7 +78,7 @@ def add_heading_3(doc, text):
     h.paragraph_format.space_after = Pt(2)
     h.paragraph_format.keep_with_next = True
     for r in h.runs:
-        r.font.name = 'Calibri'
+        r.font.name = FONT_MAIN
         r.font.size = Pt(11)
         r.font.bold = True
         r.font.color.rgb = COLOR_TEXT
@@ -97,12 +90,12 @@ def add_paragraph(doc, text, bold_prefix=""):
     p.paragraph_format.line_spacing = 1.15
     if bold_prefix:
         r_pre = p.add_run(bold_prefix)
-        r_pre.font.name = 'Calibri'
+        r_pre.font.name = FONT_MAIN
         r_pre.font.size = Pt(10.5)
         r_pre.font.bold = True
         r_pre.font.color.rgb = COLOR_TEXT
     r = p.add_run(text)
-    r.font.name = 'Calibri'
+    r.font.name = FONT_MAIN
     r.font.size = Pt(10.5)
     r.font.color.rgb = COLOR_TEXT
     return p
@@ -113,12 +106,12 @@ def add_bullet(doc, text, bold_prefix=""):
     p.paragraph_format.line_spacing = 1.15
     if bold_prefix:
         r_pre = p.add_run(bold_prefix)
-        r_pre.font.name = 'Calibri'
+        r_pre.font.name = FONT_MAIN
         r_pre.font.size = Pt(10)
         r_pre.font.bold = True
         r_pre.font.color.rgb = COLOR_TEXT
     r = p.add_run(text)
-    r.font.name = 'Calibri'
+    r.font.name = FONT_MAIN
     r.font.size = Pt(10)
     r.font.color.rgb = COLOR_TEXT
     return p
@@ -136,7 +129,7 @@ def add_code_block(doc, code_text):
     p.paragraph_format.space_after = Pt(0)
     p.paragraph_format.line_spacing = 1.05
     run = p.add_run(code_text.strip())
-    run.font.name = 'Consolas'
+    run.font.name = FONT_CODE
     run.font.size = Pt(8.5)
     run.font.color.rgb = COLOR_TEXT
     doc.add_paragraph().paragraph_format.space_after = Pt(4)
@@ -158,7 +151,7 @@ def add_image_diagram(doc, image_name, caption):
     p_cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
     p_cap.paragraph_format.space_after = Pt(10)
     r_cap = p_cap.add_run(caption)
-    r_cap.font.name = 'Calibri'
+    r_cap.font.name = FONT_MAIN
     r_cap.font.size = Pt(9)
     r_cap.font.italic = True
     r_cap.font.color.rgb = COLOR_MUTED
@@ -189,7 +182,7 @@ def add_table_from_markdown(doc, md_table_text):
         p = hdr_cells[i].paragraphs[0]
         p.alignment = WD_ALIGN_PARAGRAPH.LEFT
         for r in p.runs:
-            r.font.name = 'Calibri'
+            r.font.name = FONT_MAIN
             r.font.size = Pt(9.5)
             r.font.bold = True
             r.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
@@ -205,7 +198,7 @@ def add_table_from_markdown(doc, md_table_text):
                 p = row_cells[c_idx].paragraphs[0]
                 p.alignment = WD_ALIGN_PARAGRAPH.LEFT
                 for r in p.runs:
-                    r.font.name = 'Calibri'
+                    r.font.name = FONT_MAIN
                     r.font.size = Pt(9)
                     r.font.color.rgb = COLOR_TEXT
     doc.add_paragraph().paragraph_format.space_after = Pt(6)
@@ -312,7 +305,7 @@ def build_cover_page(doc):
     p_uni = doc.add_paragraph()
     p_uni.alignment = WD_ALIGN_PARAGRAPH.CENTER
     r_uni = p_uni.add_run("UNIVERSITATEA „ALEXANDRU IOAN CUZA” DIN IAȘI\nFACULTATEA DE ECONOMIE ȘI ADMINISTRAREA AFACERILOR\nMASTER: SISTEME INFORMAȚIONALE PENTRU AFACERI (SIA / SDBIS)")
-    r_uni.font.name = 'Calibri'
+    r_uni.font.name = FONT_MAIN
     r_uni.font.size = Pt(11)
     r_uni.font.bold = True
     r_uni.font.color.rgb = COLOR_PRIMARY
@@ -321,7 +314,7 @@ def build_cover_page(doc):
     p_course = doc.add_paragraph()
     p_course.alignment = WD_ALIGN_PARAGRAPH.CENTER
     r_course = p_course.add_run("DISCIPLINA: ANALIZA ȘI PROIECTAREA ORIENTATĂ PE OBIECTE (APOO)\nAN UNIVERSITAR 2026-2027")
-    r_course.font.name = 'Calibri'
+    r_course.font.name = FONT_MAIN
     r_course.font.size = Pt(11)
     r_course.font.italic = True
     r_course.font.color.rgb = COLOR_SECONDARY
@@ -330,7 +323,7 @@ def build_cover_page(doc):
     p_title = doc.add_paragraph()
     p_title.alignment = WD_ALIGN_PARAGRAPH.CENTER
     r_title = p_title.add_run("ERASMUS MOBILITY PLATFORM (EMP)")
-    r_title.font.name = 'Calibri'
+    r_title.font.name = FONT_MAIN
     r_title.font.size = Pt(24)
     r_title.font.bold = True
     r_title.font.color.rgb = COLOR_PRIMARY
@@ -339,7 +332,7 @@ def build_cover_page(doc):
     p_sub = doc.add_paragraph()
     p_sub.alignment = WD_ALIGN_PARAGRAPH.CENTER
     r_sub = p_sub.add_run("Sistem Distribuit bazat pe Domain-Driven Design și UML 2.5 pentru Gestiunea Mobilităților Academice Internaționale conform Standardelor Erasmus Without Paper")
-    r_sub.font.name = 'Calibri'
+    r_sub.font.name = FONT_MAIN
     r_sub.font.size = Pt(12)
     r_sub.font.color.rgb = COLOR_TEXT
     p_sub.paragraph_format.space_after = Pt(25)
@@ -347,7 +340,7 @@ def build_cover_page(doc):
     p_liv = doc.add_paragraph()
     p_liv.alignment = WD_ALIGN_PARAGRAPH.CENTER
     r_liv = p_liv.add_run("PROIECT DE SPECIALITATE - PARTEA I (LIVRABILUL P1: SECȚIUNILE 1–6)")
-    r_liv.font.name = 'Calibri'
+    r_liv.font.name = FONT_MAIN
     r_liv.font.size = Pt(13)
     r_liv.font.bold = True
     r_liv.font.color.rgb = COLOR_SECONDARY
@@ -356,7 +349,7 @@ def build_cover_page(doc):
     p_team = doc.add_paragraph()
     p_team.alignment = WD_ALIGN_PARAGRAPH.LEFT
     r_team_title = p_team.add_run("Echipa de Proiect & Repartizare Subdomenii:\n")
-    r_team_title.font.name = 'Calibri'
+    r_team_title.font.name = FONT_MAIN
     r_team_title.font.size = Pt(11)
     r_team_title.font.bold = True
     r_team_title.font.color.rgb = COLOR_PRIMARY
@@ -370,11 +363,11 @@ def build_cover_page(doc):
         p_s = doc.add_paragraph(style='List Bullet')
         p_s.paragraph_format.space_after = Pt(2)
         r_n = p_s.add_run(f"{name} ({s_idx}): ")
-        r_n.font.name = 'Calibri'
+        r_n.font.name = FONT_MAIN
         r_n.font.bold = True
         r_n.font.size = Pt(10.5)
         r_r = p_s.add_run(role)
-        r_r.font.name = 'Calibri'
+        r_r.font.name = FONT_MAIN
         r_r.font.size = Pt(10.5)
         
     doc.add_page_break()
@@ -382,13 +375,19 @@ def build_cover_page(doc):
 def generate_document():
     doc = docx.Document()
     
+    # Set default style font to Roboto
+    style_normal = doc.styles['Normal']
+    style_normal.font.name = FONT_MAIN
+    style_normal.font.size = Pt(10.5)
+    style_normal.font.color.rgb = COLOR_TEXT
+    
     for s in doc.sections:
         s.top_margin = Inches(1.0)
         s.bottom_margin = Inches(1.0)
         s.left_margin = Inches(1.0)
         s.right_margin = Inches(1.0)
         
-    print("Building Cover Page...")
+    print("Building Cover Page in Roboto...")
     build_cover_page(doc)
     
     # =========================================================================
@@ -400,7 +399,6 @@ def generate_document():
     # 1.1 Brief Description of Main Requirements
     add_heading_2(doc, "1.1 Descrierea Sumară a Principalelor Cerințe ale Aplicației")
     doc_sub = (DOCS / "01-subdomains-and-transactions.md").read_text(encoding="utf-8")
-    # Clean doc_sub title if repeated
     doc_sub_body = re.sub(r'^# .*\n+', '', doc_sub)
     parse_markdown_content(doc, doc_sub_body)
     
@@ -485,7 +483,7 @@ def generate_document():
     print("Chapter 3: Layered Architecture and Repositories...")
     add_heading_1(doc, "Capitolul 3. Proiectarea Soluției Arhitecturale (Arhitectura Logică)")
     
-    add_heading_2(doc, "3.1 Arhitectura Stratificată Onion / Clean Architecture (Figurile 9 și 10)")
+    add_heading_2(doc, "3.1 Arhitectura Stratificată Onion / Clean Architecture (Figurile 9, 9b și 10)")
     doc_layer = (DOCS / "06-layered-architecture-spec.md").read_text(encoding="utf-8")
     doc_layer_body = re.sub(r'^# .*\n+', '', doc_layer)
     parse_markdown_content(doc, doc_layer_body)
