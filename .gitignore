@@ -1,6 +1,5 @@
-# Enterprise Architect lock files and temporary caches
-~$*.qea
-~$*.qeax
+# Enterprise Architect and Office lock files
+~$*
 *.ldb
 *.eap.lock
 *.qea.lock

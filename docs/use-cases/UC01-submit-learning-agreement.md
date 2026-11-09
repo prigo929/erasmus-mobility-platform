@@ -61,7 +61,7 @@
 | 4 | Actor | The student selects corresponding home university degree courses for academic recognition (Table B). |
 | 5 | Actor | The student triggers the "Verify Equivalences" action. |
 | 6 | System | The platform queries the Equivalence Management catalog via REST adapter and displays verified credit matches. |
-| 7 | Actor | The student reviews the verified course pairs and clicks the "Submit Agreement" button. |
+| 7 | Actor | The student reviews the verified course pairs and submits the draft learning agreement to the platform for institutional review. |
 | 8 | System | The platform verifies the credit volume invariant (total ECTS >= 30.0 credits). |
 | 9 | System | The platform verifies the credit parity invariant (`sum(TableA) == sum(TableB)`). |
 | 10 | System | The platform transitions the agreement status from `DRAFT` to `SUBMITTED`. |

@@ -23,8 +23,8 @@ flowchart TD
     end
 
     subgraph PreparationContext ["Mobility Preparation (Supporting Subdomain)"]
-        Task_AR["ChecklistTask (Aggregate Root)"]
-        Template["ChecklistTemplate (Internal Entity)"]
+        Checklist_AR["MobilityChecklist (Aggregate Root)"]
+        Task_Child["ChecklistTask (Child Entity)"]
     end
 
     subgraph SharedKernel ["Shared Kernel"]
@@ -66,11 +66,12 @@ flowchart TD
 | **LearningAgreement** | Learning Agreement Management | **Aggregate Root** | The official tripartite legal and academic contract executed between student, home faculty, and partner host institution, establishing pre-approved credit recognition. |
 | **CourseLineTableA** | Learning Agreement Management | **Internal Entity** | An educational component at the receiving host institution to be completed abroad, possessing a course code, official title, term, language, and ECTS credits. |
 | **CourseLineTableB** | Learning Agreement Management | **Internal Entity** | An accredited educational component from the home degree syllabus that will be replaced and recognized upon passing Table A components. |
-| **StareLearningAgreement** | Learning Agreement Management | **Enum / Value Object** | Contract lifecycle states: `DRAFT`, `SUBMITTED`, `UNDER_REVIEW`, `APPROVED_BY_FACULTY`, `CONFIRMED_BY_HOST`, `AMENDED`, `CANCELLED`. |
+| **LearningAgreementStatus** | Learning Agreement Management | **Enum / Value Object** | Contract lifecycle states: `DRAFT`, `SUBMITTED`, `UNDER_REVIEW`, `APPROVED_BY_FACULTY`, `CONFIRMED_BY_HOST`, `AMENDED`, `CANCELLED`. |
 | **AcademicEquivalence** | Equivalence Management | **Aggregate Root** | Institutional mapping binding foreign course syllabi to domestic degree subjects based on verified learning outcomes and credit equivalence. |
-| **StareEchivalare** | Equivalence Management | **Enum / Value Object** | Equivalence lifecycle states: `PROPOSED`, `UNDER_EVALUATION`, `APPROVED`, `ACTIVE`, `RETIRED`. |
-| **ChecklistTask** | Mobility Preparation | **Aggregate Root** | An atomic unit of administrative onboarding compliance (e.g., EHIC card, grant contract, OLS assessment) governed by explicit deadlines. |
-| **StareSarcina** | Mobility Preparation | **Enum / Value Object** | Task lifecycle states: `INITIALIZED`, `PENDING_STUDENT_ACTION`, `SUBMITTED_FOR_VERIFICATION`, `COMPLETED`, `OVERDUE`. |
+| **EquivalenceStatus** | Equivalence Management | **Enum / Value Object** | Equivalence lifecycle states: `PROPOSED`, `UNDER_EVALUATION`, `APPROVED`, `ACTIVE`, `RETIRED`. |
+| **MobilityChecklist** | Mobility Preparation | **Aggregate Root** | Central administrative dossier managing the student's preparation checklist and enforcing overall readiness invariants. |
+| **ChecklistTask** | Mobility Preparation | **Child Entity** | An atomic unit of administrative onboarding compliance (e.g., EHIC card, grant contract, OLS assessment) encapsulated within MobilityChecklist. |
+| **TaskStatus** | Mobility Preparation | **Enum / Value Object** | Task lifecycle states: `INITIALIZED`, `PENDING_STUDENT_ACTION`, `SUBMITTED_FOR_VERIFICATION`, `COMPLETED`, `OVERDUE`, `ABANDONED`. |
 | **StudentId** | Shared Kernel | **Value Object** | Globally unique immutable identifier representing the matriculated student across all university subsystems. |
 | **MobilityId** | Shared Kernel | **Value Object** | Globally unique immutable identifier representing the academic exchange grant instance. |
 | **AcademicPeriod** | Shared Kernel | **Value Object** | Immutable date interval capturing mobility start and end dates, enforcing `endDate >= startDate`. |

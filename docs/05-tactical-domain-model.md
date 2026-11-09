@@ -57,8 +57,8 @@ The core package isolates the contract aggregate:
 * **`EquivalenceStatus` (Enum):** Lifecycle states (`PROPOSED`, `UNDER_EVALUATION`, `APPROVED`, `ACTIVE`, `RETIRED`).
 
 ### 3.4 Mobility Preparation (Supporting Subdomain)
-* **`MobilityDossier` (Aggregate Root):** Oversees the student exchange record, tracking target destinations and scholarship funding.
-* **`ChecklistTask` (Aggregate Root):** Discrete administrative compliance task enforcing verification deadlines.
+* **`MobilityChecklist` (Aggregate Root):** Central administrative dossier managing the student's preparation checklist and enforcing overall departure readiness.
+* **`ChecklistTask` (Child Entity):** Discrete administrative compliance task enforcing verification deadlines, encapsulated within the `MobilityChecklist` aggregate.
 * **`DocumentAttachment` (Value Object):** Stores file names, SHA-256 cryptographic hashes, and cloud storage references.
 * **`GrantAmount` (Value Object):** Immutable currency and financial calculation model.
 * **`TaskStatus` and `MobilityStatus` (Enums):** Lifecycle states for onboarding milestones and student mobility stages.

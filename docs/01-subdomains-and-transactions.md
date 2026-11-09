@@ -189,7 +189,8 @@ In strict adherence to course requirements (Chapter 2, Dennis et al.), every non
 | **CourseLineTableA** | *Learning Agreement Management* | **Internal Entity** | An individual educational component to be attended at the host institution, possessing a foreign course code, title, term, and ECTS value. |
 | **CourseLineTableB** | *Learning Agreement Management* | **Internal Entity** | An educational component from the home degree syllabus that is substituted and accredited upon passing Table A components. |
 | **AcademicEquivalence** | *Equivalence Management* | **Aggregate Root** | The institutional rule binding foreign syllabus learning outcomes to home curricular courses based on verified parity. |
-| **ChecklistTask** | *Mobility Preparation* | **Aggregate Root** | An atomic unit of administrative onboarding compliance (e.g., EHIC card, grant contract, OLS assessment) governed by explicit deadlines. |
+| **MobilityChecklist** | *Mobility Preparation* | **Aggregate Root** | Central administrative dossier managing the student's preparation checklist and enforcing overall readiness invariants. |
+| **ChecklistTask** | *Mobility Preparation* | **Internal Entity** | An atomic unit of administrative onboarding compliance (e.g., EHIC card, grant contract, OLS assessment) encapsulated within MobilityChecklist. |
 | **StudentId / MobilityId** | *Shared Kernel* | **Value Object** | Immutable UUID identifiers shared across all contexts to correlate entities without tightly coupling internal persistence models. |
 | **AcademicPeriod** | *Shared Kernel* | **Value Object** | Temporal interval bounding mobility start and end dates, enforcing the invariant `endDate >= startDate`. |
 | **ECTSCredits** | *Shared Kernel* | **Value Object** | Positive decimal numerical value quantifying student workload according to the European Credit Transfer and Accumulation System. |

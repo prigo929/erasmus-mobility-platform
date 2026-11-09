@@ -61,7 +61,7 @@
 | 4 | Actor | The evaluator enters the thematic match breakdown and computed syllabus overlap score. |
 | 5 | System | The platform validates that the overlap rating satisfies the statutory threshold (score >= 80%). |
 | 6 | Actor | The evaluator defines the validity term (start date and expiration date). |
-| 7 | Actor | The evaluator clicks "Approve and Publish Equivalence". |
+| 7 | Actor | The evaluator approves the verified equivalence for institutional publication in the academic catalog. |
 | 8 | System | The platform verifies the credit correspondence invariant. |
 | 9 | System | The platform verifies that no duplicate active equivalence exists for the course pair. |
 | 10 | System | The platform transitions aggregate status from `UNDER_EVALUATION` to `APPROVED` and subsequently to `ACTIVE`. |

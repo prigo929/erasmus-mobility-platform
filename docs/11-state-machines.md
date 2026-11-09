@@ -23,7 +23,7 @@ The `LearningAgreement` aggregate coordinates the core academic contract between
 ### 2.1 State Definitions (`LearningAgreementStatus`)
 
 ```java
-package ro.uaic.feaa.emp.agreement.domain;
+package ro.uaic.feaa.erasmus.agreement.domain;
 
 public enum LearningAgreementStatus {
     DRAFT,
@@ -78,7 +78,7 @@ The `AcademicEquivalence` aggregate governs verified course mapping rules betwee
 ### 3.1 State Definitions (`EquivalenceStatus`)
 
 ```java
-package ro.uaic.feaa.emp.equivalence.domain;
+package ro.uaic.feaa.erasmus.equivalence.domain;
 
 public enum EquivalenceStatus {
     PROPOSED,
@@ -121,12 +121,12 @@ RETIRED ---> [Final Terminal]
 
 The `ChecklistTask` entity tracks individual administrative readiness requirements before a student departs for their study abroad program.
 
-![Figure 21. State Machine Diagram: ChecklistTask Aggregate Lifecycle](../models/diagrams-png/Figura21-StateMachine-ChecklistTask.png)
+![Figure 21. State Machine Diagram: ChecklistTask Entity Lifecycle](../models/diagrams-png/Figura21-StateMachine-ChecklistTask.png)
 
 ### 4.1 State Definitions (`TaskStatus`)
 
 ```java
-package ro.uaic.feaa.emp.preparation.domain;
+package ro.uaic.feaa.erasmus.preparation.domain;
 
 public enum TaskStatus {
     INITIALIZED,

@@ -19,7 +19,7 @@
 
 * **Primary Actor:** `Mobility Officer` (verifies uploaded documents, confirms nomination readiness).
 * **Secondary Actor:** `Nominated Student` (uploads required proofs, signs grant agreements).
-* **Supporting System:** `Message Broker (RabbitMQ)` (delivers asynchronous nomination and approval events).
+* **Supporting System:** `Enterprise Messaging System` (delivers asynchronous nomination and approval events).
 * **Stakeholders:**
   * Erasmus Institutional Office: Oversees student welfare and international travel authorizations.
   * Faculty Dean's Office: Requires confirmation that nominated students maintain active enrollment.
@@ -58,7 +58,7 @@
 
 | Step | Initiator | Interaction Description (Active Voice Only) |
 | :--- | :--- | :--- |
-| 1 | System | The RabbitMQ listener receives an inbound `LearningAgreementApprovedEvent` payload. |
+| 1 | System | The platform detects the institutional approval of the student's learning agreement. |
 | 2 | System | The platform queries the idempotency port and confirms the event is unhandled. |
 | 3 | System | The platform instantiates a `MobilityChecklist` aggregate and populates default compliance tasks. |
 | 4 | System | The platform dispatches an onboarding email with task deadlines to the student. |
@@ -92,5 +92,5 @@
 * **Condition at Step 2:** The event ID already exists in the `processed_events` table.
 * **2e1:** The application service flags a duplicate event redelivery.
 * **2e2:** The platform logs an idempotency notice and skips aggregate instantiation.
-* **2e3:** The message receiver transmits an AMQP acknowledgment (`basicAck`) to RabbitMQ to clear the redundant message.
+* **2e3:** The platform acknowledges receipt of the duplicate notification to finalize transaction processing.
 

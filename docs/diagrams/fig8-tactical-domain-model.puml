@@ -160,7 +160,7 @@ package "Mobility Preparation (Supporting)" as PreparationDomain {
     + markPrepared(): MobilityPreparedEvent
   }
 
-  class ChecklistTask <<Aggregate Root>> {
+  class ChecklistTask <<Child Entity>> {
     - id: UUID
     - mobilityId: MobilityId
     - studentId: StudentId
