@@ -3,19 +3,19 @@
 **Erasmus Mobility Platform (EMP)**  
 **Methodological Alignment:** Onion / Hexagonal Architecture (Alistair Cockburn, Jeffrey Palermo) & Course Specifications (FEAA Master SDBIS / SIA)  
 **Visual Artifacts:**  
-* Figure 9 (Core Domain): [`models/diagrams-png/Figura9-Layered-Architecture-Core-Domain.png`](file:///Users/alinprigoreanu/Documents/Object-oriented analysis and design/erasmus-mobility-platform/models/diagrams-png/Figura9-Layered-Architecture-Core-Domain.png)  
-* Figure 10 (Supporting Subdomain): [`models/diagrams-png/Figura10-Layered-Architecture-Supporting-Subdomain.png`](file:///Users/alinprigoreanu/Documents/Object-oriented analysis and design/erasmus-mobility-platform/models/diagrams-png/Figura10-Layered-Architecture-Supporting-Subdomain.png)  
+* Figure 9 (Core Domain): `models/diagrams-png/Figura9-Layered-Architecture-Core-Domain.png`  
+* Figure 10 (Supporting Subdomain): `models/diagrams-png/Figura10-Layered-Architecture-Supporting-Subdomain.png`  
 **PlantUML Sources:**  
-* [`docs/diagrams/fig9-layered-architecture-core.puml`](file:///Users/alinprigoreanu/Documents/Object-oriented analysis and design/erasmus-mobility-platform/docs/diagrams/fig9-layered-architecture-core.puml)  
-* [`docs/diagrams/fig10-layered-architecture-supporting.puml`](file:///Users/alinprigoreanu/Documents/Object-oriented analysis and design/erasmus-mobility-platform/docs/diagrams/fig10-layered-architecture-supporting.puml)
+* `docs/diagrams/fig9-layered-architecture-core.puml`  
+* `docs/diagrams/fig10-layered-architecture-supporting.puml`
 
 ---
 
-## 1. Architectural Principles of the Four-Layer Model
+### 3.1.1 Architectural Principles of the Four-Layer Model
 
 The system isolates domain logic from technical infrastructure using a four-layer architecture. Dependencies flow inward toward the domain. The domain model contains zero imports from web frameworks, SQL libraries, or messaging drivers.
 
-![Figura 9b. Arhitectura Conceptuală pe 4 Straturi DDD cu Inversarea Dependențelor](../models/diagrams-png/Figura9b-Layered-Architecture-Conceptual-Layers.png)
+![Figure 9b. Conceptual 4-Layer Architecture with Dependency Inversion Principle](../models/diagrams-png/Figura9b-Layered-Architecture-Conceptual-Layers.png)
 
 ### Layer Responsibilities and Constraints
 
@@ -30,7 +30,7 @@ The system isolates domain logic from technical infrastructure using a four-laye
 
 ---
 
-## 2. Figure 9: Core Bounded Context (Learning Agreement Management)
+### 3.1.2 Figure 9: Core Bounded Context (Learning Agreement Management)
 
 In Figure 9, the core domain orchestrates the authoring, ECTS validation, and approval of study contracts:
 
@@ -46,7 +46,7 @@ In Figure 9, the core domain orchestrates the authoring, ECTS validation, and ap
 
 ---
 
-## 3. Figure 10: Supporting Subdomain (Equivalence Management)
+### 3.1.3 Figure 10: Supporting Subdomain (Equivalence Management)
 
 In Figure 10, the supporting domain manages the catalog of course syllabi and pre-approved mappings:
 

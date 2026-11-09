@@ -10,7 +10,7 @@
 
 ---
 
-## 1.1 Executive Problem Statement and Core Requirements
+### Problem Statement and Academic Background
 
 Within European higher education institutions participating in the Erasmus+ framework, student academic mobility is a strategic cornerstone of internationalization. However, managing exchange programs is plagued by operational fragmentation: workflows are mediated by disjointed email threads, manually scanned paper documents, out-of-date course catalogs, and a lack of real-time curricular synchronization between the sending institution (*Home University*) and the receiving institution (*Host University*).
 
@@ -27,15 +27,15 @@ The **Learning Agreement Management** subdomain constitutes the core business en
 The functional requirements grouped in this domain are:
 * **Create and Initialize Learning Agreement (Create LA):** A nominated student creates a study contract linked to their unique mobility dossier (`MobilityId`, `StudentId`). Upon creation, the agreement enters the `DRAFT` state, encapsulating metadata regarding the host partner institution, academic year, target semester (Autumn, Spring, or Full Year), and mobility modality (Study vs. Traineeship).
 * **Manage Course Lines (Manage Course Lines):** The student authors and mutates academic components partitioned into two strictly correlated tables:
-  * *Table A (Study Programme at Receiving Institution):* Educational components to be completed abroad, capturing foreign course codes, official titles, semester term, language of instruction, and allocated ECTS credits.
-  * *Table B (Recognition at Sending Institution):* Curricular courses from the home faculty degree plan that will be replaced and recognized upon successful completion of Table A.
+  * **Table A (Study Programme at Receiving Institution):** Educational components to be completed abroad, capturing foreign course codes, official titles, semester term, language of instruction, and allocated ECTS credits.
+  * **Table B (Recognition at Sending Institution):** Curricular courses from the home faculty degree plan that will be replaced and recognized upon successful completion of Table A.
 * **Validate ECTS Credit Balance (Check ECTS Balance):** The aggregate enforces the core domain invariant: the cumulative credits earned in Table A must equal the recognized credits in Table B, strictly fulfilling the standard benchmark of **at least 30 ECTS credits per semester** (subject to bilateral agreement thresholds). This invariant check executes transactionally in memory prior to any submission attempt.
 * **Propose New Academic Equivalences (Propose New Equivalence):** If a student discovers during study plan composition that a foreign course is missing from the institutional equivalence catalog, an extension flow (`<<extend>>`) is triggered, forwarding the syllabus and learning outcomes to the departmental teaching committee for expedited review.
 * **Submit Learning Agreement (Submit LA):** The student formally submits the finalized study plan for departmental review. This command mandatorily includes the automated ECTS balance validation (`<<include>>`). Upon success, the aggregate transitions to `SUBMITTED`, locking the course lines from uncoordinated student edits.
 * **Home Academic Coordinator Review (Review LA):** The home faculty coordinator reviews curricular compatibility. The coordinator may:
-  * *Approve the agreement:* Transitioning the contract to `APPROVED_BY_FACULTY`.
-  * *Request changes (Request Amendment):* Transitioning the contract to `UNDER_REVIEW`, returning it to the student accompanied by contextual audit notes identifying incompatible courses.
-  * *Notify student of decision (Notify Student of Decision):* Every state transition automatically publishes an in-app and email alert (`<<include>>`).
+  * **Approve the agreement:** Transitioning the contract to `APPROVED_BY_FACULTY`.
+  * **Request changes (Request Amendment):** Transitioning the contract to `UNDER_REVIEW`, returning it to the student accompanied by contextual audit notes identifying incompatible courses.
+  * **Notify student of decision (Notify Student of Decision):** Every state transition automatically publishes an in-app and email alert (`<<include>>`).
 * **Escalate Overdue Academic Reviews (Escalate Overdue Review):** A background temporal scheduler monitors agreements resting in the `SUBMITTED` state. If the designated coordinator fails to render a decision within **5 business days**, the scheduler triggers an automated escalation notification to the Vice-Dean for International Relations (`<<extend>>`).
 * **Host Partner Institutional Confirmation (Confirm LA at Host University):** Following home faculty endorsement, the contract is transmitted securely across the European network via the EWP REST API. Upon digital signature by the host coordinator, the agreement achieves full tripartite validity and transitions to `CONFIRMED_BY_HOST`.
 * **In-Mobility Exceptional Amendments (Request Amendment):** During the initial weeks of mobility, if courses at the host university are cancelled or rescheduled, the student can initiate an amendment request (`AMENDED` state), triggering an isolated tripartite approval cycle for altered lines only.
@@ -92,69 +92,34 @@ The central aggregate `ChecklistTask` traverses the lifecycle: `INITIALIZED`, `P
 
 ---
 
-## 1.2 End-to-End Transactional Architecture & Data Flow
+### 5) End-to-End Transactional Architecture & Data Flow
 
 Data flows across Bounded Context boundaries through five coordinated transactional stages:
 
-![Figura 1b. Diagrama de Secvență a Fluxului Tranzacțional Principal Cross-Subdomenii](../models/diagrams-png/Figura1b-Main-Transaction-Flow-Sequence.png)
+![Figure 1b. Main End-to-End Transaction Flow Sequence Diagram across Subdomains](../models/diagrams-png/Figura1b-Main-Transaction-Flow-Sequence.png)
 
-### Detailed Transaction Breakdown:
+#### Detailed Transaction Breakdown:
 
 1. **Transaction T1: Nomination & Automated Onboarding Checklist (Mobility Preparation)**
-   * *Trigger:* Institutional selection committee allocates a mobility grant.
-   * *Data Flow:* The coordinator invokes `Confirm Nomination`, providing `StudentId`, `MobilityId`, destination host, and term.
-   * *Consistency:* An ACID transaction instantiates the mobility dossier and populates the personalized `ChecklistTask` entities. The domain event `StudentNominatedEvent` is emitted.
+   * **Trigger:** Institutional selection committee allocates a mobility grant.
+   * **Data Flow:** The coordinator invokes `Confirm Nomination`, providing `StudentId`, `MobilityId`, destination host, and term.
+   * **Consistency:** An ACID transaction instantiates the mobility dossier and populates the personalized `ChecklistTask` entities. The domain event `StudentNominatedEvent` is emitted.
 
 2. **Transaction T2: Equivalence Discovery & Catalog Enrichment (Equivalence Management)**
-   * *Trigger:* The student identifies courses at the partner institution.
-   * *Data Flow:* A synchronous REST query (`Search Equivalences`) returns accredited mappings and credit values.
-   * *Exception Branch:* If a syllabus is missing, the student invokes `Propose New Equivalence`. The coordinator approves the syllabus, promoting it to `ACTIVE` for institutional reuse.
+   * **Trigger:** The student identifies courses at the partner institution.
+   * **Data Flow:** A synchronous REST query (`Search Equivalences`) returns accredited mappings and credit values.
+   * **Exception Branch:** If a syllabus is missing, the student invokes `Propose New Equivalence`. The coordinator approves the syllabus, promoting it to `ACTIVE` for institutional reuse.
 
 3. **Transaction T3: Study Plan Authoring & Invariant Enforcement (Learning Agreement)**
-   * *Trigger:* Student composes Table A and Table B.
-   * *Data Flow:* `Create LA` instantiates the `LearningAgreement` aggregate in the `DRAFT` state. The student maps foreign course lines to domestic degree subjects.
-   * *Invariant Check:* Invoking `Submit LA` triggers internal aggregate validation (`Check ECTS Balance`). The transaction enforces $\sum ECTS(Table A) = \sum ECTS(Table B) \ge 30$. Non-compliant attempts are rejected with zero database mutation. Compliant contracts transition to `SUBMITTED`.
+   * **Trigger:** Student composes Table A and Table B.
+   * **Data Flow:** `Create LA` instantiates the `LearningAgreement` aggregate in the `DRAFT` state. The student maps foreign course lines to domestic degree subjects.
+   * **Invariant Check:** Invoking `Submit LA` triggers internal aggregate validation (`Check ECTS Balance`). The transaction enforces $\sum ECTS(Table A) = \sum ECTS(Table B) \ge 30$. Non-compliant attempts are rejected with zero database mutation. Compliant contracts transition to `SUBMITTED`.
 
 4. **Transaction T4: Tripartite Digital Review & Outbox Event Synchronization (Integrations)**
-   * *Trigger:* Home coordinator executes `Review LA`.
-   * *Data Flow:* If approved, the contract advances to `APPROVED_BY_FACULTY` and is transmitted across the European EWP network. Upon partner endorsement, the contract becomes `CONFIRMED_BY_HOST`.
-   * *Outbox Pattern:* State persistence writes `LearningAgreementApprovedEvent` to the local transactional `Outbox` table. An asynchronous message broker guarantees at-least-once delivery to **Mobility Preparation**, which idempotently marks the checklist task as `COMPLETED`.
+   * **Trigger:** Home coordinator executes `Review LA`.
+   * **Data Flow:** If approved, the contract advances to `APPROVED_BY_FACULTY` and is transmitted across the European EWP network. Upon partner endorsement, the contract becomes `CONFIRMED_BY_HOST`.
+   * **Outbox Pattern:** State persistence writes `LearningAgreementApprovedEvent` to the local transactional `Outbox` table. An asynchronous message broker guarantees at-least-once delivery to **Mobility Preparation**, which idempotently marks the checklist task as `COMPLETED`.
 
 5. **Transaction T5: Exceptional Amendments & Force Majeure Abort (Interruptible Region)**
-   * *In-Mobility Amendments:* If foreign courses are cancelled, `Request Amendment` transitions the contract to `AMENDED` for an isolated tripartite delta approval.
-   * *Mobility Cancellation:* In the event of force majeure, the cancellation signal traverses the `«interrupting edge»` of the `InterruptibleActivityRegion`. This cancels the `LearningAgreement` (`CANCELLED`), marks active checklist tasks as `OVERDUE`/`ABORTED`, and deallocates reserved Erasmus scholarship funds.
-
----
-
-## 1.3 Measurable Non-Functional Requirements Matrix (SLA Targets)
-
-In strict adherence to course requirements (Chapter 2, Dennis et al.), every non-functional requirement specifies a **measured threshold: a numeric benchmark, a unit of measurement, and an explicit test condition**.
-
-### Table 1.1. Measurable Non-Functional Requirements Matrix (SLA & Acceptance Criteria)
-
-| Architectural Category | Measurable Quality Attribute | Acceptance Criteria (SLA / Verification Method) | Architectural Impact (DDD & Technology) |
-| :--- | :--- | :--- | :--- |
-| **Performance & Latency** | **Catalog Equivalence Query Latency** | HTTP response latency at **p95 < 250 ms** and **p99 < 500 ms** under 100 concurrent read operations across an active catalog of at least 50,000 course records. | Composite B-Tree index on `(partner_id, course_code)`; Hibernate L2 Cache / Redis for hot partner catalogs. |
-| **Performance & Integrity** | **ECTS Invariant Validation Execution** | In-memory execution latency **< 100 ms** for `LearningAgreement.validateEctsBalance()` on contracts holding up to 30 curricular lines. | Pure Domain Model in-memory execution within Aggregate Root boundary; zero blocking I/O or network queries. |
-| **Security & Compliance** | **Immutable Cryptographic Audit Logging (GDPR)** | **100% of state-mutating actions**, grade modifications, and personal data accesses (PII: national IDs, IBANs) produce an append-only audit record in **< 20 ms**. | Spring Security AOP interceptors (`@Audited`), dedicated tamper-evident append-only table signed with HMAC SHA-256. |
-| **Scalability & Batching** | **Asynchronous Scheduler Deadline Sweep** | The temporal background scheduler must evaluate at least **10,000 active mobility dossiers** and dispatch overdue alerts in **less than 60 seconds**. | Asynchronous batch pipeline using Java 23 Virtual Threads, partitioned database pagination, and RabbitMQ message queues. |
-| **Transactional Consistency** | **Atomic Cascading Cancellation (Interruptible Region)** | Transitioning a mobility dossier to `CANCELLED` cascades across the `LearningAgreement` and all active `ChecklistTask` entities in **< 1,500 ms**. | **Transactional Outbox Pattern**: aggregate state mutation and `MobilityCancelledEvent` recorded in the same ACID commit, followed by idempotent downstream consumption. |
-| **Availability & Resilience** | **Platform Uptime during Academic Peak Windows** | Monthly platform availability (**Uptime ≥ 99.5%**) during peak submission months (September–October and January–February); **MTTR < 15 minutes**. | Multi-instance containerized deployment (Docker / Kubernetes), automated health probes (`/actuator/health`), PostgreSQL read-replica failover. |
-
----
-
-## 1.4 Strategic DDD Context Map & Ubiquitous Language Glossary
-
-### Table 1.2. Ubiquitous Language Glossary Across Bounded Contexts
-
-| Term / Concept | Bounded Context | DDD Pattern / Role | Formal Business Definition |
-| :--- | :--- | :--- | :--- |
-| **LearningAgreement** | *Learning Agreement Management* | **Aggregate Root** | The official tripartite educational contract guaranteeing automatic academic recognition between student, home faculty, and receiving partner. |
-| **CourseLineTableA** | *Learning Agreement Management* | **Internal Entity** | An individual educational component to be attended at the host institution, possessing a foreign course code, title, term, and ECTS value. |
-| **CourseLineTableB** | *Learning Agreement Management* | **Internal Entity** | An educational component from the home degree syllabus that is substituted and accredited upon passing Table A components. |
-| **AcademicEquivalence** | *Equivalence Management* | **Aggregate Root** | The institutional rule binding foreign syllabus learning outcomes to home curricular courses based on verified parity. |
-| **MobilityChecklist** | *Mobility Preparation* | **Aggregate Root** | Central administrative dossier managing the student's preparation checklist and enforcing overall readiness invariants. |
-| **ChecklistTask** | *Mobility Preparation* | **Internal Entity** | An atomic unit of administrative onboarding compliance (e.g., EHIC card, grant contract, OLS assessment) encapsulated within MobilityChecklist. |
-| **StudentId / MobilityId** | *Shared Kernel* | **Value Object** | Immutable UUID identifiers shared across all contexts to correlate entities without tightly coupling internal persistence models. |
-| **AcademicPeriod** | *Shared Kernel* | **Value Object** | Temporal interval bounding mobility start and end dates, enforcing the invariant `endDate >= startDate`. |
-| **ECTSCredits** | *Shared Kernel* | **Value Object** | Positive decimal numerical value quantifying student workload according to the European Credit Transfer and Accumulation System. |
+   * **In-Mobility Amendments:** If foreign courses are cancelled, `Request Amendment` transitions the contract to `AMENDED` for an isolated tripartite delta approval.
+   * **Mobility Cancellation:** In the event of force majeure, the cancellation signal traverses the `«interrupting edge»` of the `InterruptibleActivityRegion`. This cancels the `LearningAgreement` (`CANCELLED`), marks active checklist tasks as `OVERDUE`/`ABORTED`, and deallocates reserved Erasmus scholarship funds.

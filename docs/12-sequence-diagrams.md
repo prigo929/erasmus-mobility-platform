@@ -4,7 +4,7 @@ This document details the dynamic collaboration between presentation controllers
 
 ---
 
-## 1. Overview of Integration Flows
+### 6.2.1 Overview of Integration Flows
 
 The system architecture employs two distinct integration paradigms to keep the three bounded contexts decoupled:
 
@@ -13,13 +13,13 @@ The system architecture employs two distinct integration paradigms to keep the t
 
 ---
 
-## 2. Synchronous REST Integration (Client Side: Learning Agreement Context)
+### 6.2.2 Synchronous REST Integration: Client Side (Figure 22)
 
 Figure 22 captures the execution path when a student triggers course verification in the Learning Agreement workspace.
 
 ![Figure 22. Sequence Diagram: Synchronous REST Integration - Client Side](../models/diagrams-png/Figura22-Sequence-Sync-REST-Client.png)
 
-### 2.1 Execution Sequence
+#### Execution Sequence
 
 1. **Trigger:** The `:Student` clicks "Verify Course Equivalences", issuing an HTTP `POST /api/agreements/{id}/verify` to `:AgreementWebController`.
 2. **Application Orchestration:** The controller delegates to `AgreementApplicationService.verifyCourses(agreementId)`.
@@ -33,13 +33,13 @@ Figure 22 captures the execution path when a student triggers course verificatio
 
 ---
 
-## 3. Synchronous REST Integration (Server Side: Equivalence Management Context)
+### 6.2.3 Synchronous REST Integration: Server Side (Figure 23)
 
 Figure 23 models the internal processing within the Equivalence Management context when answering inbound verification calls.
 
 ![Figure 23. Sequence Diagram: Synchronous REST Integration - Server Side](../models/diagrams-png/Figura23-Sequence-Sync-REST-Server.png)
 
-### 3.1 Execution Sequence
+#### Execution Sequence
 
 1. **Inbound HTTP Call:** The remote client issues an HTTP GET to `/api/equivalences/search?send=CS101&host=INF202`.
 2. **Open Host Controller:** `:EquivalenceApiRest` receives the request. As an Open Host Service, it verifies query parameter sanitization and calls `EquivalenceApplicationService.checkEquivalence("CS101", "INF202")`.
@@ -52,13 +52,13 @@ Figure 23 models the internal processing within the Equivalence Management conte
 
 ---
 
-## 4. Asynchronous Outbox Integration (Producer Side: Learning Agreement Context)
+### 6.2.4 Asynchronous Outbox Integration: Producer Side (Figure 24)
 
 Figure 24 illustrates how the Learning Agreement context guarantees message delivery using the Transactional Outbox pattern, eliminating dual-write failure modes.
 
 ![Figure 24. Sequence Diagram: Asynchronous Outbox Integration - Producer Side](../models/diagrams-png/Figura24-Sequence-Async-Outbox-Publisher.png)
 
-### 4.1 Execution Sequence
+#### Execution Sequence
 
 1. **Coordinator Sign-Off:** The `:Coordinator` submits an approval command (`POST /agreements/{id}/approve`) to `:AgreementController`.
 2. **Transactional Entry:** The controller invokes `AgreementApplicationService.approveAgreement(id, coordId)`. Spring begins a local relational ACID transaction (`@Transactional`).
@@ -75,13 +75,13 @@ Figure 24 illustrates how the Learning Agreement context guarantees message deli
 
 ---
 
-## 5. Asynchronous Outbox Integration (Consumer Side: Mobility Preparation Context)
+### 6.2.5 Asynchronous Outbox Integration: Consumer Side (Figure 25)
 
 Figure 25 traces the inbound message handling within the Mobility Preparation context, highlighting the idempotent receiver design.
 
 ![Figure 25. Sequence Diagram: Asynchronous Outbox Integration - Consumer Side](../models/diagrams-png/Figura25-Sequence-Async-Outbox-Consumer.png)
 
-### 5.1 Execution Sequence
+#### Execution Sequence
 
 1. **AMQP Delivery:** The RabbitMQ queue (`mobility.preparation.agreement.approved`) delivers the message to `:AgreementApprovedMessageReceiver.onMessage(...)`.
 2. **Command Translation:** The receiver parses the JSON body into an `InitializeChecklistCommand`, extracting `eventId`, `agreementId`, and `studentId`.

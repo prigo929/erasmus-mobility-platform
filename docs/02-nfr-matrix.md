@@ -6,7 +6,7 @@
 
 ---
 
-## 1. Methodological Foundations
+### 1. Methodological Foundations
 
 According to Dennis et al. and course lectures:
 > *"A functional requirement decides which classes and operations must exist. A non-functional requirement decides which architecture you need (layering, caching, database partitioning, asynchronous event processing, security boundaries)."*  
@@ -16,7 +16,7 @@ The following matrix governs the architectural quality attributes of the Erasmus
 
 ---
 
-## 2. Extended Quality Attribute Matrix
+### 2. Extended Quality Attribute Matrix
 
 | ID | Architectural Category | Measurable Quality Attribute | Quantifiable Metric | Service Level Agreement (SLA Target) | Verification & Testing Condition | Architectural Decision & Implementation |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |

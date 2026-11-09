@@ -1,6 +1,6 @@
 # Asynchronous Outbox Integration Specification (Section 4)
 
-## 1. Overview and Physical Mechanics
+### 4.2.1 Overview and Physical Mechanics
 
 Asynchronous messaging without distributed transactions behaves like an office clerk placing a carbon copy of a signed contract into an outgoing postal tray. The clerk does not walk the document across town immediately. The clerk signs the primary ledger, drops the duplicate envelope into the tray, and closes the safe. Both actions happen at the same desk in one motion.
 
@@ -10,13 +10,13 @@ The Transactional Outbox pattern guarantees at-least-once message delivery acros
 
 ---
 
-## 2. Producer Side: Learning Agreement Context (Figure 14)
+### 4.2.2 Producer Side: Learning Agreement Context (Figure 14)
 
 When a faculty coordinator approves a student's learning agreement, downstream contexts must take immediate preparatory actions. `Learning Agreement Context` produces domain events without tying its local database transaction to an external message broker.
 
 ![Figure 14. Asynchronous Outbox Integration Producer Side](../models/diagrams-png/Figura14-Outbox-Publisher-Integration.png)
 
-### 2.1 The Atomic Local Transaction
+#### The Atomic Local Transaction
 `AgreementApplicationService.approveAgreement()` executes within a standard Spring `@Transactional` scope:
 
 ```java
@@ -72,7 +72,7 @@ public class AgreementApplicationService {
 
 If the database server loses power during execution, both the aggregate update and the outbox row vanish. If the write succeeds, both persist together. 
 
-### 2.2 The Background Scheduler: `OutboxDispatcher`
+#### The Background Scheduler: `OutboxDispatcher`
 The application does not block HTTP requests to communicate with RabbitMQ. Instead, an independent background daemon polls the database table:
 
 ```java
@@ -119,13 +119,13 @@ The worker reads up to 50 pending records. It forwards each payload to RabbitMQ 
 
 ---
 
-## 3. Consumer Side: Mobility Preparation Context (Figure 15)
+### 4.2.3 Consumer Side: Mobility Preparation Context (Figure 15)
 
 The `Mobility Preparation Context` subscribes to the message broker to initialize logistical checklists as soon as nominations achieve formal approval.
 
 ![Figure 15. Asynchronous Outbox Integration Consumer Side](../models/diagrams-png/Figura15-Outbox-Consumer-Integration.png)
 
-### 3.1 Idempotent Message Receiver: `AgreementApprovedMessageReceiver`
+#### Idempotent Message Receiver: `AgreementApprovedMessageReceiver`
 Because networks can fail during delivery acknowledgments, the broker may deliver identical messages multiple times. The receiver handles duplicate deliveries through explicit verification:
 
 ```java
@@ -174,7 +174,7 @@ public class AgreementApprovedMessageReceiver {
 }
 ```
 
-### 3.2 Idempotency Filter in the Application Layer
+#### Idempotency Filter in the Application Layer
 The consumer verifies uniqueness before writing new records:
 
 ```java
@@ -223,7 +223,7 @@ If the message arrives twice, `processedEventRepo.existsById(cmd.getEventId())` 
 
 ---
 
-## 4. Failure Modes and Recovery Invariants
+### 4.2.4 Failure Modes and Recovery Invariants
 
 1. **Broker Failure on Publish:** If the message broker rejects connections, the dispatcher halts polling. Records stay marked as `PENDING` in the outbox table. No events are lost.
 2. **Crash Before Manual ACK:** If the consumer server loses power after persisting tasks but before running `basicAck`, RabbitMQ redelivers the message upon server restart. The receiver runs its check against `IProcessedEventRepository`, detects the prior commit, skips duplicate task generation, and delivers the delayed ACK.

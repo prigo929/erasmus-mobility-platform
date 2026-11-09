@@ -148,46 +148,37 @@ package "Equivalence Management (Supporting)" as EquivalenceDomain {
 }
 
 package "Mobility Preparation (Supporting)" as PreparationDomain {
-  class MobilityDossier <<Aggregate Root>> {
-    - id: MobilityId
+  class MobilityChecklist <<Aggregate Root>> {
+    - id: ChecklistId
     - studentId: StudentId
-    - partnerUniversityId: String
-    - period: AcademicPeriod
-    - grantAmount: GrantAmount
-    - status: MobilityStatus
-    + initializeChecklist(templateId: String): void
-    + cancelMobility(reason: String): MobilityCancelledEvent
-    + markPrepared(): MobilityPreparedEvent
+    - agreementId: AgreementId
+    - tasks: List<ChecklistTask>
+    + initializeDefaultPreparationTasks(): void
+    + completeTask(taskId: TaskId): void
+    + areMandatoryTasksComplete(): boolean
+    + flagOverdueTasks(asOf: LocalDate): void
   }
 
   class ChecklistTask <<Child Entity>> {
-    - id: UUID
-    - mobilityId: MobilityId
-    - studentId: StudentId
-    - taskCode: String
+    - taskId: TaskId
+    - taskType: TaskType
     - title: String
     - deadline: LocalDate
     - status: TaskStatus
-    - document: DocumentAttachment
-    - isMandatory: boolean
-    + uploadDocument(fileRef: String, hash: String): void
-    + submitForVerification(): void
-    + verifyAndComplete(officerId: String): TaskCompletedEvent
-    + markOverdue(): TaskOverdueEvent
-    + abortTask(): void
+    - proofDocumentUri: String
+    + assignToStudent(): void
+    + attachProof(uri: String): void
+    + markSubmitted(): void
+    + markCompleted(): void
+    + markOverdue(): void
   }
 
-  class DocumentAttachment <<Value Object>> {
-    - fileName: String
-    - storageUri: String
-    - checksumSha256: String
-    - uploadTimestamp: Instant
-  }
-
-  class GrantAmount <<Value Object>> {
-    - monthlyRate: BigDecimal
-    - totalAmount: BigDecimal
-    - currency: String
+  enum TaskType <<Enum>> {
+    OLS_LANGUAGE_ASSESSMENT
+    MEDICAL_INSURANCE_EHIC
+    VISA_DOCUMENTATION
+    GRANT_AGREEMENT
+    LEARNING_AGREEMENT_APPROVAL
   }
 
   enum TaskStatus <<Enum>> {
@@ -196,22 +187,12 @@ package "Mobility Preparation (Supporting)" as PreparationDomain {
     SUBMITTED_FOR_VERIFICATION
     COMPLETED
     OVERDUE
-    ABORTED
+    ABANDONED
   }
 
-  enum MobilityStatus <<Enum>> {
-    NOMINATED
-    IN_PREPARATION
-    PREPARED
-    ABROAD
-    COMPLETED
-    CANCELLED
-  }
-
-  MobilityDossier *-- GrantAmount : holds
-  MobilityDossier --> MobilityStatus
-  ChecklistTask *-- DocumentAttachment : holds
+  MobilityChecklist "1" *-- "1..*" ChecklistTask : encapsulates
   ChecklistTask --> TaskStatus
+  ChecklistTask --> TaskType
 }
 
 LearningAgreement --> StudentId
@@ -221,11 +202,9 @@ CourseLineTableA --> ECTSCredits
 CourseLineTableB --> ECTSCredits
 AcademicEquivalence --> AcademicPeriod
 AcademicEquivalence --> ECTSCredits
-MobilityDossier --> StudentId
-MobilityDossier --> MobilityId
-MobilityDossier --> AcademicPeriod
-ChecklistTask --> StudentId
-ChecklistTask --> MobilityId
+MobilityChecklist --> StudentId
+MobilityChecklist --> AgreementId
+ChecklistTask --> TaskId
 
 @enduml
 

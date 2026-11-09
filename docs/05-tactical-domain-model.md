@@ -2,13 +2,13 @@
 
 **Erasmus Mobility Platform (EMP)**  
 **Methodological Alignment:** Strategic & Tactical DDD (Eric Evans, Vaughn Vernon) and Course Structural Modeling (FEAA Master SDBIS / SIA)  
-**Visual Artifact:** [`models/diagrams-png/Figura8-Tactical-DDD-Domain-Model.png`](file:///Users/alinprigoreanu/Documents/Object-oriented analysis and design/erasmus-mobility-platform/models/diagrams-png/Figura8-Tactical-DDD-Domain-Model.png)  
-**Scalable Vector Graphics (SVG):** [`models/diagrams-png/Figura8-Tactical-DDD-Domain-Model.svg`](file:///Users/alinprigoreanu/Documents/Object-oriented analysis and design/erasmus-mobility-platform/models/diagrams-png/Figura8-Tactical-DDD-Domain-Model.svg)  
-**PlantUML Source:** [`docs/diagrams/fig8-tactical-domain-model.puml`](file:///Users/alinprigoreanu/Documents/Object-oriented analysis and design/erasmus-mobility-platform/docs/diagrams/fig8-tactical-domain-model.puml)
+**Visual Artifact:** `models/diagrams-png/Figura8-Tactical-DDD-Domain-Model.png`  
+**Scalable Vector Graphics (SVG):** `models/diagrams-png/Figura8-Tactical-DDD-Domain-Model.svg`  
+**PlantUML Source:** `docs/diagrams/fig8-tactical-domain-model.puml`
 
 ---
 
-## 1. Tactical Patterns and Consistency Boundaries
+## 2.1 Tactical Patterns and Consistency Boundaries
 
 Up to this point, the analysis focused on the functional perspective. We now shift to the structural perspective. We apply Tactical Domain-Driven Design (DDD) to enforce consistency boundaries and protect transactional invariants across the three subdomains.
 
@@ -23,7 +23,7 @@ The tactical patterns applied include:
 
 ---
 
-## 2. Table 2.1 Transactional Invariants Matrix for the Core Aggregate
+## 2.2 Table 2.1 Transactional Invariants Matrix for Aggregate Roots
 
 | Business Invariant Rule | Guaranteed by Aggregate Root Method | Failure Mode if Aggregate Root is Bypassed |
 | :--- | :--- | :--- |
@@ -34,29 +34,29 @@ The tactical patterns applied include:
 
 ---
 
-## 3. Structural Decomposition across Contexts
+## 2.3 Structural Decomposition across Contexts
 
-### 3.1 Common Types (Shared Kernel)
+### Common Types (Shared Kernel)
 The Shared Kernel encapsulates four immutable Value Objects:
 1. `StudentId`: UUID wrapper enforcing non-null university matriculation identity.
 2. `MobilityId`: UUID wrapper identifying the specific exchange allocation dossier.
 3. `AcademicPeriod`: Encapsulates `startDate` and `endDate`, strictly validating `endDate >= startDate`.
 4. `ECTSCredits`: Encapsulates a positive decimal `BigDecimal`, preventing negative or zero credit allocations.
 
-### 3.2 Learning Agreement Management (Core Domain)
+### Learning Agreement Management (Core Domain)
 The core package isolates the contract aggregate:
 * **`LearningAgreement` (Aggregate Root):** Enforces credit parity and orchestrates approvals. Holds private collections of Table A and Table B lines.
 * **`CourseLineTableA` and `CourseLineTableB` (Internal Entities):** Maintain line items for host and home courses. Their lifespan is bound to the parent agreement via strict UML composition (`1` to `1..*`). Deleting the agreement destroys all internal lines.
 * **`ECTSParityService` (Domain Service):** Stateless calculator verifying credit totals across foreign and domestic tables.
 * **`LearningAgreementStatus` (Enum):** Governs lifecycle transitions (`DRAFT`, `SUBMITTED`, `UNDER_REVIEW`, `APPROVED_BY_FACULTY`, `CONFIRMED_BY_HOST`, `AMENDED`, `CANCELLED`).
 
-### 3.3 Equivalence Management (Supporting Subdomain)
+### Equivalence Management (Supporting Subdomain)
 * **`AcademicEquivalence` (Aggregate Root):** Maintains the canonical link between a host course syllabus and a domestic subject.
 * **`CourseSyllabus` (Value Object):** Immutable record capturing learning outcomes, contact hours, and grading rubrics.
 * **`SyllabusEvaluationService` (Domain Service):** Computes text and credit similarity metrics between two course syllabi.
 * **`EquivalenceStatus` (Enum):** Lifecycle states (`PROPOSED`, `UNDER_EVALUATION`, `APPROVED`, `ACTIVE`, `RETIRED`).
 
-### 3.4 Mobility Preparation (Supporting Subdomain)
+### Mobility Preparation (Supporting Subdomain)
 * **`MobilityChecklist` (Aggregate Root):** Central administrative dossier managing the student's preparation checklist and enforcing overall departure readiness.
 * **`ChecklistTask` (Child Entity):** Discrete administrative compliance task enforcing verification deadlines, encapsulated within the `MobilityChecklist` aggregate.
 * **`DocumentAttachment` (Value Object):** Stores file names, SHA-256 cryptographic hashes, and cloud storage references.

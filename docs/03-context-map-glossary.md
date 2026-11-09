@@ -5,20 +5,20 @@
 
 ---
 
-## 1. Strategic Context Map
+#### 1. Strategic Context Map
 
 The strategic architecture decomposes the problem domain into three core operational Bounded Contexts, an integration Shared Kernel, and two supporting generic subdomains:
 
-![Figura 1. Strategic DDD Context Map (Bounded Contexts & Integration Contracts)](../models/diagrams-png/Figura1-Strategic-DDD-Context-Map.png)
+![Figure 1. Strategic DDD Context Map (Bounded Contexts & Integration Contracts)](../models/diagrams-png/Figura1-Strategic-DDD-Context-Map.png)
 
-### Formal Integration Contracts:
+##### Formal Integration Contracts:
 1. **Shared Kernel:** The three Bounded Contexts share a minimal set of immutable identity and measurement Value Objects: `StudentId`, `MobilityId`, `AcademicPeriod`, and `ECTSCredits`. Modifications to these types require cross-team consensus.
 2. **Customer / Supplier (Synchronous REST with Anti-Corruption Layer):** *Learning Agreement Management* acts as a Customer consuming the course catalog services exposed by *Equivalence Management* (Supplier). Queries pass through a domain Port and an infrastructure REST Adapter to preserve aggregate encapsulation.
 3. **Asynchronous Event-Driven Integration (Transactional Outbox Pattern):** Inter-context synchronization between *Learning Agreement* and *Mobility Preparation* is temporal and asynchronous. Upon partner endorsement (`CONFIRMED_BY_HOST`), domain events (`LearningAgreementApprovedEvent`, `LearningAgreementCancelledEvent`) are committed atomically to the local `Outbox` table and delivered via message broker to update onboarding checklist states idempotently.
 
 ---
 
-## 2. Ubiquitous Language Glossary
+#### 2. Ubiquitous Language Glossary
 
 | Term / Concept | Bounded Context | DDD Element / Pattern | Formal Business Role & Architectural Significance |
 | :--- | :--- | :--- | :--- |

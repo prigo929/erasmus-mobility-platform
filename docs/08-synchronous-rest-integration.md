@@ -1,6 +1,6 @@
 # Synchronous REST Integration Specification (Section 4)
 
-## 1. Overview and Physical Mechanics
+### 4.1.1 Overview and Physical Mechanics
 
 Systems that exchange data synchronously act like two bank tellers communicating through an intercom window. The client teller cannot proceed with paperwork until the server teller stamps the request slip and slides it back through the slot. If the line drops or the server teller walks away, the client teller halts. 
 
@@ -8,13 +8,13 @@ In the Erasmus Mobility Platform, the `Learning Agreement Management` context mu
 
 ---
 
-## 2. Client Side: Learning Agreement Context (Figure 12)
+### 4.1.2 Client Side: Learning Agreement Context (Figure 12)
 
 The client architecture isolates the core domain from network protocols and remote server addresses. 
 
 ![Figure 12. Synchronous REST Integration Client Side](../models/diagrams-png/Figura12-REST-Client-Integration.png)
 
-### 2.1 The Domain Port: `IEquivalenceCatalogAdapter`
+#### The Domain Port: `IEquivalenceCatalogAdapter`
 The domain model resides behind a protective boundary. The core domain defines its own requirement through the Java interface `IEquivalenceCatalogAdapter`:
 
 ```java
@@ -32,7 +32,7 @@ public interface IEquivalenceCatalogAdapter {
 
 The core domain owns this interface. No HTTP client, JSON annotation, or remote IP address enters this package.
 
-### 2.2 The Infrastructure Adapter: `EquivalenceRestAdapter`
+#### The Infrastructure Adapter: `EquivalenceRestAdapter`
 The `EquivalenceRestAdapter` lives in the Infrastructure layer. It implements `IEquivalenceCatalogAdapter` and translates domain inquiries into concrete HTTP GET calls:
 
 1. **Request Formation:** The adapter builds an HTTP GET request targeting `/api/v1/equivalences/verify?sendCode={send}&hostCode={host}`.
@@ -84,13 +84,13 @@ public class EquivalenceRestAdapter implements IEquivalenceCatalogAdapter {
 
 ---
 
-## 3. Server Side: Equivalence Management Context (Figure 13)
+### 4.1.3 Server Side: Equivalence Management Context (Figure 13)
 
 The supporting subdomain publishes an Open Host Service (OHS). It presents a standard contract to external consumers while isolating its own JPA entities.
 
 ![Figure 13. Synchronous REST Integration Server Side](../models/diagrams-png/Figura13-REST-Server-Integration.png)
 
-### 3.1 The Open Host Service Controller: `EquivalenceApiRest`
+#### The Open Host Service Controller: `EquivalenceApiRest`
 The REST controller accepts inbound HTTP requests, unwraps query parameters, and delegates execution to `EquivalenceApplicationService`:
 
 ```java
@@ -133,14 +133,14 @@ public class EquivalenceApiRest {
 }
 ```
 
-### 3.2 Application Service and Persistence Dispatch
+#### Application Service and Persistence Dispatch
 `EquivalenceApplicationService` queries `AcademicEquivalenceRepository`. The call resolves against `AcademicEquivalenceRepoJPA`, which extends `AbstractRepositoryJPA`. 
 
 The query matches course identifiers and verifies that the current date falls inside `ValidityWindow`. If the course mapping exists and remains valid, the service returns confirmed credits. If the record is missing or expired, it returns an explicit invalid status. The database connection closes before HTTP response serialization begins.
 
 ---
 
-## 4. Boundary Failure Modes and Defense Rules
+### 4.1.4 Boundary Failure Modes and Defense Rules
 
 1. **Remote Timeout:** If `Equivalence Context` exceeds the 2500 ms limit, `EquivalenceRestAdapter` throws a `RemoteServiceUnavailableException`. The calling agreement service marks verification as pending and prompts the student to retry later. It never submits unverified agreements.
 2. **Schema Drift:** The server serializes responses into `EquivalenceResponseDTO`. If the server adds extra metadata fields, client deserialization ignores unknown properties. The contract remains intact.

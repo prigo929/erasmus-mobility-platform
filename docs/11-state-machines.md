@@ -4,7 +4,7 @@ This document defines the formal behavioral lifecycles for the core aggregates a
 
 ---
 
-## 1. Team Allocations
+### 6.1.1 Team Allocations and Lifecycle Scope
 
 | Aggregate Root / Entity | Subdomain Context | Primary Author | State Enum Class | Associated Diagram |
 | :--- | :--- | :--- | :--- | :--- |
@@ -14,13 +14,13 @@ This document defines the formal behavioral lifecycles for the core aggregates a
 
 ---
 
-## 2. Learning Agreement Aggregate Lifecycle (Student 1: Prigoreanu Alin-Gabriel)
+### 6.1.2 Learning Agreement Aggregate Lifecycle (Student 1: Prigoreanu Alin-Gabriel)
 
 The `LearningAgreement` aggregate coordinates the core academic contract between the exchange student, the home university, and the host institution.
 
 ![Figure 19. State Machine Diagram: LearningAgreement Aggregate Lifecycle](../models/diagrams-png/Figura19-StateMachine-LearningAgreement.png)
 
-### 2.1 State Definitions (`LearningAgreementStatus`)
+#### 6.1.2.1 State Definitions (`LearningAgreementStatus`)
 
 ```java
 package ro.uaic.feaa.erasmus.agreement.domain;
@@ -44,24 +44,24 @@ public enum LearningAgreementStatus {
 * **`AMENDED`**: Reopened during the mobility semester for exceptional course adjustments (Table A2 and Table B2).
 * **`CANCELLED`**: Permanently revoked due to student withdrawal, severe credit deficit, or administrative disqualification.
 
-### 2.2 Transitions and Invariant Guards (Tabelul de Tranziție a Stărilor)
+#### 6.1.2.2 Transitions and Invariant Guards (Formal State Transition Table)
 
-| Stare Sursă | Eveniment Declanșator (Trigger / Metodă) | Condiție de Gardă (Guard) | Efect / Acțiune (Action / Output) | Stare Destinație |
+| Source State | Trigger Event / Method | Guard Condition | Action / Output Effect | Target State |
 | :--- | :--- | :--- | :--- | :--- |
-| `[Stare Inițială]` | `createDraft()` | — | Instanțiere agregat cu liste de cursuri goale | `DRAFT` |
-| `DRAFT` | `submit()` | `hasCreditParity() && totalECTS >= 30.0` | Blocare editare linii curriculare (`lockCourseLines()`) | `SUBMITTED` |
-| `SUBMITTED` | `assignCoordinator(coordinatorId)` | `coordinatorId != null` | Alocare dosar pentru inspecție academică | `UNDER_REVIEW` |
-| `UNDER_REVIEW` | `approve(coordinatorId)` | `hasCreditParity()` | Emitere `LearningAgreementApprovedEvent` | `APPROVED_BY_FACULTY` |
-| `UNDER_REVIEW` | `requestChanges(rejectionNotes)` | — | Deblocare linii cursuri pentru remediere | `DRAFT` |
-| `UNDER_REVIEW` | `after(5 zile lucrătoare)` | — | Transmitere alertă escaladare către DRI | `UNDER_REVIEW` |
-| `APPROVED_BY_FACULTY` | `confirmByHost(signatureToken)` | `signatureToken != null` | Sigilare contract tripartit oficial | `CONFIRMED_BY_HOST` |
-| `CONFIRMED_BY_HOST` | `requestAmendment(reason)` | — | Deschidere sesiune de modificare curriculară | `AMENDED` |
-| `AMENDED` | `resubmitAmendedDraft()` | `hasCreditParity()` | Trimitere contract modificat la re-avizare | `SUBMITTED` |
-| `{DRAFT, SUBMITTED, UNDER_REVIEW}` | `cancel(reason)` | — | Anulare contract de studii | `CANCELLED` |
-| `CONFIRMED_BY_HOST` | `concludeExchange()` | — | Finalizare mobilitate cu recunoaștere credite | `[Stare Finală]` |
-| `CANCELLED` | — | — | Arhivare dosar anulat | `[Stare Finală]` |
+| `[Initial State]` | `createDraft()` | None | Instantiate aggregate with empty course collections | `DRAFT` |
+| `DRAFT` | `submit()` | `hasCreditParity() && totalECTS >= 30.0` | Lock course line editing (`lockCourseLines()`) | `SUBMITTED` |
+| `SUBMITTED` | `assignCoordinator(coordinatorId)` | `coordinatorId != null` | Allocate agreement to coordinator review queue | `UNDER_REVIEW` |
+| `UNDER_REVIEW` | `approve(coordinatorId)` | `hasCreditParity()` | Emit `LearningAgreementApprovedEvent` | `APPROVED_BY_FACULTY` |
+| `UNDER_REVIEW` | `requestChanges(rejectionNotes)` | None | Unlock course lines for student adjustments | `DRAFT` |
+| `UNDER_REVIEW` | `after(5 business days)` | None | Dispatch escalation notification to DRI | `UNDER_REVIEW` |
+| `APPROVED_BY_FACULTY` | `confirmByHost(signatureToken)` | `signatureToken != null` | Seal official tripartite institutional contract | `CONFIRMED_BY_HOST` |
+| `CONFIRMED_BY_HOST` | `requestAmendment(reason)` | None | Open exceptional curricular amendment session | `AMENDED` |
+| `AMENDED` | `resubmitAmendedDraft()` | `hasCreditParity()` | Submit amended contract for faculty re-approval | `SUBMITTED` |
+| `{DRAFT, SUBMITTED, UNDER_REVIEW}` | `cancel(reason)` | None | Cancel study contract across subsystems | `CANCELLED` |
+| `CONFIRMED_BY_HOST` | `concludeExchange()` | None | Conclude mobility with full credit recognition | `[Final State]` |
+| `CANCELLED` | None | None | Archive cancelled contract dossier | `[Final State]` |
 
-### 2.3 Operational Mechanics
+#### 6.1.2.3 Operational Mechanics
 
 1. **Credit Parity Guard (`hasCreditParity()`):** The aggregate prevents any transition from `DRAFT` to `SUBMITTED` unless the sum of ECTS credits in Table A equals the sum of credits in Table B, and the total reaches at least 30.0 credits for a standard semester.
 2. **Temporal Review Alert:** If an agreement remains in `UNDER_REVIEW` for more than 5 business days without coordinator action, a non-blocking background timer fires `alertDRI()`. This notifies the Department of International Relations to prevent administrative bottlenecks.
@@ -69,13 +69,13 @@ public enum LearningAgreementStatus {
 
 ---
 
-## 3. Academic Equivalence Aggregate Lifecycle (Student 2: Bîrgovan A. Mihai-Daniel)
+### 6.1.3 Academic Equivalence Aggregate Lifecycle (Student 2: Bîrgovan A. Mihai-Daniel)
 
 The `AcademicEquivalence` aggregate governs verified course mapping rules between sending and receiving academic programs.
 
 ![Figure 20. State Machine Diagram: AcademicEquivalence Aggregate Lifecycle](../models/diagrams-png/Figura20-StateMachine-AcademicEquivalence.png)
 
-### 3.1 State Definitions (`EquivalenceStatus`)
+#### 6.1.3.1 State Definitions (`EquivalenceStatus`)
 
 ```java
 package ro.uaic.feaa.erasmus.equivalence.domain;
@@ -95,21 +95,21 @@ public enum EquivalenceStatus {
 * **`ACTIVE`**: Published in the catalog and open for automatic verification via REST endpoints.
 * **`RETIRED`**: Archived and no longer eligible for newly submitted learning agreements. Historical records remain preserved for audit compliance.
 
-### 3.2 Transitions and Invariant Guards (Tabelul de Tranziție a Stărilor)
+#### 6.1.3.2 Transitions and Invariant Guards (Formal State Transition Table)
 
-| Stare Sursă | Eveniment Declanșator (Trigger / Metodă) | Condiție de Gardă (Guard) | Efect / Acțiune (Action / Output) | Stare Destinație |
+| Source State | Trigger Event / Method | Guard Condition | Action / Output Effect | Target State |
 | :--- | :--- | :--- | :--- | :--- |
-| `[Stare Inițială]` | `propose()` | — | Înregistrare propunere nouă de echivalare | `PROPOSED` |
-| `PROPOSED` | `assignEvaluator(evaluatorId)` | `evaluatorId != null` | Alocare către profesorul titular de disciplină | `UNDER_EVALUATION` |
-| `UNDER_EVALUATION` | `requestClarification(details)` | — | Solicitare silabă detaliată de la universitatea gazdă | `PROPOSED` |
-| `UNDER_EVALUATION` | `approve()` | `contentOverlap >= 80% && creditsMatch` | Validare decizie de recunoaștere | `APPROVED` |
-| `UNDER_EVALUATION` | `reject(discrepancyNotes)` | — | Respingere echivalare din lipsă de acoperire | `RETIRED` |
-| `APPROVED` | `publishToCatalog()` | — | Indexare în catalogul public REST (`indexInRestCatalog()`) | `ACTIVE` |
-| `ACTIVE` | `retire(reason)` | — | Retragere manuală din catalog | `RETIRED` |
-| `ACTIVE` | `after(validityWindow.endDate)` | `asOf > validityWindow.endDate` | Expirare automată la încheierea ciclului academic | `RETIRED` |
-| `RETIRED` | — | — | Arhivare istorică a regulii | `[Stare Finală]` |
+| `[Initial State]` | `propose()` | None | Record new syllabus equivalence proposal | `PROPOSED` |
+| `PROPOSED` | `assignEvaluator(evaluatorId)` | `evaluatorId != null` | Allocate to departmental discipline coordinator | `UNDER_EVALUATION` |
+| `UNDER_EVALUATION` | `requestClarification(details)` | None | Request detailed syllabus from host institution | `PROPOSED` |
+| `UNDER_EVALUATION` | `approve()` | `contentOverlap >= 80% && creditsMatch` | Validate academic recognition decision | `APPROVED` |
+| `UNDER_EVALUATION` | `reject(discrepancyNotes)` | None | Reject proposal due to insufficient overlap | `RETIRED` |
+| `APPROVED` | `publishToCatalog()` | None | Index in public REST catalog (`indexInRestCatalog()`) | `ACTIVE` |
+| `ACTIVE` | `retire(reason)` | None | Manual retirement from active catalog | `RETIRED` |
+| `ACTIVE` | `after(validityWindow.endDate)` | `asOf > validityWindow.endDate` | Automatic expiration upon validity window lapse | `RETIRED` |
+| `RETIRED` | None | None | Historical preservation of syllabus mapping | `[Final State]` |
 
-### 3.3 Operational Mechanics
+#### 6.1.3.3 Operational Mechanics
 
 1. **Curricular Parity Guard:** The transition to `APPROVED` requires programmatic verification that the home and host syllabi share at least 80% core thematic overlap, and that the allocated ECTS credits match.
 2. **Catalog Indexing:** Only records in `ACTIVE` state are exposed through the Open Host Service REST API (`/api/equivalences/search`). Any draft, pending, or retired records remain invisible to external queries.
@@ -117,13 +117,13 @@ public enum EquivalenceStatus {
 
 ---
 
-## 4. Mobility Preparation Task Lifecycle (Student 3: Schipor Ana-Maria)
+### 6.1.4 Mobility Preparation Task Lifecycle (Student 3: Schipor Ana-Maria)
 
 The `ChecklistTask` entity tracks individual administrative readiness requirements before a student departs for their study abroad program.
 
 ![Figure 21. State Machine Diagram: ChecklistTask Entity Lifecycle](../models/diagrams-png/Figura21-StateMachine-ChecklistTask.png)
 
-### 4.1 State Definitions (`TaskStatus`)
+#### 6.1.4.1 State Definitions (`TaskStatus`)
 
 ```java
 package ro.uaic.feaa.erasmus.preparation.domain;
@@ -145,22 +145,22 @@ public enum TaskStatus {
 * **`OVERDUE`**: The statutory deadline passed without approved documentation.
 * **`ABANDONED`**: Voided due to mobility cancellation or formal waiver.
 
-### 4.2 Transitions and Invariant Guards (Tabelul de Tranziție a Stărilor)
+#### 6.1.4.2 Transitions and Invariant Guards (Formal State Transition Table)
 
-| Stare Sursă | Eveniment Declanșator (Trigger / Metodă) | Condiție de Gardă (Guard) | Efect / Acțiune (Action / Output) | Stare Destinație |
+| Source State | Trigger Event / Method | Guard Condition | Action / Output Effect | Target State |
 | :--- | :--- | :--- | :--- | :--- |
-| `[Stare Inițială]` | `instantiate()` | — | Creare sarcină conform template-ului de țară | `INITIALIZED` |
-| `INITIALIZED` | `assignToStudent()` | — | Alocare în contul studentului și expediere e-mail | `PENDING_STUDENT_ACTION` |
-| `PENDING_STUDENT_ACTION` | `uploadProof(fileRef)` | `fileRef != null` | Atașare document PDF justificativ | `SUBMITTED_FOR_VERIFICATION` |
-| `SUBMITTED_FOR_VERIFICATION` | `rejectProof(notes)` | — | Solicitare reîncărcare document conform | `PENDING_STUDENT_ACTION` |
-| `SUBMITTED_FOR_VERIFICATION` | `validateProof()` | — | Verificare completare dosar (`checkAllChecklistTasks()`) | `COMPLETED` |
-| `PENDING_STUDENT_ACTION` | `after(deadline)` | `currentDate > deadline` | Trimitere notificare urgentă de depășire termen | `OVERDUE` |
-| `OVERDUE` | `uploadLateProof(fileRef)` | `fileRef != null` | Încărcare tardivă pentru analiză | `SUBMITTED_FOR_VERIFICATION` |
-| `{INITIALIZED, PENDING, OVERDUE}` | `abandon()` | — | Anulare sarcină în caz de retragere | `ABANDONED` |
-| `COMPLETED` | — | — | Sarcină îndeplinită cu succes | `[Stare Finală]` |
-| `ABANDONED` | — | — | Sarcină clasată | `[Stare Finală]` |
+| `[Initial State]` | `instantiate()` | None | Instantiate onboarding task from country template | `INITIALIZED` |
+| `INITIALIZED` | `assignToStudent()` | None | Assign to student dashboard and dispatch alert email | `PENDING_STUDENT_ACTION` |
+| `PENDING_STUDENT_ACTION` | `uploadProof(fileRef)` | `fileRef != null` | Attach verified PDF certificate | `SUBMITTED_FOR_VERIFICATION` |
+| `SUBMITTED_FOR_VERIFICATION` | `rejectProof(notes)` | None | Request document re-upload with coordinator audit notes | `PENDING_STUDENT_ACTION` |
+| `SUBMITTED_FOR_VERIFICATION` | `validateProof()` | None | Verify dossier completeness (`checkAllChecklistTasks()`) | `COMPLETED` |
+| `PENDING_STUDENT_ACTION` | `after(deadline)` | `currentDate > deadline` | Dispatch urgent escalation reminder | `OVERDUE` |
+| `OVERDUE` | `uploadLateProof(fileRef)` | `fileRef != null` | Upload late proof document for urgent review | `SUBMITTED_FOR_VERIFICATION` |
+| `{INITIALIZED, PENDING, OVERDUE}` | `abandon()` | None | Void task following mobility cancellation | `ABANDONED` |
+| `COMPLETED` | None | None | Successfully fulfilled administrative milestone | `[Final State]` |
+| `ABANDONED` | None | None | Closed task without liability | `[Final State]` |
 
-### 4.3 Operational Mechanics
+#### 6.1.4.3 Operational Mechanics
 
 1. **Automated Initialization:** Tasks are never entered manually. They are generated by the message listener following the arrival of a confirmed nomination event from the message broker.
 2. **Temporal Overdue Scanner:** A background scheduler checks tasks whose status is `PENDING_STUDENT_ACTION`. When the local calendar date exceeds `deadline`, the system changes the status to `OVERDUE` and dispatches an escalation notice to the coordinator.

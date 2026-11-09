@@ -2,9 +2,9 @@
 
 **Erasmus Mobility Platform (EMP)**  
 **Methodological Alignment:** Course Chapter 2 - Functional Modeling (Alan Dennis et al., UML 2.5 Metamodel) & Project Guidelines (FEAA Master SDBIS / SIA)  
-**Visual Artifact:** [`models/diagrams-png/Figura2-Activity-Diagram-Across-Bounded-Contexts.png`](file:///Users/alinprigoreanu/Documents/Object-oriented analysis and design/erasmus-mobility-platform/models/diagrams-png/Figura2-Activity-Diagram-Across-Bounded-Contexts.png)  
-**Scalable Vector Graphics (SVG):** [`models/diagrams-png/Figura2-Activity-Diagram-Across-Bounded-Contexts.svg`](file:///Users/alinprigoreanu/Documents/Object-oriented analysis and design/erasmus-mobility-platform/models/diagrams-png/Figura2-Activity-Diagram-Across-Bounded-Contexts.svg)  
-**PlantUML Source:** [`docs/diagrams/activity-diagram-erasmus-platform.puml`](file:///Users/alinprigoreanu/Documents/Object-oriented analysis and design/erasmus-mobility-platform/docs/diagrams/activity-diagram-erasmus-platform.puml)
+**Visual Artifact:** `models/diagrams-png/Figura2-Activity-Diagram-Across-Bounded-Contexts.png`  
+**Scalable Vector Graphics (SVG):** `models/diagrams-png/Figura2-Activity-Diagram-Across-Bounded-Contexts.svg`  
+**PlantUML Source:** `docs/diagrams/activity-diagram-erasmus-platform.puml`
 
 ---
 
@@ -13,11 +13,11 @@
 In strict accordance with **Domain-Driven Design (DDD)** and the UML 2.5 metamodel, the macro-level business workflow of the platform is partitioned into **three parallel vertical swimlanes** mapping directly to the three Bounded Contexts:
 
 1. **Swimlane 1 (Left): `Mobility Preparation (Supporting Subdomain)`**  
-   * *Operational Responsibility:* Initializes the mobility dossier post-selection, automatically generates onboarding checklist tasks (`ChecklistTask`), tracks administrative readiness (EHIC medical card, OLS linguistic assessment), coordinates Erasmus+ scholarship grant contract execution, and enforces compliance deadlines.
+   * **Operational Responsibility:** Initializes the mobility dossier post-selection, automatically generates onboarding checklist tasks (`ChecklistTask`), tracks administrative readiness (EHIC medical card, OLS linguistic assessment), coordinates Erasmus+ scholarship grant contract execution, and enforces compliance deadlines.
 2. **Swimlane 2 (Center): `Equivalence Management (Supporting Subdomain)`**  
-   * *Operational Responsibility:* Queries active accredited syllabus equivalence records, compares learning outcomes, and handles missing course exceptions (student proposal $\rightarrow$ academic review $\rightarrow$ ECTS validation $\rightarrow$ institutional catalog registration).
+   * **Operational Responsibility:** Queries active accredited syllabus equivalence records, compares learning outcomes, and handles missing course exceptions (student proposal $\rightarrow$ academic review $\rightarrow$ ECTS validation $\rightarrow$ institutional catalog registration).
 3. **Swimlane 3 (Right): `Learning Agreement Management (Core Domain)`**  
-   * *Operational Responsibility:* Governs the authoring and tripartite approval of the study plan (Table A foreign courses mapped to Table B home degree components), enforces the core credit parity invariant ($\sum Table A == \sum Table B \ge 30$ ECTS), manages faculty review, and secures digital institutional confirmation from the host partner across the European EWP network.
+   * **Operational Responsibility:** Governs the authoring and tripartite approval of the study plan (Table A foreign courses mapped to Table B home degree components), enforces the core credit parity invariant ($\sum Table A == \sum Table B \ge 30$ ECTS), manages faculty review, and secures digital institutional confirmation from the host partner across the European EWP network.
 
 ---
 
@@ -26,8 +26,8 @@ In strict accordance with **Domain-Driven Design (DDD)** and the UML 2.5 metamod
 ### 2.1 Parallel Synchronization (Fork & Join)
 Physical departure preparation requires simultaneous administrative onboarding and academic curriculum planning:
 * **Fork Synchronization Bar (Top Black Bar):** Splits the initial control flow into concurrent streams:
-  * *Administrative Stream (Swimlane 1):* Progresses through document uploads and scholarship agreements.
-  * *Academic Stream (Swimlane 2 $\rightarrow$ Swimlane 3):* Searches equivalences, composes the Learning Agreement, and traverses departmental review.
+  * **Administrative Stream (Swimlane 1):** Progresses through document uploads and scholarship agreements.
+  * **Academic Stream (Swimlane 2 $\rightarrow$ Swimlane 3):** Searches equivalences, composes the Learning Agreement, and traverses departmental review.
 * **Join Synchronization Bar (Bottom Black Bar):** Blocks final departure readiness until **both** concurrent streams have completed successfully (all mandatory checklist tasks verified AND the Learning Agreement confirmed by the host partner).
 
 ### 2.2 Canonical UML 2.5 «InterruptibleActivityRegion» & Interrupting Edge

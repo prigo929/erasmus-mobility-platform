@@ -2,13 +2,13 @@
 
 **Erasmus Mobility Platform (EMP)**  
 **Methodological Alignment:** Tactical Domain-Driven Design (Eric Evans) & Course Repository Specifications (FEAA Master SDBIS / SIA)  
-**Visual Artifact:** [`models/diagrams-png/Figura11-Repository-Hierarchy.png`](file:///Users/alinprigoreanu/Documents/Object-oriented analysis and design/erasmus-mobility-platform/models/diagrams-png/Figura11-Repository-Hierarchy.png)  
-**Scalable Vector Graphics (SVG):** [`models/diagrams-png/Figura11-Repository-Hierarchy.svg`](file:///Users/alinprigoreanu/Documents/Object-oriented analysis and design/erasmus-mobility-platform/models/diagrams-png/Figura11-Repository-Hierarchy.svg)  
-**PlantUML Source:** [`docs/diagrams/fig11-repository-hierarchy.puml`](file:///Users/alinprigoreanu/Documents/Object-oriented analysis and design/erasmus-mobility-platform/docs/diagrams/fig11-repository-hierarchy.puml)
+**Visual Artifact:** `models/diagrams-png/Figura11-Repository-Hierarchy.png`  
+**Scalable Vector Graphics (SVG):** `models/diagrams-png/Figura11-Repository-Hierarchy.svg`  
+**PlantUML Source:** `docs/diagrams/fig11-repository-hierarchy.puml`
 
 ---
 
-## 1. Tactical Purpose of the Repository Pattern
+### 3.2.1 Tactical Purpose of the Repository Pattern
 
 In Domain-Driven Design, a repository provides the illusion of an in-memory collection of all aggregate roots of a given type. It mediates between the domain model and data mapping layers.
 
@@ -20,7 +20,7 @@ The architecture enforces a strict physical separation:
 
 ---
 
-## 2. The Abstract Base: `AbstractRepositoryJPA`
+### 3.2.2 The Abstract Base: AbstractRepositoryJPA
 
 All concrete repository implementations extend `AbstractRepositoryJPA`. 
 
@@ -69,24 +69,24 @@ The base class exposes persistence operations. It declares zero transaction boun
 
 ---
 
-## 3. Structural Breakdown of Repository Classes
+### 3.2.3 Structural Breakdown of Repository Classes
 
-### 3.1 `LearningAgreementRepo` (Core Domain)
+#### `LearningAgreementRepo` (Core Domain)
 * **Domain Interface:** Exposes `add`, `findById`, `findByStudentId`, `save`, and `delete`.
 * **Concrete JPA Class:** `LearningAgreementRepoJPA` extends `AbstractRepositoryJPA<LearningAgreement, UUID>`.
 * **Responsibility:** Loads and persists the complete `LearningAgreement` aggregate. It loads all `CourseLineTableA` and `CourseLineTableB` lines within the same entity graph.
 
-### 3.2 `CourseLineQueryRepo` (Read-Only Projection)
+#### `CourseLineQueryRepo` (Read-Only Projection)
 * **Domain Interface:** Exposes projection queries `findLinesByAgreementId` and `findHostCourseByCode`.
 * **Concrete JPA Class:** `CourseLineQueryRepoJPA` uses JPA Criteria queries to return read-only DTO records.
 * **Invariant Constraint:** Direct mutations through this repository are forbidden. Adding, editing, or deleting lines must traverse `LearningAgreement` root methods to protect the 30 ECTS invariant.
 
-### 3.3 `AcademicEquivalenceRepo` (Supporting Subdomain)
+#### `AcademicEquivalenceRepo` (Supporting Subdomain)
 * **Domain Interface:** Exposes `save`, `findById`, `searchByPartnerAndCode`, and `findActiveByDegreeProgram`.
 * **Concrete JPA Class:** `AcademicEquivalenceRepoJPA` queries syllabus mappings.
 * **Type Safety:** Returns typed `AcademicEquivalence` aggregates and `CourseSyllabus` value objects.
 
-### 3.4 `ChecklistTaskRepo` (Supporting Subdomain)
+#### `ChecklistTaskRepo` (Supporting Subdomain)
 * **Domain Interface:** Exposes `save`, `findById`, `findAllByMobilityId`, and `findOverdueTasks`.
 * **Concrete JPA Class:** `ChecklistTaskRepoJPA` queries student administrative onboarding tasks.
 * **Batch Scheduling:** Supports indexed date queries for the nightly temporal deadline sweep.
