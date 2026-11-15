@@ -460,9 +460,8 @@ def build_cover_page(doc):
     r_team_title.font.color.rgb = COLOR_PRIMARY
     
     students = [
-        ("Prigoreanu Alin-Gabriel", "Student 1", "Learning Agreement Management (Core Domain)"),
-        ("Bîrgovan A. Mihai-Daniel", "Student 2", "Equivalence Management (Supporting Subdomain)"),
-        ("Schipor Ana-Maria", "Student 3", "Mobility Preparation (Supporting Subdomain)")
+        ("Prigoreanu Alin-Gabriel", "Student 1", "Learning Agreement Management (Core Domain) & 50% Mobility Preparation"),
+        ("Bîrgovan A. Mihai-Daniel", "Student 2", "Equivalence Management (Supporting Subdomain) & 50% Mobility Preparation")
     ]
     for name, s_idx, role in students:
         p_s = doc.add_paragraph(style='List Bullet')
@@ -534,7 +533,7 @@ def generate_document():
     add_paragraph(doc, "For each of the three primary subdomains established in the strategic context map, a dedicated UML 2.5 Use Case Diagram was designed, detailing business actors, associations, and advanced «include» and «extend» relationships:")
     add_image_diagram(doc, "usecase-learning-agreement.png", "Figure 3. Use Case Diagram: Learning Agreement Management (Student 1: Prigoreanu Alin-Gabriel)")
     add_image_diagram(doc, "usecase-equivalence-management.png", "Figure 4. Use Case Diagram: Equivalence Management (Student 2: Bîrgovan A. Mihai-Daniel)")
-    add_image_diagram(doc, "usecase-mobility-preparation.png", "Figure 5. Use Case Diagram: Mobility Preparation (Student 3: Schipor Ana-Maria)")
+    add_image_diagram(doc, "usecase-mobility-preparation.png", "Figure 5. Use Case Diagram: Mobility Preparation (Joint 50%/50%: Prigoreanu Alin-Gabriel & Bîrgovan A. Mihai-Daniel)")
     
     # 1.2.4 SVDPI Use Case Narrative Descriptions
     add_heading_3(doc, "1.2.4 Use Case Narrative Specifications (SVDPI Format: UC01, UC02, UC03)")
@@ -564,7 +563,7 @@ def generate_document():
     feat_eq = (ROOT / "features/equivalence-management.feature").read_text(encoding="utf-8")
     add_code_block(doc, feat_eq)
     
-    add_paragraph(doc, "C. Gherkin Specification: Mobility Preparation (Student 3: Schipor Ana-Maria)", bold_prefix="Specification 3: ")
+    add_paragraph(doc, "C. Gherkin Specification: Mobility Preparation (Joint 50%/50%: Prigoreanu Alin-Gabriel & Bîrgovan A. Mihai-Daniel)", bold_prefix="Specification 3: ")
     feat_prep = (ROOT / "features/mobility-preparation.feature").read_text(encoding="utf-8")
     add_code_block(doc, feat_prep)
     
