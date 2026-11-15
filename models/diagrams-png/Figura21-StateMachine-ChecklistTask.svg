@@ -12,8 +12,8 @@
   </defs>
 
   <!-- Title -->
-  <text x="30" y="32" font-size="18" font-weight="bold" fill="#1A202C">Figure 21. State Machine Diagram: ChecklistTask Aggregate Lifecycle</text>
-  <text x="30" y="50" font-size="11.5" fill="#5A4A3E">Author: Schipor Ana-Maria (Student 3). Asynchronous Triggering, Document Proof Verification, and Overdue Escalation</text>
+  <text x="30" y="32" font-size="18" font-weight="bold" fill="#1A202C">Figure 21. State Machine Diagram: ChecklistTask Entity Lifecycle</text>
+  <text x="30" y="50" font-size="11.5" fill="#5A4A3E">Authors: Prigoreanu Alin-Gabriel (50%) &amp; Bîrgovan A. Mihai-Daniel (50%). Asynchronous Triggering, Document Proof Verification, and Overdue Escalation</text>
 
   <!-- Initial State Node -->
   <circle cx="70" cy="150" r="12" fill="#1A202C" />
