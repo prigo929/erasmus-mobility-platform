@@ -4,9 +4,8 @@
 **Course:** Object-Oriented Analysis and Design (OOAD)  
 **Project:** Erasmus Mobility Platform (EMP): Enterprise Distributed Architecture for International Academic Exchanges  
 **Authors:**
-* Prigoreanu Alin-Gabriel (Student 1)
-* Bîrgovan A. Mihai-Daniel (Student 2)
-* Schipor Ana-Maria (Student 3)
+* Prigoreanu Alin-Gabriel (Student 1: Learning Agreement Management + 50% Mobility Preparation)
+* Bîrgovan A. Mihai-Daniel (Student 2: Equivalence Management + 50% Mobility Preparation)
 
 ---
 

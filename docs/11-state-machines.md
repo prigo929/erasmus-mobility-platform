@@ -10,7 +10,7 @@ This document defines the formal behavioral lifecycles for the core aggregates a
 | :--- | :--- | :--- | :--- | :--- |
 | `LearningAgreement` | `Learning Agreement Management` (Core Domain) | Prigoreanu Alin-Gabriel | `LearningAgreementStatus` | Figure 19 |
 | `AcademicEquivalence` | `Equivalence Management` (Supporting Subdomain) | Bîrgovan A. Mihai-Daniel | `EquivalenceStatus` | Figure 20 |
-| `ChecklistTask` | `Mobility Preparation` (Supporting Subdomain) | Schipor Ana-Maria | `TaskStatus` | Figure 21 |
+| `ChecklistTask` | `Mobility Preparation` (Supporting Subdomain) | Prigoreanu Alin-Gabriel (50%) & Bîrgovan A. Mihai-Daniel (50%) | `TaskStatus` | Figure 21 |
 
 ---
 
@@ -117,7 +117,7 @@ public enum EquivalenceStatus {
 
 ---
 
-### 6.1.4 Mobility Preparation Task Lifecycle (Student 3: Schipor Ana-Maria)
+### 6.1.4 Mobility Preparation Task Lifecycle (Joint 50%/50%: Prigoreanu Alin-Gabriel & Bîrgovan A. Mihai-Daniel)
 
 The `ChecklistTask` entity tracks individual administrative readiness requirements before a student departs for their study abroad program.
 

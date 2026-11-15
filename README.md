@@ -19,37 +19,36 @@ The software models three specialized Bounded Contexts:
 
 ## 2. Team Members and Individual Task Allocation
 
-The project is developed by a team of three graduate students:
+The project is developed by a team of two graduate students:
 * **Prigoreanu Alin-Gabriel** (Student 1)
 * **Bîrgovan A. Mihai-Daniel** (Student 2)
-* **Schipor Ana-Maria** (Student 3)
 
 Individual responsibilities map directly to course deliverables:
 
-### Student 1: Prigoreanu Alin-Gabriel - Learning Agreement Management (Core Domain)
-* **Domain Responsibility:** Core academic workflow, study contracts, and tripartite approvals.
+### Student 1: Prigoreanu Alin-Gabriel - Learning Agreement Management (Core Domain) & 50% Mobility Preparation
+* **Domain Responsibility:** Core academic workflow, study contracts, tripartite approvals, and Outbox Producer integration (plus 50% joint co-ownership of Mobility Preparation: Asynchronous Outbox Consumer & Checklist Initialization).
 * **Use Case Diagram:** `docs/diagrams/usecase-learning-agreement.puml`
 * **Detailed Use Case (SVDPI):** `UC01 - Submit Learning Agreement` (including ECTS balance verification).
 * **BDD Specification (Gherkin):** `features/learning-agreement.feature`
-* **Dynamic Interaction:** Sequence diagram for study plan submission and academic coordinator review.
-* **State Machine:** Entity `LearningAgreement` via `StareLearningAgreement` enum (`DRAFT`, `SUBMITTED`, `UNDER_REVIEW`, `APPROVED_BY_FACULTY`, `CONFIRMED_BY_HOST`, `AMENDED`, `CANCELLED`).
+* **Dynamic Interaction:** Sequence diagram for study plan submission, academic coordinator review, and asynchronous event dispatch.
+* **State Machine:** Entity `LearningAgreement` via `LearningAgreementStatus` enum (`DRAFT`, `SUBMITTED`, `UNDER_REVIEW`, `APPROVED_BY_FACULTY`, `CONFIRMED_BY_HOST`, `AMENDED`, `CANCELLED`).
 
-### Student 2: Bîrgovan A. Mihai-Daniel - Equivalence Management (Supporting Subdomain)
-* **Domain Responsibility:** Institutional course catalog, academic syllabus matching, and credit parity rules.
+### Student 2: Bîrgovan A. Mihai-Daniel - Equivalence Management (Supporting Subdomain) & 50% Mobility Preparation
+* **Domain Responsibility:** Institutional course catalog, academic syllabus matching, credit parity rules, and Open Host REST Service (plus 50% joint co-ownership of Mobility Preparation: `ChecklistTask` Lifecycle, Document Verification & Deadline Enforcement).
 * **Use Case Diagram:** `docs/diagrams/usecase-equivalence-management.puml`
 * **Detailed Use Case (SVDPI):** `UC02 - Register Course Equivalence` (including mandatory ECTS range checks).
 * **BDD Specification (Gherkin):** `features/equivalence-management.feature`
 * **Dynamic Interaction:** Synchronous REST sequence diagram verifying syllabus equivalence queries.
-* **State Machine:** Entity `AcademicEquivalence` via `StareEchivalare` enum (`PROPOSED`, `UNDER_EVALUATION`, `APPROVED`, `ACTIVE`, `RETIRED`).
+* **State Machine:** Entity `AcademicEquivalence` via `EquivalenceStatus` enum (`PROPOSED`, `UNDER_EVALUATION`, `APPROVED`, `ACTIVE`, `RETIRED`).
 
-### Student 3: Schipor Ana-Maria - Mobility Preparation (Supporting Subdomain)
-* **Domain Responsibility:** Administrative readiness, document onboarding, and deadline enforcement.
+### Shared Subdomain (50% / 50% Joint Allocation: Prigoreanu Alin-Gabriel & Bîrgovan A. Mihai-Daniel) - Mobility Preparation (Supporting Subdomain)
+* **Domain Responsibility:** Administrative readiness, document onboarding (`MobilityChecklist` & `ChecklistTask`), asynchronous Transactional Outbox consumer, and deadline enforcement (co-authored 50% by Student 1 and 50% by Student 2).
 * **Use Case Diagram:** `docs/diagrams/usecase-mobility-preparation.puml`
 * **Detailed Use Case (SVDPI):** `UC03 - Confirm Nomination` (including automated checklist generation).
 * **BDD Specification (Gherkin):** `features/mobility-preparation.feature`
-* **Dynamic Interaction:** Asynchronous sequence diagram using Transactional Outbox for nomination events.
-* **State Machine:** Entity `ChecklistTask` via `StareSarcina` enum (`INITIALIZED`, `PENDING_STUDENT_ACTION`, `SUBMITTED_FOR_VERIFICATION`, `COMPLETED`, `OVERDUE`).
-* **Part II Lead (Design Patterns):** Strategy, Factory, Singleton, and Facade implementation for variable scholarship grants or equivalence evaluation engines.
+* **Dynamic Interaction:** Asynchronous sequence diagram using Transactional Outbox for nomination events (`Figura25-Sequence-Async-Outbox-Consumer.png`).
+* **State Machine:** Entity `ChecklistTask` via `TaskStatus` enum (`INITIALIZED`, `PENDING_STUDENT_ACTION`, `SUBMITTED_FOR_VERIFICATION`, `COMPLETED`, `OVERDUE`, `ABANDONED`).
+* **Part II Scope (Design Patterns):** Joint Strategy, Factory, Singleton, and Facade implementation for variable scholarship grants and equivalence evaluation engines.
 
 ---
 

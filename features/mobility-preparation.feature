@@ -4,7 +4,7 @@ Feature: Mobility Preparation Checklist and Departure Gate Verification
   So that outgoing students comply with legal, medical, and grant regulations
 
   Background:
-    Given an authenticated mobility officer "Ana-Maria Schipor" with officerId "off-3003"
+    Given an authenticated mobility officer "DRI Mobility Officer" with officerId "off-3003"
     And an outgoing exchange student "s-1001" with an approved learning agreement "la-9001"
 
   Scenario: Successful checklist completion and departure clearance

@@ -1,6 +1,6 @@
 # Use Case Specification: UC03 - Confirm Nomination
 
-* **Author:** Schipor Ana-Maria (Student 3)
+* **Authors:** Prigoreanu Alin-Gabriel (Student 1, 50%) & Bîrgovan A. Mihai-Daniel (Student 2, 50%)
 * **Subdomain:** Mobility Preparation (Supporting Subdomain)
 * **Primary Aggregate:** `MobilityChecklist`
 * **Associated Diagram:** Figure 5 (Use Case Diagram), Figure 21 (State Machine), Figure 25 (Sequence Diagram)
