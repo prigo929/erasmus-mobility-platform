@@ -1,6 +1,18 @@
 # Erasmus Mobility Platform (EMP)
 
-An enterprise software architecture and domain model for managing international student exchange programs under the Erasmus+ European framework.
+> **Temporary review note — requested changes in this branch**
+>
+> - The project scope is one-semester study mobility after nomination. EWP exchange and scholarship payment are outside scope.
+> - **UC01:** submit a Learning Agreement after checking every 1:1 course mapping, credit parity, the 30 ECTS project minimum, and the expected version.
+> - **UC02:** evaluate and publish an equivalence in one operation (`UNDER_EVALUATION` → `ACTIVE`); explicit rejection is separate (`REJECTED`).
+> - **UC03:** nomination creates the checklist; the consumer applies later `HOST_CONFIRMED` or `CANCELLED` events to that existing checklist idempotently.
+> - Figure 2 shows the shared process; Figures 3–5, 19–25 and the Gherkin files trace the three use cases.
+> - Diagram sources and SVG/PNG exports were updated; the DOCX and PDF were regenerated.
+> - **Review note:** the UML/documentation enums and some Java enums still differ; check these before treating the Java skeleton as aligned.
+
+---
+
+A domain-driven prototype for modeling international student study mobility under the Erasmus+ framework.
 
 Developed for the **Object-Oriented Analysis and Design (OOAD)** course, Master in Software Development and Business Information Systems (SDBIS / SIA), FEAA, Universitatea „Alexandru Ioan Cuza” din Iași.
 
@@ -8,12 +20,12 @@ Developed for the **Object-Oriented Analysis and Design (OOAD)** course, Master 
 
 ## 1. Project Overview
 
-The Erasmus Mobility Platform automates the management of international academic exchanges across partner universities. The system replaces fragmented email communications and paper workflows with a distributed, domain-driven architecture. 
+The Erasmus Mobility Platform models the academic and administrative steps for preparing a nominated student's study mobility. It separates responsibilities into three bounded contexts.
 
 The software models three specialized Bounded Contexts:
-1. **Learning Agreement Management (Core Domain):** Authoring, tripartite review, and contractual approval of student study plans.
+1. **Learning Agreement Management (Core Domain):** Drafting, faculty review, and recording host confirmation evidence for study plans.
 2. **Equivalence Management (Supporting Subdomain):** A verified academic catalog matching home faculty courses with foreign university curricula and validating European Credit Transfer and Accumulation System (ECTS) parity.
-3. **Mobility Preparation (Supporting Subdomain):** Administrative task tracking, document checklists, and nomination onboarding.
+3. **Mobility Preparation (Supporting Subdomain):** Nomination onboarding, checklist evidence, and readiness tracking. Nomination initializes the checklist; agreement events update its existing academic task.
 
 ---
 
@@ -26,39 +38,41 @@ The project is developed by a team of two graduate students:
 Individual responsibilities map directly to course deliverables:
 
 ### Student 1: Prigoreanu Alin-Gabriel - Learning Agreement Management (Core Domain) & 50% Mobility Preparation
-* **Domain Responsibility:** Core academic workflow, study contracts, tripartite approvals, and Outbox Producer integration (plus 50% joint co-ownership of Mobility Preparation: Asynchronous Outbox Consumer & Checklist Initialization).
+* **Domain Responsibility:** Core academic workflow and study agreements; 50% joint contribution to Mobility Preparation.
 * **Use Case Diagram:** `docs/diagrams/usecase-learning-agreement.puml`
 * **Detailed Use Case (SVDPI):** `UC01 - Submit Learning Agreement` (including ECTS balance verification).
 * **BDD Specification (Gherkin):** `features/learning-agreement.feature`
-* **Dynamic Interaction:** Sequence diagram for study plan submission, academic coordinator review, and asynchronous event dispatch.
-* **State Machine:** Entity `LearningAgreement` via `LearningAgreementStatus` enum (`DRAFT`, `SUBMITTED`, `UNDER_REVIEW`, `APPROVED_BY_FACULTY`, `CONFIRMED_BY_HOST`, `AMENDED`, `CANCELLED`).
+* **Dynamic Interaction:** Figure 22 traces UC01 submission; Figure 24 traces host confirmation and outbox publication.
+* **State Machine:** Figure 19 models `LearningAgreement` through `DRAFT`, `SUBMITTED`, `UNDER_REVIEW`, `APPROVED_BY_FACULTY`, `CONFIRMED_BY_HOST`, and `CANCELLED`.
 
 ### Student 2: Bîrgovan A. Mihai-Daniel - Equivalence Management (Supporting Subdomain) & 50% Mobility Preparation
-* **Domain Responsibility:** Institutional course catalog, academic syllabus matching, credit parity rules, and Open Host REST Service (plus 50% joint co-ownership of Mobility Preparation: `ChecklistTask` Lifecycle, Document Verification & Deadline Enforcement).
+* **Domain Responsibility:** Institutional course catalog, syllabus evaluation, and equivalence publication; 50% joint contribution to Mobility Preparation.
 * **Use Case Diagram:** `docs/diagrams/usecase-equivalence-management.puml`
-* **Detailed Use Case (SVDPI):** `UC02 - Register Course Equivalence` (including mandatory ECTS range checks).
+* **Detailed Use Case (SVDPI):** `UC02 - Evaluate and publish a course equivalence`.
 * **BDD Specification (Gherkin):** `features/equivalence-management.feature`
-* **Dynamic Interaction:** Synchronous REST sequence diagram verifying syllabus equivalence queries.
-* **State Machine:** Entity `AcademicEquivalence` via `EquivalenceStatus` enum (`PROPOSED`, `UNDER_EVALUATION`, `APPROVED`, `ACTIVE`, `RETIRED`).
+* **Dynamic Interaction:** Figure 23 traces UC02 evaluation and publication; Figures 12–13 show the read-only REST catalog integration.
+* **State Machine:** Figure 20 models `PROPOSED`, `UNDER_EVALUATION`, `ACTIVE`, `REJECTED`, and `RETIRED`.
 
 ### Shared Subdomain (50% / 50% Joint Allocation: Prigoreanu Alin-Gabriel & Bîrgovan A. Mihai-Daniel) - Mobility Preparation (Supporting Subdomain)
-* **Domain Responsibility:** Administrative readiness, document onboarding (`MobilityChecklist` & `ChecklistTask`), asynchronous Transactional Outbox consumer, and deadline enforcement (co-authored 50% by Student 1 and 50% by Student 2).
+* **Domain Responsibility:** Checklist tasks and evidence, event consumption, and readiness tracking (co-authored 50% by each student).
 * **Use Case Diagram:** `docs/diagrams/usecase-mobility-preparation.puml`
 * **Detailed Use Case (SVDPI):** `UC03 - Apply Agreement Event to Mobility Checklist` (host confirmation and cancellation events).
 * **BDD Specification (Gherkin):** `features/mobility-preparation.feature`
-* **Dynamic Interaction:** Asynchronous sequence diagram using Transactional Outbox for nomination events (`Figura25-Sequence-Async-Outbox-Consumer.png`).
+* **Dynamic Interaction:** Figure 25 applies host-confirmation or cancellation events to the existing checklist; Figure 24 publishes those events through the outbox.
 * **State Machine:** Entity `ChecklistTask` via `TaskStatus` enum (`INITIALIZED`, `PENDING_STUDENT_ACTION`, `SUBMITTED_FOR_VERIFICATION`, `COMPLETED`, `OVERDUE`, `ABANDONED`).
-* **Part II Scope (Design Patterns):** Joint Strategy, Factory, Singleton, and Facade implementation for variable scholarship grants and equivalence evaluation engines.
 
 ---
 
 ## 3. Team Deliverables
 
 * **Domain Specification:** Comprehensive narrative detailing subdomains, transactions, and business invariants (`docs/01-subdomains-and-transactions.md`).
-* **Non-Functional Requirements:** SLA matrix containing measured latency, throughput, and audit boundaries (`docs/02-nfr-matrix.md`).
+* **Non-Functional Requirements:** SLA targets, measurement methods, and audit boundaries (`docs/02-nfr-matrix.md`).
 * **Strategic Context Map:** Upstream/Downstream contracts, Shared Kernel, and Open Host Services (`docs/03-context-map-glossary.md`).
-* **Cross-Context Activity Diagram:** End-to-end business process covering all three Bounded Contexts with vertical swimlanes, parallel forks, and an interruptible cancellation region.
-* **Layered Class Models (Figures 8-15):** Presentation, Application, Domain, and Infrastructure layers using Enterprise Architect.
+* **Cross-Context Activity Diagram:** Figure 2 shows nomination, parallel academic/preparation work, host confirmation, readiness, and withdrawal handling.
+* **Structural Models:** Figures 8–18 cover the tactical domain model, layered structures, repositories, integrations, and consolidated context models.
+* **Behavioral Models:** Figures 19–21 are state machines; Figures 22–25 are sequence diagrams.
+* **Use Case and BDD Specifications:** Figures 3–5, the three narrative use cases, and the matching Gherkin feature files.
+* **Generated documentation:** `docs/Erasmus_Mobility_Platform_Documentatie_P1.docx` and `.pdf`.
 
 ---
 
@@ -67,28 +81,25 @@ Individual responsibilities map directly to course deliverables:
 ```text
 erasmus-mobility-platform/
 │
-├── .gitignore                          # Excludes EA SQLite locks (~$*.qea) and build artifacts
-├── README.md                           # Team roles, deliverable mapping, and project setup
+├── README.md                           # Current scope, requested changes, and deliverable mapping
 │
 ├── docs/                               # Analysis, architecture memos, and specifications
-│   ├── 01-subdomains-and-transactions.md # 3-page problem statement and transaction breakdown
+│   ├── 01-subdomains-and-transactions.md # Subdomain descriptions and T1–T5 transaction flow
 │   ├── 02-nfr-matrix.md                # Measurable quality attributes and SLA targets
 │   ├── 03-context-map-glossary.md      # Ubiquitous language and integration contracts
+│   ├── diagrams/                       # PlantUML sources and shared definitions
 │   └── use-cases/                      # Narrative SVDPI use case specifications
 │       ├── UC01-submit-learning-agreement.md
 │       ├── UC02-register-course-equivalence.md
-│       └── UC03-confirm-nomination.md
+│       └── UC03-confirm-nomination.md  # Content title: Apply Agreement Event to Mobility Checklist
 │
 ├── features/                           # Gherkin BDD living documentation (.feature files)
 │   ├── learning-agreement.feature
 │   ├── equivalence-management.feature
 │   └── mobility-preparation.feature
 │
-├── models/                             # Enterprise Architect models and exports
-│   ├── EA-Repository/
-│   │   └── ErasmusModel.qea            # Master SQLite repository for Enterprise Architect v16+
-│   ├── xmi-exports/                    # XMI / Native XML schema packages for version control
-│   └── diagrams-png/                   # Exported diagrams for documentation
+├── models/                             # Rendered diagram exports
+│   └── diagrams-png/                   # PNG and SVG diagrams embedded in the documentation
 │
 └── src/                                # Reference implementation (JDK 23 / Spring Boot)
     ├── pom.xml
@@ -101,12 +112,11 @@ erasmus-mobility-platform/
 ```
 
 
-## 5. Development and Tooling Requirements
+## 5. Development and Tooling
 
-* **Enterprise Architect v16+:** Core UML CASE tool (.qea SQLite file format). Always close the tool before committing to release the database lock file.
-* **Java Development Kit (JDK) 23:** Modern Java baseline utilizing records, sealed interfaces, and pattern matching.
-* **IntelliJ IDEA (2024.3+):** Recommended IDE for source inspection, unit testing, and pattern validation.
-* **Maven 3.9+:** Project build management and dependency resolution.
+* **PlantUML:** Diagram sources are in `docs/diagrams/`; rendered PNG/SVG exports are in `models/diagrams-png/`.
+* **Java and Maven:** The `src/` directory contains the reference domain skeleton and its Maven build.
+* **IntelliJ IDEA:** Recommended for inspecting the project and Java sources.
 
 ```bash
 # Verify build and run architecture constraint checks
