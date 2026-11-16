@@ -26,22 +26,22 @@ hide MessagePublisherAdapter methods
 hide LearningAgreement fields
 hide LearningAgreement methods
 hide AgreementApplicationService members
-AgreementApplicationService -[hidden]down-> OutboxDispatcher
+AgreementApplicationService -[hidden]right-> OutboxDispatcher
 LearningAgreement ..> AgreementIntegrationEvent : confirmByHost / cancel
-note bottom of AgreementApplicationService
-  CF08 / BR-08: confirmHost, nu simpla aprobare a facultății.
-  LA + audit + append(event) în aceeași tranzacție.
-  HOST_CONFIRMED / CANCELLED identifică evenimentele
-  LearningAgreementConfirmedByHost / LearningAgreementCancelled.
-end note
-note bottom of OutboxDispatcher
-  Publică după commit; markPublished numai după confirmarea
-  transportului. Retry poate produce duplicate (at-least-once).
-end note
+legend bottom left
+  CF08 / BR-08: confirmHost, not faculty approval alone.
+  Agreement + audit + append(event) commit atomically.
+  HOST_CONFIRMED / CANCELLED identify the integration events.
+  Dispatcher publishes after commit; marks published after broker confirmation.
+  Retry is at-least-once and may deliver duplicates.
+endlegend
 
-LearningAgreementRepoJPA -[hidden]down-> OutboxRepoJPA
-OutboxRepoJPA -[hidden]down-> OutboxDispatcher
+LearningAgreementRepoJPA -[hidden]right-> OutboxRepoJPA
+OutboxRepoJPA -[hidden]down-> IOutboxRepository
+AgreementDelivery -[hidden]down-> OutboxContract
 OutboxDispatcher -[hidden]down-> MessagePublisherAdapter
+MessagePublisherAdapter -[hidden]down-> IMessagePublisher
+IMessagePublisher -[hidden]left-> IOutboxRepository
 remove AgreementOutbound
 hide members
 show AgreementIntegrationEvent fields

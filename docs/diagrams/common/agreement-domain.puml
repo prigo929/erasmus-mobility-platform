@@ -46,7 +46,9 @@ package "LA\nDomain" as AgreementDomain {
  }
  LearningAgreement "1" *-down- "0..*" RecognitionMapping : mappings
  LearningAgreement --> LearningAgreementStatus : status
+!ifndef EMP_FIG8_COMPACT
  RecognitionMapping -down-> CourseSyllabus : home / host snapshots
+!endif
  LearningAgreement --> "0..*" DecisionRecord : history
 }
 !endif

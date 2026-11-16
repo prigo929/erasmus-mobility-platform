@@ -1,6 +1,8 @@
 @startuml
 title Figure 15. Asynchronous integration — update an existing checklist
+!define EMP_FIG15_COMPACT
 !include common/style.puml
+skinparam linetype ortho
 !include common/preparation-architecture.puml
 remove Commands
 remove MobilityChecklistWebController
@@ -29,17 +31,14 @@ hide PreparationApplicationService members
 hide MobilityChecklistRepoJPA members
 hide ProcessedEventRepoJPA members
 hide ChecklistTask methods
-note bottom of PreparationApplicationService
-  tryRecord(eventId) + findByMobilityId + applyAgreementEvent
-  + save(checklist) în aceeași tranzacție locală.
-  ACK după commit; unicitate eventId și actualizare serializată.
-  Checklist absent: rollback/retry, nu creare implicită.
-end note
-note bottom of MobilityChecklist
-  sourceVersion ignoră evenimentele vechi.
-  CANCELLED nu poate fi reactivat de o confirmare tardivă.
-  Sarcina academică se completează fără upload PDF.
-end note
+hide IProcessedEventRepository members
+legend bottom left
+  tryRecord(eventId) + findByMobilityId + applyAgreementEvent + save(checklist)
+  commit in one local transaction. ACK follows commit; eventId is unique.
+  Missing checklist: rollback/retry, no implicit checklist creation.
+  sourceVersion ignores stale events; CANCELLED cannot be reactivated by late confirmation.
+  The academic task completes without a PDF upload.
+endlegend
 
 remove PreparationPresentation
 @enduml

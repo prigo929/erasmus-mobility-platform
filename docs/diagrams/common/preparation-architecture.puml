@@ -45,5 +45,9 @@ MobilityChecklistWebController -down-> PreparationApplicationService : delegates
 AgreementMessageReceiver -down-> PreparationApplicationService : dispatches
 PreparationApplicationService -right-> MobilityChecklistRepository : load / save by MobilityId
 PreparationApplicationService -down-> MobilityChecklist : invokes rules
+!ifndef EMP_FIG15_COMPACT
 PreparationApplicationService -left-> IProcessedEventRepository : deduplicates
+!else
+PreparationApplicationService -left-> IProcessedEventRepository
+!endif
 !endif

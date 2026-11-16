@@ -1,5 +1,6 @@
 @startuml
 title Figure 8. Tactical DDD model: aggregates, mappings and invariants
+!define EMP_FIG8_COMPACT
 !include common/style.puml
 !include common/agreement-domain.puml
 !include common/equivalence-domain.puml
@@ -30,7 +31,11 @@ show CourseSyllabus fields
 legend bottom left
   1:1 recognition mappings; minimum 30 ECTS at submission.
   One checklist per MobilityId; host confirmation updates its academic task.
+  Shared value objects are identified by their attribute types.
 endlegend
 LearningAgreement -[hidden]right-> AcademicEquivalence
+LearningAgreement -[hidden]down-> CourseSyllabus
+LearningAgreement -[hidden]down-> RecognitionMapping
+LearningAgreement -[hidden]right-> LearningAgreementStatus
 AcademicEquivalence -[hidden]down-> MobilityChecklist
 @enduml

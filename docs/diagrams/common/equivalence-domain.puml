@@ -33,8 +33,10 @@ package "EQ\nDomain" as EquivalenceDomain {
   + saveIfVersionMatches(equivalence: AcademicEquivalence, expectedVersion: long): boolean
  }
  AcademicEquivalence --> EquivalenceStatus : status
+!ifndef EMP_FIG8_COMPACT
  AcademicEquivalence --> CourseSyllabus : send / host snapshots
  AcademicEquivalence -down-> ValidityWindow : validity
+!endif
  AcademicEquivalence --> "0..*" DecisionRecord : history
 }
 !endif
