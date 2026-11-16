@@ -1,0 +1,49 @@
+' Definiții canonice; se includ, nu se copiază în vederi.
+!ifndef EMP_PREPARATION_ARCHITECTURE
+!define EMP_PREPARATION_ARCHITECTURE
+!include preparation-domain.puml
+!include commands.puml
+!include outbox.puml
+package "PREP\nUI" as PreparationPresentation {
+ class MobilityChecklistWebController <<Controller>> {
+  + registerNomination(cmd: RegisterNominationCommand): void
+  + submitProof(cmd: SubmitProofCommand): void
+  + approveProof(cmd: ReviewProofCommand): void
+  + rejectProof(cmd: ReviewProofCommand): void
+  + confirmReadiness(cmd: ConfirmReadinessCommand): void
+ }
+}
+package "PREP\nApplication" as PreparationApplication {
+ class PreparationApplicationService <<ApplicationService>> {
+  - checklists: MobilityChecklistRepository
+  - processed: IProcessedEventRepository
+  + registerNomination(cmd: RegisterNominationCommand): void
+  + submitProof(cmd: SubmitProofCommand): void
+  + approveProof(cmd: ReviewProofCommand): void
+  + rejectProof(cmd: ReviewProofCommand): void
+  + confirmReadiness(cmd: ConfirmReadinessCommand): void
+  + applyAgreementEvent(event: AgreementIntegrationEvent): void
+ }
+}
+package "Persistence" as PreparationPersistence {
+ class MobilityChecklistRepoJPA <<RepositoryImplementation>> {
+  + findByMobilityId(mobilityId: MobilityId): Optional<MobilityChecklist>
+  + save(checklist: MobilityChecklist): void
+ }
+ class ProcessedEventRepoJPA <<RepositoryImplementation>> {
+  + tryRecord(eventId: UUID): boolean
+ }
+}
+package "Inbound events" as PreparationInbound {
+ class AgreementMessageReceiver <<MessageReceiver>> {
+  + onMessage(event: AgreementIntegrationEvent): void
+ }
+}
+MobilityChecklistRepoJPA .down.|> MobilityChecklistRepository
+ProcessedEventRepoJPA .down.|> IProcessedEventRepository
+MobilityChecklistWebController -down-> PreparationApplicationService : delegates
+AgreementMessageReceiver -down-> PreparationApplicationService : dispatches
+PreparationApplicationService -right-> MobilityChecklistRepository : load / save by MobilityId
+PreparationApplicationService -down-> MobilityChecklist : invokes rules
+PreparationApplicationService -left-> IProcessedEventRepository : deduplicates
+!endif

@@ -16,153 +16,55 @@ This document defines the formal behavioral lifecycles for the core aggregates a
 
 ### 6.1.2 Learning Agreement Aggregate Lifecycle (Student 1: Prigoreanu Alin-Gabriel)
 
-The `LearningAgreement` aggregate coordinates the core academic contract between the exchange student, the home university, and the host institution.
+`LearningAgreementStatus` is `DRAFT`, `SUBMITTED`, `UNDER_REVIEW`, `APPROVED_BY_FACULTY`, `CONFIRMED_BY_HOST`, or `CANCELLED`.
 
 ![Figure 19. State Machine Diagram: LearningAgreement Aggregate Lifecycle](../models/diagrams-png/Figura19-StateMachine-LearningAgreement.png)
 
-#### 6.1.2.1 State Definitions (`LearningAgreementStatus`)
+| Transition | Guard / result |
+|---|---|
+| Initial → `DRAFT` | Create the persisted working draft. |
+| `DRAFT` → `SUBMITTED` | Student owns it; every mapping is eligible; mappings are 1:1 with equal credits; semester total is at least 30 ECTS. |
+| `SUBMITTED` → `UNDER_REVIEW` | Authorized coordinator begins review. |
+| `UNDER_REVIEW` → `DRAFT` | Coordinator requests corrections with a reason. |
+| `UNDER_REVIEW` → `APPROVED_BY_FACULTY` | Current version and academic checks pass. |
+| `APPROVED_BY_FACULTY` → `CONFIRMED_BY_HOST` | DRI records evidence for the approved revision; agreement, decision, and outbox are committed locally. |
+| Any active pre-departure state → `CANCELLED` | Authorized cancellation is recorded; terminal state. |
 
-```java
-package ro.uaic.feaa.erasmus.agreement.domain;
-
-public enum LearningAgreementStatus {
-    DRAFT,
-    SUBMITTED,
-    UNDER_REVIEW,
-    APPROVED_BY_FACULTY,
-    CONFIRMED_BY_HOST,
-    AMENDED,
-    CANCELLED
-}
-```
-
-* **`DRAFT`**: The initial working slate. The student freely adds, edits, or removes course lines in Table A (host offerings) and Table B (home recognitions).
-* **`SUBMITTED`**: The agreement is locked against student edits and queued for departmental assignment.
-* **`UNDER_REVIEW`**: Assigned to the designated faculty coordinator for academic curriculum inspection.
-* **`APPROVED_BY_FACULTY`**: Stamped with the institutional digital seal. Triggers publication of `LearningAgreementApprovedEvent` to the transactional outbox ledger.
-* **`CONFIRMED_BY_HOST`**: Counter-signed by the receiving partner institution via Erasmus Without Paper (EWP) network. Represents a binding tripartite contract.
-* **`AMENDED`**: Reopened during the mobility semester for exceptional course adjustments (Table A2 and Table B2).
-* **`CANCELLED`**: Permanently revoked due to student withdrawal, severe credit deficit, or administrative disqualification.
-
-#### 6.1.2.2 Transitions and Invariant Guards (Formal State Transition Table)
-
-| Source State | Trigger Event / Method | Guard Condition | Action / Output Effect | Target State |
-| :--- | :--- | :--- | :--- | :--- |
-| `[Initial State]` | `createDraft()` | None | Instantiate aggregate with empty course collections | `DRAFT` |
-| `DRAFT` | `submit()` | `hasCreditParity() && totalECTS >= 30.0` | Lock course line editing (`lockCourseLines()`) | `SUBMITTED` |
-| `SUBMITTED` | `assignCoordinator(coordinatorId)` | `coordinatorId != null` | Allocate agreement to coordinator review queue | `UNDER_REVIEW` |
-| `UNDER_REVIEW` | `approve(coordinatorId)` | `hasCreditParity()` | Emit `LearningAgreementApprovedEvent` | `APPROVED_BY_FACULTY` |
-| `UNDER_REVIEW` | `requestChanges(rejectionNotes)` | None | Unlock course lines for student adjustments | `DRAFT` |
-| `UNDER_REVIEW` | `after(5 business days)` | None | Dispatch escalation notification to DRI | `UNDER_REVIEW` |
-| `APPROVED_BY_FACULTY` | `confirmByHost(signatureToken)` | `signatureToken != null` | Seal official tripartite institutional contract | `CONFIRMED_BY_HOST` |
-| `CONFIRMED_BY_HOST` | `requestAmendment(reason)` | None | Open exceptional curricular amendment session | `AMENDED` |
-| `AMENDED` | `resubmitAmendedDraft()` | `hasCreditParity()` | Submit amended contract for faculty re-approval | `SUBMITTED` |
-| `{DRAFT, SUBMITTED, UNDER_REVIEW}` | `cancel(reason)` | None | Cancel study contract across subsystems | `CANCELLED` |
-| `CONFIRMED_BY_HOST` | `concludeExchange()` | None | Conclude mobility with full credit recognition | `[Final State]` |
-| `CANCELLED` | None | None | Archive cancelled contract dossier | `[Final State]` |
-
-#### 6.1.2.3 Operational Mechanics
-
-1. **Credit Parity Guard (`hasCreditParity()`):** The aggregate prevents any transition from `DRAFT` to `SUBMITTED` unless the sum of ECTS credits in Table A equals the sum of credits in Table B, and the total reaches at least 30.0 credits for a standard semester.
-2. **Temporal Review Alert:** If an agreement remains in `UNDER_REVIEW` for more than 5 business days without coordinator action, a non-blocking background timer fires `alertDRI()`. This notifies the Department of International Relations to prevent administrative bottlenecks.
-3. **Event Trigger on Approval:** Entering `APPROVED_BY_FACULTY` executes an entry action that emits `LearningAgreementApprovedEvent`. The application service commits this event into the local outbox table inside the same database transaction.
-
----
+UC01 ends at persisted `SUBMITTED`; Figure 19 continues the same aggregate lifecycle through review and host evidence. Failed submission leaves the persisted draft unchanged. There is no `AMENDED` state in this project scope.
 
 ### 6.1.3 Academic Equivalence Aggregate Lifecycle (Student 2: Bîrgovan A. Mihai-Daniel)
 
-The `AcademicEquivalence` aggregate governs verified course mapping rules between sending and receiving academic programs.
+`EquivalenceStatus` is `PROPOSED`, `UNDER_EVALUATION`, `ACTIVE`, `REJECTED`, or `RETIRED`.
 
 ![Figure 20. State Machine Diagram: AcademicEquivalence Aggregate Lifecycle](../models/diagrams-png/Figura20-StateMachine-AcademicEquivalence.png)
 
-#### 6.1.3.1 State Definitions (`EquivalenceStatus`)
+| Transition | Guard / result |
+|---|---|
+| Initial → `PROPOSED` | Record a submitted course-pair proposal. |
+| `PROPOSED` → `UNDER_EVALUATION` | Authorized evaluator begins assessment; this precedes UC02. |
+| `UNDER_EVALUATION` → `ACTIVE` | UC02 atomically validates score ≥80/100, equal credits, validity for the full mobility period, no overlap, and rationale; saves decision and rule. |
+| `UNDER_EVALUATION` → `REJECTED` | Evaluator records an explicit rejection with a reason. |
+| `ACTIVE` → `RETIRED` | Authorized retirement or validity expiry. |
 
-```java
-package ro.uaic.feaa.erasmus.equivalence.domain;
+A validation failure in UC02 leaves the proposal `UNDER_EVALUATION`; it is not an explicit rejection. The 80/100 threshold is a project policy. No intermediate `APPROVED` status exists: evaluation and publication are one operation.
 
-public enum EquivalenceStatus {
-    PROPOSED,
-    UNDER_EVALUATION,
-    APPROVED,
-    ACTIVE,
-    RETIRED
-}
-```
+### 6.1.4 Mobility Preparation Task Lifecycle (shared)
 
-* **`PROPOSED`**: Raw course syllabus mapping submitted by a student or academic advisor.
-* **`UNDER_EVALUATION`**: Under rigorous assessment by a departmental subject-matter professor.
-* **`APPROVED`**: Academic equivalence confirmed by faculty resolution. Validity window is established.
-* **`ACTIVE`**: Published in the catalog and open for automatic verification via REST endpoints.
-* **`RETIRED`**: Archived and no longer eligible for newly submitted learning agreements. Historical records remain preserved for audit compliance.
-
-#### 6.1.3.2 Transitions and Invariant Guards (Formal State Transition Table)
-
-| Source State | Trigger Event / Method | Guard Condition | Action / Output Effect | Target State |
-| :--- | :--- | :--- | :--- | :--- |
-| `[Initial State]` | `propose()` | None | Record new syllabus equivalence proposal | `PROPOSED` |
-| `PROPOSED` | `assignEvaluator(evaluatorId)` | `evaluatorId != null` | Allocate to departmental discipline coordinator | `UNDER_EVALUATION` |
-| `UNDER_EVALUATION` | `requestClarification(details)` | None | Request detailed syllabus from host institution | `PROPOSED` |
-| `UNDER_EVALUATION` | `approve()` | `contentOverlap >= 80% && creditsMatch` | Validate academic recognition decision | `APPROVED` |
-| `UNDER_EVALUATION` | `reject(discrepancyNotes)` | None | Reject proposal due to insufficient overlap | `RETIRED` |
-| `APPROVED` | `publishToCatalog()` | None | Index in public REST catalog (`indexInRestCatalog()`) | `ACTIVE` |
-| `ACTIVE` | `retire(reason)` | None | Manual retirement from active catalog | `RETIRED` |
-| `ACTIVE` | `after(validityWindow.endDate)` | `asOf > validityWindow.endDate` | Automatic expiration upon validity window lapse | `RETIRED` |
-| `RETIRED` | None | None | Historical preservation of syllabus mapping | `[Final State]` |
-
-#### 6.1.3.3 Operational Mechanics
-
-1. **Curricular Parity Guard:** The transition to `APPROVED` requires programmatic verification that the home and host syllabi share at least 80% core thematic overlap, and that the allocated ECTS credits match.
-2. **Catalog Indexing:** Only records in `ACTIVE` state are exposed through the Open Host Service REST API (`/api/equivalences/search`). Any draft, pending, or retired records remain invisible to external queries.
-3. **Temporal Expiration:** A scheduled maintenance task evaluates the `ValidityWindow` value object daily. When the end date lapses (typically after 3 academic years), the aggregate transitions into `RETIRED`.
-
----
-
-### 6.1.4 Mobility Preparation Task Lifecycle (Joint 50%/50%: Prigoreanu Alin-Gabriel & Bîrgovan A. Mihai-Daniel)
-
-The `ChecklistTask` entity tracks individual administrative readiness requirements before a student departs for their study abroad program.
+`ChecklistTask` tracks one requirement in the existing mobility dossier.
 
 ![Figure 21. State Machine Diagram: ChecklistTask Entity Lifecycle](../models/diagrams-png/Figura21-StateMachine-ChecklistTask.png)
 
-#### 6.1.4.1 State Definitions (`TaskStatus`)
+`TaskStatus` is `INITIALIZED`, `PENDING_STUDENT_ACTION`, `SUBMITTED_FOR_VERIFICATION`, `COMPLETED`, `OVERDUE`, or `ABANDONED`.
 
-```java
-package ro.uaic.feaa.erasmus.preparation.domain;
+| Transition | Guard / result |
+|---|---|
+| Initial → `INITIALIZED` → `PENDING_STUDENT_ACTION` | Nomination creates the checklist once; the task is assigned to the student. |
+| `PENDING_STUDENT_ACTION` → `SUBMITTED_FOR_VERIFICATION` | Student submits valid administrative proof. |
+| `SUBMITTED_FOR_VERIFICATION` → `PENDING_STUDENT_ACTION` | DRI rejects the proof with a reason. |
+| `PENDING_STUDENT_ACTION` → `OVERDUE` | A deadline check finds the due date passed and no proof submitted. |
+| `OVERDUE` → `SUBMITTED_FOR_VERIFICATION` | Student submits late proof. |
+| `SUBMITTED_FOR_VERIFICATION` → `COMPLETED` | DRI approves the proof. |
+| `PENDING_STUDENT_ACTION` or `OVERDUE` → `COMPLETED` | A valid host-confirmation event completes the existing academic task; no PDF upload is required. |
+| Active task → `ABANDONED` | Mobility cancellation is applied; completed evidence remains history. |
 
-public enum TaskStatus {
-    INITIALIZED,
-    PENDING_STUDENT_ACTION,
-    SUBMITTED_FOR_VERIFICATION,
-    COMPLETED,
-    OVERDUE,
-    ABANDONED
-}
-```
-
-* **`INITIALIZED`**: The task record is instantiated by the asynchronous message consumer following receipt of `LearningAgreementApprovedEvent`.
-* **`PENDING_STUDENT_ACTION`**: Assigned to the student profile. The student must upload evidence such as a signed grant agreement, health insurance proof, or housing confirmation.
-* **`SUBMITTED_FOR_VERIFICATION`**: Proof documentation is attached. The task sits in the Erasmus office review queue.
-* **`COMPLETED`**: Verified and signed off by an institutional mobility officer.
-* **`OVERDUE`**: The statutory deadline passed without approved documentation.
-* **`ABANDONED`**: Voided due to mobility cancellation or formal waiver.
-
-#### 6.1.4.2 Transitions and Invariant Guards (Formal State Transition Table)
-
-| Source State | Trigger Event / Method | Guard Condition | Action / Output Effect | Target State |
-| :--- | :--- | :--- | :--- | :--- |
-| `[Initial State]` | `instantiate()` | None | Instantiate onboarding task from country template | `INITIALIZED` |
-| `INITIALIZED` | `assignToStudent()` | None | Assign to student dashboard and dispatch alert email | `PENDING_STUDENT_ACTION` |
-| `PENDING_STUDENT_ACTION` | `uploadProof(fileRef)` | `fileRef != null` | Attach verified PDF certificate | `SUBMITTED_FOR_VERIFICATION` |
-| `SUBMITTED_FOR_VERIFICATION` | `rejectProof(notes)` | None | Request document re-upload with coordinator audit notes | `PENDING_STUDENT_ACTION` |
-| `SUBMITTED_FOR_VERIFICATION` | `validateProof()` | None | Verify dossier completeness (`checkAllChecklistTasks()`) | `COMPLETED` |
-| `PENDING_STUDENT_ACTION` | `after(deadline)` | `currentDate > deadline` | Dispatch urgent escalation reminder | `OVERDUE` |
-| `OVERDUE` | `uploadLateProof(fileRef)` | `fileRef != null` | Upload late proof document for urgent review | `SUBMITTED_FOR_VERIFICATION` |
-| `{INITIALIZED, PENDING, OVERDUE}` | `abandon()` | None | Void task following mobility cancellation | `ABANDONED` |
-| `COMPLETED` | None | None | Successfully fulfilled administrative milestone | `[Final State]` |
-| `ABANDONED` | None | None | Closed task without liability | `[Final State]` |
-
-#### 6.1.4.3 Operational Mechanics
-
-1. **Automated Initialization:** Tasks are never entered manually. They are generated by the message listener following the arrival of a confirmed nomination event from the message broker.
-2. **Temporal Overdue Scanner:** A background scheduler checks tasks whose status is `PENDING_STUDENT_ACTION`. When the local calendar date exceeds `deadline`, the system changes the status to `OVERDUE` and dispatches an escalation notice to the coordinator.
-3. **Departure Readiness Gate:** The parent `MobilityChecklist` aggregate evaluates all child tasks via `areMandatoryTasksComplete()`. The platform forbids grant disbursement and final departure clearance while any task remains in `OVERDUE` or `PENDING_STUDENT_ACTION`.
-
+A submitted proof does not become overdue while awaiting DRI review. Rejected proof can become overdue on a later deadline scan. Task changes are made through `MobilityChecklist`; the checklist is initialized at nomination and is not recreated by host-confirmation events.

@@ -44,7 +44,7 @@ Individual responsibilities map directly to course deliverables:
 ### Shared Subdomain (50% / 50% Joint Allocation: Prigoreanu Alin-Gabriel & Bîrgovan A. Mihai-Daniel) - Mobility Preparation (Supporting Subdomain)
 * **Domain Responsibility:** Administrative readiness, document onboarding (`MobilityChecklist` & `ChecklistTask`), asynchronous Transactional Outbox consumer, and deadline enforcement (co-authored 50% by Student 1 and 50% by Student 2).
 * **Use Case Diagram:** `docs/diagrams/usecase-mobility-preparation.puml`
-* **Detailed Use Case (SVDPI):** `UC03 - Confirm Nomination` (including automated checklist generation).
+* **Detailed Use Case (SVDPI):** `UC03 - Apply Agreement Event to Mobility Checklist` (host confirmation and cancellation events).
 * **BDD Specification (Gherkin):** `features/mobility-preparation.feature`
 * **Dynamic Interaction:** Asynchronous sequence diagram using Transactional Outbox for nomination events (`Figura25-Sequence-Async-Outbox-Consumer.png`).
 * **State Machine:** Entity `ChecklistTask` via `TaskStatus` enum (`INITIALIZED`, `PENDING_STUDENT_ACTION`, `SUBMITTED_FOR_VERIFICATION`, `COMPLETED`, `OVERDUE`, `ABANDONED`).

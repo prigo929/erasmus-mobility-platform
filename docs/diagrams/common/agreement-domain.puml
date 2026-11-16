@@ -1,0 +1,52 @@
+' Definiții canonice; se includ, nu se copiază în vederi.
+!ifndef EMP_AGREEMENT_DOMAIN
+!define EMP_AGREEMENT_DOMAIN
+!include shared.puml
+!include catalog-contract.puml
+package "LA\nDomain" as AgreementDomain {
+ class LearningAgreement <<AggregateRoot>> {
+  - id: AgreementId
+  - mobilityId: MobilityId
+  - studentId: StudentId
+  - hostUniversityId: UUID
+  - period: ValidityWindow
+  - revision: int
+  - version: long
+  - status: LearningAgreementStatus
+  - mappings: List<RecognitionMapping>
+  - decisions: List<DecisionRecord>
+  + addMapping(mapping: RecognitionMapping): void
+  + removeMapping(mappingId: UUID): void
+  + submit(checks: List<EquivalenceVerificationResult>, actorId: UUID): void
+  + beginReview(coordinatorId: UUID): void
+  + requestChanges(actorId: UUID, reason: String): void
+  + approveByFaculty(actorId: UUID): void
+  + confirmByHost(officerId: UUID, proofRef: String, now: Instant): AgreementIntegrationEvent
+  + cancel(actorId: UUID, reason: String, now: Instant): AgreementIntegrationEvent
+  + totalCredits(): ECTSCredits
+ }
+ class RecognitionMapping <<ValueObject>> {
+  + id: UUID
+  + hostCourse: CourseSyllabus
+  + homeCourse: CourseSyllabus
+  + equivalenceId: EquivalenceId
+  + equivalenceVersion: long
+ }
+ enum LearningAgreementStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED_BY_FACULTY
+  CONFIRMED_BY_HOST
+  CANCELLED
+ }
+ interface LearningAgreementRepository <<DomainPort>> {
+  + findById(id: AgreementId): Optional<LearningAgreement>
+  + saveIfVersionMatches(agreement: LearningAgreement, expectedVersion: long): boolean
+ }
+ LearningAgreement "1" *-down- "0..*" RecognitionMapping : mappings
+ LearningAgreement --> LearningAgreementStatus : status
+ RecognitionMapping -down-> CourseSyllabus : home / host snapshots
+ LearningAgreement --> "0..*" DecisionRecord : history
+}
+!endif

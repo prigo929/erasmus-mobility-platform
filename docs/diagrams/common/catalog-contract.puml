@@ -1,0 +1,41 @@
+' Definiții canonice; se includ, nu se copiază în vederi.
+!ifndef EMP_CATALOG_CONTRACT
+!define EMP_CATALOG_CONTRACT
+!include shared.puml
+package "Catalog" as CatalogContract {
+ class EquivalenceQuery <<ValueObject>> {
+  + sendUniversityId: UUID
+  + hostUniversityId: UUID
+  + sendCode: CourseCode
+  + hostCode: CourseCode
+  + sendSyllabusVersion: String
+  + hostSyllabusVersion: String
+  + period: ValidityWindow
+ }
+ class EquivalenceVerificationResult <<ValueObject>> {
+  + equivalenceId: EquivalenceId
+  + equivalenceVersion: long
+  + status: VerificationStatus
+  + recognizedCredits: ECTSCredits
+  + validity: ValidityWindow
+  + reason: String
+ }
+ enum VerificationStatus {
+  ELIGIBLE
+  INELIGIBLE
+  UNAVAILABLE
+ }
+ interface IEquivalenceCatalogAdapter <<DomainPort>> {
+  + checkEquivalence(query: EquivalenceQuery): EquivalenceVerificationResult
+ }
+ class EquivalenceResponseDTO <<DTO>> {
+  + equivalenceId: UUID
+  + equivalenceVersion: long
+  + status: VerificationStatus
+  + recognizedCredits: int
+  + validFrom: LocalDate
+  + validUntil: LocalDate
+  + reason: String
+ }
+}
+!endif

@@ -1,0 +1,63 @@
+' Definiții canonice; se includ, nu se copiază în vederi.
+!ifndef EMP_SHARED
+!define EMP_SHARED
+package "Shared" as Shared {
+ class AgreementId <<Identity>> {
+  + value: UUID
+ }
+ class MobilityId <<Identity>> {
+  + value: UUID
+ }
+ class StudentId <<Identity>> {
+  + value: UUID
+ }
+ class EquivalenceId <<Identity>> {
+  + value: UUID
+ }
+ class ChecklistId <<Identity>> {
+  + value: UUID
+ }
+ class TaskId <<Identity>> {
+  + value: UUID
+ }
+ class CourseCode <<ValueObject>> {
+  + value: String
+ }
+ class ECTSCredits <<ValueObject>> {
+  + value: int
+  + plus(other: ECTSCredits): ECTSCredits
+ }
+ class ValidityWindow <<ValueObject>> {
+  + startDate: LocalDate
+  + endDate: LocalDate
+  + covers(period: ValidityWindow): boolean
+ }
+ class CourseSyllabus <<ValueObject>> {
+  + code: CourseCode
+  + name: String
+  + credits: ECTSCredits
+  + universityId: UUID
+  + syllabusVersion: String
+ }
+ class DecisionRecord <<ValueObject>> {
+  + actorId: UUID
+  + occurredAt: Instant
+  + action: String
+  + reason: String
+  + revision: int
+ }
+ class AgreementIntegrationEvent <<IntegrationEvent>> {
+  + eventId: UUID
+  + agreementId: AgreementId
+  + mobilityId: MobilityId
+  + revision: int
+  + sourceVersion: long
+  + type: AgreementEventType
+  + occurredAt: Instant
+ }
+ enum AgreementEventType {
+  HOST_CONFIRMED
+  CANCELLED
+ }
+}
+!endif

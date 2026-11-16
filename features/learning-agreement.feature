@@ -1,55 +1,48 @@
-Feature: Learning Agreement Management and Invariant Enforcement
-  As an outgoing exchange student
-  I want to assemble and submit my Learning Agreement
-  So that my academic recognition is guaranteed by both home and host faculties
+Feature: UC01 submit a Learning Agreement
+  A student submits a versioned semester draft after every explicit course mapping
+  passes the read-only equivalence check and the aggregate credit rules.
 
   Background:
-    Given an authenticated student "Alin Prigoreanu" with studentId "s-1001"
-    And an active nomination to "Technical University of Munich" for the "Winter 2026" semester
-    And an empty learning agreement draft with status "DRAFT"
+    Given an active nomination exists for the student and semester
+    And the student owns a persisted Learning Agreement in "DRAFT"
+    And the student has the current agreement version
 
-  Scenario: Successful submission of a credit-balanced learning agreement
-    Given the student adds the following host courses to Table A:
-      | Course Code | Course Title                 | ECTS Credits |
-      | IN2001      | Advanced Software Engineering | 8.0          |
-      | IN2002      | Distributed Systems           | 7.0          |
-      | IN2003      | Cloud Computing Architecture | 8.0          |
-      | IN2004      | Database Internals           | 7.0          |
-    And the student maps the following recognized home courses in Table B:
-      | Course Code | Course Title             | ECTS Credits |
-      | CS-M101     | Software Design Patterns | 8.0          |
-      | CS-M102     | Distributed Systems Lab  | 7.0          |
-      | CS-M103     | Cloud Infrastructure     | 8.0          |
-      | CS-M104     | Advanced Databases       | 7.0          |
-    When the student submits the learning agreement
-    Then the platform verifies that Table A total ECTS is 30.0
-    And the platform verifies that Table B total ECTS is 30.0
-    And the platform transitions the agreement status to "SUBMITTED"
-    And all course lines in Table A and Table B become immutable
-    And a submission receipt is issued to "Alin Prigoreanu"
+  Scenario: Submit a valid agreement
+    Given the draft contains eligible 1:1 mappings for the full mobility period
+    And the mapped host and home credits are equal
+    And the agreement totals at least 30 ECTS for the semester
+    When the student submits the current draft
+    Then the system checks each mapping through the read-only catalog adapter
+    And the agreement and decision are committed as "SUBMITTED" using the expected version
+    And the student receives a submission receipt
 
-  Scenario: Rejection of agreement submission due to credit volume deficit
-    Given the student adds the following host courses to Table A:
-      | Course Code | Course Title                 | ECTS Credits |
-      | IN2001      | Advanced Software Engineering | 8.0          |
-      | IN2002      | Distributed Systems           | 7.0          |
-      | IN2003      | Cloud Computing Architecture | 8.0          |
-    And the student maps the following recognized home courses in Table B:
-      | Course Code | Course Title             | ECTS Credits |
-      | CS-M101     | Software Design Patterns | 8.0          |
-      | CS-M102     | Distributed Systems Lab  | 7.0          |
-      | CS-M103     | Cloud Infrastructure     | 8.0          |
-    When the student attempts to submit the learning agreement
-    Then the platform rejects the submission with error "INSUFFICIENT_CREDITS"
-    And the error message states "Total host credits must be at least 30.0 ECTS. Current total is 23.0 ECTS."
-    And the agreement status remains "DRAFT"
-    And course lines in Table A remain open for editing
+  Scenario: A mapping is ineligible
+    Given one mapping receives the catalog result "INELIGIBLE"
+    When the student submits the current draft
+    Then submission is rejected with the failed mapping identified
+    And the persisted agreement remains "DRAFT"
 
-  Scenario: Rejection of agreement submission due to credit parity discrepancy
-    Given the student adds host courses to Table A totaling 30.0 ECTS
-    But the student maps home courses in Table B totaling only 25.0 ECTS
-    When the student attempts to submit the learning agreement
-    Then the platform rejects the submission with error "CREDIT_PARITY_MISMATCH"
-    And the error message states "Table A credits (30.0) do not equal Table B credits (25.0)."
-    And the agreement status remains "DRAFT"
+  Scenario: The catalog is unavailable
+    Given one mapping receives the catalog result "UNAVAILABLE"
+    When the student submits the current draft
+    Then submission is rejected as retryable and is not treated as academic rejection
+    And the persisted agreement remains "DRAFT"
 
+  Scenario: The semester credit minimum is not met
+    Given otherwise eligible mappings total 29 ECTS
+    When the student submits the current draft
+    Then submission is rejected by the project minimum of 30 ECTS
+    And the persisted agreement remains "DRAFT"
+
+  Scenario: Mapped course credits differ
+    Given one eligible 1:1 mapping has unequal host and home credits
+    When the student submits the current draft
+    Then submission is rejected with a credit-parity error
+    And the persisted agreement remains "DRAFT"
+
+  Scenario: The draft changed after it was loaded
+    Given another update has advanced the agreement version
+    When the student submits using the stale expected version
+    Then the local submission transaction rolls back with a version conflict
+    And no successful receipt is returned
+    And the student is asked to reload the agreement

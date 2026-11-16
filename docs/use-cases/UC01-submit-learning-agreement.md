@@ -1,93 +1,48 @@
-# Use Case Specification: UC01 - Submit Learning Agreement
+# UC01 — Submit Learning Agreement
 
 * **Author:** Prigoreanu Alin-Gabriel (Student 1)
-* **Subdomain:** Learning Agreement Management (Core Domain)
-* **Primary Aggregate:** `LearningAgreement`
-* **Associated Diagram:** Figure 3 (Use Case Diagram), Figure 19 (State Machine), Figure 22 (Sequence Diagram)
+* **Subdomain:** Learning Agreement Management
+* **Primary aggregate:** `LearningAgreement`
+* **Traceability:** Figure 3 (use case), Figure 22 (sequence), Figure 19 (full agreement lifecycle), `learning-agreement.feature`
 
----
+## Goal and actors
 
-## 1. Context and Value Proposition
+The student submits an editable semester study plan for home-faculty review. The system checks each explicit 1:1 course mapping against the read-only Equivalence catalog before allowing submission.
 
-* **Scope:** Erasmus Mobility Platform (EMP) Academic Module.
-* **Goal in Context:** Allow an outgoing exchange student to assemble study course pairs across host and home curriculums, verify their academic equivalence against institutional catalogs, and formally submit the agreement for faculty review.
-* **Business Value:** Guarantees that outgoing students submit credit-compliant learning contracts before departure, preventing credit loss upon return and ensuring alignment with European Commission EWP standards.
+* **Primary actor:** Student who owns the draft.
+* **Supporting system:** Equivalence Management through `IEquivalenceCatalogAdapter` / `EquivalenceRestAdapter`.
+* **Later lifecycle actors:** Home Academic Coordinator reviews the submitted agreement; DRI records host evidence and cancellation. These later steps are shown in Figure 19 and are outside UC01's success postcondition.
 
----
+## Preconditions
 
-## 2. Actors and Stakeholders
+1. An active nomination exists for the student and semester.
+2. The student owns a persisted `DRAFT` Learning Agreement and has its current version.
+3. Course mappings and their catalog references can be loaded.
 
-* **Primary Actor:** `Outgoing Student` (initiates agreement drafting, enters courses, submits contract).
-* **Secondary Actor:** `Faculty Coordinator` (evaluates submitted contracts, requests revisions, grants institutional approval).
-* **Supporting System:** `Equivalence Management Service` (remote catalog accessed synchronously via REST).
-* **Stakeholders:**
-  * Home Faculty Department: Requires that incoming recognition matches degree program requirements.
-  * Receiving Host Institution: Requires bilateral course transparency.
-  * Department of International Relations (DRI): Monitors institutional compliance.
+## Main success scenario
 
----
+| Step | Actor | Action / response |
+|---|---|---|
+| 1 | Student | Requests submission of the current draft. |
+| 2 | System | Loads the agreement and checks ownership, `DRAFT` status, and expected version. |
+| 3 | System | For each `RecognitionMapping`, checks the 1:1 rule and queries the catalog for the exact courses, versions, and mobility period. |
+| 4 | Catalog | Returns `ELIGIBLE` for every mapping; the adapter translates each DTO into a domain verification result. |
+| 5 | System | The aggregate verifies equal recognized credits, no duplicate counting, and at least 30 ECTS for the semester (project policy). |
+| 6 | System | In one local transaction, changes `DRAFT` to `SUBMITTED` and saves the agreement and decision using the expected version. |
+| 7 | System | Commits and returns a submission receipt. The student can no longer edit the submitted version. |
 
-## 3. Preconditions and Postconditions
+**Success postcondition:** The persisted status is `SUBMITTED`; the agreement and audit decision are committed together. Figure 22 shows this transaction and its failure branches. Figure 19 continues the lifecycle after submission.
 
-### 3.1 Preconditions
-1. The student holds an active exchange nomination for an approved bilateral partner institution.
-2. The current academic term permits contract submissions according to faculty calendar windows.
-3. The student has opened a draft learning agreement in status `DRAFT`.
+## Alternatives and failures
 
-### 3.2 Postconditions
-1. The `LearningAgreement` aggregate transitions to status `SUBMITTED`.
-2. The course lines in Table A and Table B become immutable for student editing.
-3. The agreement enters the review queue of the appointed departmental faculty coordinator.
-4. An automated confirmation email reaches the student inbox with the timestamped submission manifest.
+* **Catalog returns `INELIGIBLE`:** Stop before submission, explain which mapping failed, and keep the persisted agreement `DRAFT` for correction.
+* **Catalog returns `UNAVAILABLE`:** Stop before submission and offer retry; unavailability is not academic rejection. Keep `DRAFT`.
+* **Credit total is below 30 ECTS, credits differ, mappings are invalid, or the state is not `DRAFT`:** Reject the command without changing persisted state; explain the failed rule.
+* **The agreement version changed or persistence fails:** Roll back the local transaction, return a conflict, and ask the student to reload. Do not report successful submission.
 
----
+## Rules
 
-## 4. Invariants and Business Rules (BR)
-
-* **BR-LA-01 (Credit Volume Invariant):** The total ECTS credits in Table A must be greater than or equal to 30.0 credits for a single semester exchange (or 60.0 for a full academic year).
-* **BR-LA-02 (Credit Parity Invariant):** The sum of recognized home credits in Table B must exactly match the sum of completed host credits in Table A (`sum(TableA.credits) == sum(TableB.credits)`).
-* **BR-LA-03 (Course Line Association):** Every course line in Table A must map to at least one valid recognition counterpart in Table B. Orphaned course lines are rejected.
-* **BR-LA-04 (Submission Immutability):** Once submitted, neither Table A nor Table B can be modified without a formal rejection or coordinator-requested revision.
-
----
-
-## 5. Main Success Scenario (MSS)
-
-| Step | Initiator | Interaction Description (Active Voice Only) |
-| :--- | :--- | :--- |
-| 1 | Actor | The student opens the Learning Agreement drafting dashboard. |
-| 2 | System | The platform displays the current draft containing Table A and Table B course line grids. |
-| 3 | Actor | The student enters course codes, titles, and ECTS credit values for host subjects (Table A). |
-| 4 | Actor | The student selects corresponding home university degree courses for academic recognition (Table B). |
-| 5 | Actor | The student triggers the "Verify Equivalences" action. |
-| 6 | System | The platform queries the Equivalence Management catalog via REST adapter and displays verified credit matches. |
-| 7 | Actor | The student reviews the verified course pairs and submits the draft learning agreement to the platform for institutional review. |
-| 8 | System | The platform verifies the credit volume invariant (total ECTS >= 30.0 credits). |
-| 9 | System | The platform verifies the credit parity invariant (`sum(TableA) == sum(TableB)`). |
-| 10 | System | The platform transitions the agreement status from `DRAFT` to `SUBMITTED`. |
-| 11 | System | The platform locks all course rows against further edits. |
-| 12 | System | The platform assigns the contract to the faculty coordinator and displays a submission receipt to the student. |
-
----
-
-## 6. Alternative and Exception Flows
-
-### 6a. Course Equivalences Pending in Catalog
-* **Condition at Step 6:** One or more course pairs do not exist in the active equivalence catalog.
-* **6a1:** The platform displays an advisory banner indicating that unverified courses will require manual coordinator syllabus assessment.
-* **6a2:** The student confirms intent to submit unlisted courses with attached syllabus URLs.
-* **6a3:** The system records the syllabus attachments and allows the student to proceed to Step 7.
-
-### 8e. Total Credits Under Statutory Threshold
-* **Condition at Step 8:** The aggregate calculates total host credits strictly below 30.0 ECTS.
-* **8e1:** The platform rejects the submission request.
-* **8e2:** The platform highlights Table A with the message: *"Minimum semester requirement is 30.0 ECTS. Current total is [X] ECTS."*
-* **8e3:** The agreement remains in status `DRAFT`.
-* **8e4:** The student returns to Step 3 to add complementary course selections.
-
-### 9e. Credit Parity Discrepancy
-* **Condition at Step 9:** The credit sum of Table A does not equal the credit sum of Table B.
-* **9e1:** The platform blocks the transition and flags mismatched course mappings.
-* **9e2:** The platform displays the error: *"Table A sum ([X] ECTS) does not equal Table B sum ([Y] ECTS). Balance course recognition before submitting."*
-* **9e3:** The aggregate preserves state `DRAFT`. The student returns to Step 4 to balance course credit assignments.
-
+* Every submitted mapping is explicit and 1:1; its host and home credits must be equal.
+* Each mapping must be eligible for the whole mobility period; aggregate credit totals do not replace mapping checks.
+* The semester minimum of 30 ECTS is a project policy.
+* A failed request leaves the persisted draft editable; a successful request commits `SUBMITTED` and its decision atomically.

@@ -1,0 +1,32 @@
+' Definiții canonice; se includ, nu se copiază în vederi.
+!ifndef EMP_EQUIVALENCE_ARCHITECTURE
+!define EMP_EQUIVALENCE_ARCHITECTURE
+!include equivalence-domain.puml
+!include commands.puml
+package "EQ\nUI" as EquivalencePresentation {
+ class EquivalenceApiRest <<Controller>> {
+  + evaluateAndPublish(cmd: EvaluateEquivalenceCommand): void
+  + verify(query: EquivalenceQuery): EquivalenceResponseDTO
+ }
+}
+package "EQ\nApplication" as EquivalenceApplication {
+ class EquivalenceApplicationService <<ApplicationService>> {
+  - equivalences: AcademicEquivalenceRepository
+  + evaluateAndPublish(cmd: EvaluateEquivalenceCommand): void
+  + checkEquivalence(query: EquivalenceQuery): EquivalenceVerificationResult
+ }
+}
+package "EQ\nInfrastructure" as EquivalenceInfrastructure {
+ class AcademicEquivalenceRepoJPA <<RepositoryImplementation>> {
+  + findById(id: EquivalenceId): Optional<AcademicEquivalence>
+  + hasOverlappingRule(query: EquivalenceQuery): boolean
+  + findEligible(query: EquivalenceQuery): Optional<AcademicEquivalence>
+  + saveIfVersionMatches(equivalence: AcademicEquivalence, expectedVersion: long): boolean
+ }
+ AcademicEquivalenceRepoJPA ..|> AcademicEquivalenceRepository
+}
+EquivalenceApiRest -down-> EquivalenceApplicationService : delegates
+EquivalenceApiRest ..> EquivalenceResponseDTO : returns DTO
+EquivalenceApplicationService --> AcademicEquivalenceRepository : load / validate / save
+EquivalenceApplicationService --> AcademicEquivalence : invokes rules
+!endif

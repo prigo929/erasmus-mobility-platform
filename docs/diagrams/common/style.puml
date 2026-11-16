@@ -1,0 +1,30 @@
+' Definiții canonice; se includ, nu se copiază în vederi.
+!ifndef EMP_STYLE
+!define EMP_STYLE
+set namespaceSeparator none
+skinparam backgroundColor white
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 11
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam roundCorner 7
+skinparam packageStyle folder
+skinparam packageTitleAlignment right
+skinparam linetype polyline
+skinparam nodesep 30
+skinparam ranksep 40
+skinparam class {
+ BackgroundColor #FFF8EE
+ BorderColor #805B47
+ HeaderBackgroundColor #F9E8D4
+}
+skinparam package {
+ BackgroundColor #FAFCFE
+ BorderColor #8090A0
+}
+skinparam note {
+ BackgroundColor #FFF9D9
+ BorderColor #BDA755
+}
+hide empty members
+!endif

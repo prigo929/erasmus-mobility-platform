@@ -1,96 +1,41 @@
-# Use Case Specification: UC03 - Confirm Nomination
+# UC03 — Apply Agreement Event to Mobility Checklist
 
 * **Authors:** Prigoreanu Alin-Gabriel (Student 1, 50%) & Bîrgovan A. Mihai-Daniel (Student 2, 50%)
 * **Subdomain:** Mobility Preparation (Supporting Subdomain)
-* **Primary Aggregate:** `MobilityChecklist`
-* **Associated Diagram:** Figure 5 (Use Case Diagram), Figure 21 (State Machine), Figure 25 (Sequence Diagram)
+* **Primary Aggregate:** `MobilityChecklist` / `ChecklistTask`
+* **Traceability:** Figure 5 (use case), Figure 25 (sequence), Figure 21 (task state machine), `mobility-preparation.feature`
 
----
+## Goal
 
-## 1. Context and Value Proposition
+Apply a confirmed agreement or cancellation event to the preparation checklist that was initialized when DRI registered the existing nomination. The event consumer is idempotent and does not create a checklist.
 
-* **Scope:** Erasmus Mobility Platform (EMP) Student Onboarding and Compliance Module.
-* **Goal in Context:** Process an inbound institutional nomination or approved agreement, create a student compliance dossier with personalized preparation tasks, receive verified document proofs (grant agreements, insurance certificates), and confirm student departure readiness.
-* **Business Value:** Guarantees that outgoing students satisfy all legal, medical, and financial regulations before travelling abroad. Protects the university from liability and ensures compliance with Erasmus+ grant disbursement conditions.
+## Actors and Preconditions
 
----
+* **Primary actor:** Learning Agreement publishing module, through the message broker.
+* **Supporting system:** Mobility Preparation message receiver.
+* A checklist exists for the event's `MobilityId`; its academic confirmation task is awaiting confirmation.
+* The event contains a unique `eventId`, matching agreement and mobility identifiers, and an ordered `sourceVersion`.
 
-## 2. Actors and Stakeholders
+## Main Success Scenario — Host Confirmation
 
-* **Primary Actor:** `Mobility Officer` (verifies uploaded documents, confirms nomination readiness).
-* **Secondary Actor:** `Nominated Student` (uploads required proofs, signs grant agreements).
-* **Supporting System:** `Enterprise Messaging System` (delivers asynchronous nomination and approval events).
-* **Stakeholders:**
-  * Erasmus Institutional Office: Oversees student welfare and international travel authorizations.
-  * Faculty Dean's Office: Requires confirmation that nominated students maintain active enrollment.
-  * National Agency: Audits grant allocations against verified mobility files.
-
----
-
-## 3. Preconditions and Postconditions
-
-### 3.1 Preconditions
-1. The student holds an approved nomination from the selection committee.
-2. The Learning Agreement context has published an approved contract event over the message broker.
-3. The Mobility Preparation message receiver has ingested the event and verified idempotency.
-
-### 3.2 Postconditions
-1. The `MobilityChecklist` aggregate holds verified completions for all mandatory tasks.
-2. The checklist status marks the student as `READY_FOR_DEPARTURE`.
-3. The platform unlocks the first installment of the Erasmus+ financial grant.
-4. An official nomination confirmation package reaches the partner university international office.
-
----
-
-## 4. Invariants and Business Rules (BR)
-
-* **BR-MP-01 (Mandatory Task Set Invariant):** Every student checklist must contain at least three non-waivable tasks:
-  1. Signed Erasmus+ Grant Agreement.
-  2. Valid European Health Insurance Card (EHIC) or equivalent private coverage.
-  3. Official Acceptance Letter from the host institution.
-* **BR-MP-02 (Departure Readiness Gate):** The platform strictly prohibits confirming nomination departure readiness while any mandatory task remains in status `INITIALIZED`, `PENDING_STUDENT_ACTION`, `SUBMITTED_FOR_VERIFICATION`, or `OVERDUE`.
-* **BR-MP-03 (Idempotent Nomination Processing):** An incoming event with identifier `eventId` can generate at most one preparation checklist. Duplicate broker redeliveries must terminate without creating redundant records.
-* **BR-MP-04 (Document File Integrity):** Uploaded proof attachments must be verified PDF documents with cryptographic integrity hashes stored in the audit ledger.
-
----
-
-## 5. Main Success Scenario (MSS)
-
-| Step | Initiator | Interaction Description (Active Voice Only) |
+| Step | Initiator | Interaction |
 | :--- | :--- | :--- |
-| 1 | System | The platform detects the institutional approval of the student's learning agreement. |
-| 2 | System | The platform queries the idempotency port and confirms the event is unhandled. |
-| 3 | System | The platform instantiates a `MobilityChecklist` aggregate and populates default compliance tasks. |
-| 4 | System | The platform dispatches an onboarding email with task deadlines to the student. |
-| 5 | Actor | The student accesses the preparation portal and uploads the signed grant agreement and insurance proof. |
-| 6 | System | The platform stores the document references and transitions the tasks to `SUBMITTED_FOR_VERIFICATION`. |
-| 7 | Actor | The mobility officer opens the verification dashboard and inspects the attached document proofs. |
-| 8 | Actor | The mobility officer approves each submitted proof. |
-| 9 | System | The platform transitions all task statuses to `COMPLETED`. |
-| 10 | System | The platform evaluates the departure readiness invariant (`areMandatoryTasksComplete()`). |
-| 11 | System | The platform transitions checklist status to `CONFIRMED_READY_FOR_DEPARTURE`. |
-| 12 | System | The platform triggers grant payment authorization and transmits departure confirmation to the student. |
+| 1 | Broker | Delivers a `HOST_CONFIRMED` agreement event. |
+| 2 | Receiver | Passes the event to the application service. |
+| 3 | Service | In one local transaction, reserves `eventId` in the processed-event ledger. |
+| 4 | Service | Loads the existing checklist by `MobilityId` and verifies the agreement identity. |
+| 5 | Checklist | Applies the ordered event; the awaiting academic task transitions to `COMPLETED`. |
+| 6 | Service | Saves the checklist and commits the task update with the event record. |
+| 7 | Receiver | Acknowledges the broker message after commit. |
 
----
+**Success postcondition:** The existing checklist records host confirmation exactly once. This operation does not confirm overall departure readiness.
 
-## 6. Alternative and Exception Flows
+## Alternatives and Exceptions
 
-### 5a. Student Requests Task Waiver for Private Insurance
-* **Condition at Step 5:** The student holds alternative international insurance not covered by EHIC.
-* **5a1:** The student uploads an private insurance policy with an exemption request.
-* **5a2:** The mobility officer reviews the policy coverage limits against institutional liability minimums.
-* **5a3:** The officer approves the alternative proof with a waiver annotation and proceeds to Step 8.
+* **Duplicate `eventId`:** Make no changes and acknowledge the already processed message.
+* **Missing checklist or mismatched agreement:** Roll back the event record and request redelivery; do not create a dossier.
+* **Stale confirmation or confirmation after cancellation:** Keep the cancellation effective, commit the handled event without reactivating the checklist, then acknowledge it.
+* **New cancellation event:** Mark the checklist cancelled and abandon active tasks; preserve completed evidence as history.
+* **Save or concurrency failure:** Roll back the checklist change and event record; do not acknowledge, allowing retry.
 
-### 8e. Rejected Document Proof
-* **Condition at Step 8:** An uploaded document is expired, incomplete, or illegible.
-* **8e1:** The mobility officer rejects the submission and inputs feedback notes.
-* **8e2:** The platform reverts the specific task to `PENDING_STUDENT_ACTION`.
-* **8e3:** The platform sends an urgent rejection notification to the student with instructions to resubmit.
-* **8e4:** The departure gate remains locked. Execution loops back to Step 5.
-
-### 2e. Duplicate Event Ingestion
-* **Condition at Step 2:** The event ID already exists in the `processed_events` table.
-* **2e1:** The application service flags a duplicate event redelivery.
-* **2e2:** The platform logs an idempotency notice and skips aggregate instantiation.
-* **2e3:** The platform acknowledges receipt of the duplicate notification to finalize transaction processing.
-
+Nomination registration and checklist initialization are separate use cases shown in Figure 5. Scholarship payment, EWP exchange, and production identity are outside this project scope.

@@ -1,74 +1,29 @@
 @startuml
-title Figure 19. State Machine Diagram - LearningAgreement Aggregate (Student 1: Prigoreanu Alin-Gabriel)
-skinparam backgroundColor #FFFFFF
-skinparam defaultFontName "Helvetica", "Arial", sans-serif
-skinparam defaultFontSize 10
-skinparam state {
-  BackgroundColor #FFF8EE
-  BorderColor #8D5B4C
-  FontSize 10
-  HeaderBackgroundColor #FCEBD9
+!pragma layout smetana
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam ArrowColor #334155
+skinparam stateBackgroundColor #F8FAFC
+skinparam legendBackgroundColor #FFF7DB
+hide empty description
+title Figure 19. LearningAgreement lifecycle (Alin)
+state "Active agreement before departure" as ActiveAgreement {
+ [*] --> DRAFT
+ DRAFT --> SUBMITTED : submissionRequested\n[ownerAuthorized && mappingsEligible && totalCredits >= 30]\n/ submit(checks, actorId)
+ SUBMITTED --> UNDER_REVIEW : reviewStarted\n[coordinatorAuthorized]\n/ beginReview(coordinatorId)
+ UNDER_REVIEW --> DRAFT : changesRequested [reasonProvided]\n/ requestChanges(actorId, reason)
+ UNDER_REVIEW --> APPROVED_BY_FACULTY : facultyApprovalRequested\n[currentVersion && academicChecksPassed]\n/ approveByFaculty(actorId)
+ APPROVED_BY_FACULTY --> CONFIRMED_BY_HOST : hostEvidenceRecorded\n[officerAuthorized && evidenceMatchesApprovedRevision]\n/ confirmByHost(officerId, proofRef, now)
 }
-
-[*] --> DRAFT : createDraft()
-
-state DRAFT {
-  DRAFT : entry / initializeEmptyCourseTables()
-}
-
-DRAFT --> SUBMITTED : submit() [hasCreditParity() && credits >= 30]
-DRAFT --> CANCELLED : cancel()
-
-state SUBMITTED {
-  SUBMITTED : entry / lockCourseLinesForEditing()
-}
-
-SUBMITTED --> UNDER_REVIEW : assignCoordinator(coordinatorId)
-
-state UNDER_REVIEW {
-  UNDER_REVIEW : entry / startReviewTimer()
-}
-
-UNDER_REVIEW --> UNDER_REVIEW : after(5 days) / triggerEscalationAlert()
-UNDER_REVIEW --> DRAFT : requestChanges(rejectionReason)
-UNDER_REVIEW --> APPROVED_BY_FACULTY : approve(coordinatorId) [hasCreditParity() && credits >= 30]
-UNDER_REVIEW --> CANCELLED : cancel()
-
-state APPROVED_BY_FACULTY {
-  APPROVED_BY_FACULTY : entry / publish(LearningAgreementApprovedEvent)
-  APPROVED_BY_FACULTY : entry / transmitViaEWP()
-}
-
-APPROVED_BY_FACULTY --> CONFIRMED_BY_HOST : confirmByHost(hostSignatureRef)
-APPROVED_BY_FACULTY --> AMENDED : requestAmendment(reason)
-APPROVED_BY_FACULTY --> CANCELLED : cancel()
-
-state CONFIRMED_BY_HOST {
-  CONFIRMED_BY_HOST : entry / lockTripartiteContract()
-}
-
-CONFIRMED_BY_HOST --> AMENDED : requestAmendment(reason)
-CONFIRMED_BY_HOST --> CANCELLED : cancel()
-
-state AMENDED {
-  AMENDED : entry / unlockCourseLinesForRevision()
-}
-
-AMENDED --> SUBMITTED : resubmitAmendedDraft() [hasCreditParity()]
-AMENDED --> CANCELLED : cancel()
-
-state CANCELLED {
-  CANCELLED : entry / cascadeCancellationToPrepTasks()
-}
-
+[*] --> ActiveAgreement
+ActiveAgreement --> CANCELLED : withdrawalConfirmed [beforeDeparture]\n/ cancel(actorId, reason, now)
 CANCELLED --> [*]
-CONFIRMED_BY_HOST --> [*] : concludeExchange()
-
-note right of UNDER_REVIEW
-  Temporal Transition Rule:
-  after(5 days) notifies DRI officer
-  if academic review exceeds threshold.
-end note
-
+legend bottom
+ A transition from the composite state applies to every active substate.
+ ActiveAgreement groups states; it is not an additional Enum literal.
+ Host confirmation produces HOST_CONFIRMED. The application commits
+ the agreement, decision history and outbox together; delivery follows later.
+endlegend
 @enduml
-

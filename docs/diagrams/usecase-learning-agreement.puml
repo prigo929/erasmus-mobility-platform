@@ -1,43 +1,47 @@
 @startuml
-title Figure 3. Use Case Diagram - Learning Agreement Management (Core Domain)
+title Figure 3. Learning Agreement — actor goals (Alin)
+!pragma layout smetana
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam ArrowColor #334155
+skinparam noteBackgroundColor #FFF7DB
+skinparam noteBorderColor #B99B41
+skinparam nodesep 22
+skinparam ranksep 30
+skinparam usecaseBackgroundColor #F8FAFC
 left to right direction
-skinparam packageStyle rectangle
-
-actor "Student" as S
-actor "Scheduler\n(Temporal Trigger)" as T
-actor "Home Academic\nCoordinator" as HC
-actor "Host Coordinator\n(external, secondary)" as XC
-
+actor Student as S
+actor "Home academic\ncoordinator" as C
+actor "DRI officer" as D
+actor "Host coordinator\n(external evidence source)" as H
 rectangle "Learning Agreement Management" {
-  usecase "Create Draft LA" as U1
-  usecase "Manage Course Lines" as U2
-  usecase "Propose New Equivalence" as U3
-  usecase "Submit LA" as U5
-  usecase "Check ECTS Balance" as U4
-  usecase "Request Amendment" as U9
-  usecase "Cancel LA" as U10
-  usecase "Track LA Status" as U11
-  usecase "Review LA" as U6
-  usecase "Notify Student of Decision" as U8
-  usecase "Escalate Overdue Review" as U7
-  usecase "Confirm LA at Host University" as U12
+ usecase "Create or edit\nthe study-plan draft" as Draft
+ usecase "UC01: Submit\nLearning Agreement" as Submit
+ usecase "Check mappings, credits\nand catalog eligibility" as Validate
+ usecase "View agreement status" as Track
+ usecase "Request withdrawal\nbefore departure" as Withdraw
+ usecase "Begin academic review" as Review
+ usecase "Request corrections" as Changes
+ usecase "Approve for home faculty" as Approve
+ usecase "Record host confirmation" as Confirm
+ usecase "UC08: Record withdrawal\nand cancel agreement" as Cancel
 }
-
-S --> U1
-S --> U2
-S --> U5
-S --> U9
-S --> U10
-S --> U11
-T --> U7
-HC --> U6
-XC --> U12
-
-U3 ..> U2 : <<extend>>
-note on link : [no equivalence\nfound in catalog]
-U5 ..> U4 : <<include>>
-U7 ..> U6 : <<extend>>
-note on link : [no decision rendered\nwithin 5 business days]
-U6 ..> U8 : <<include>>
-
+S -- Draft : edits own draft
+S -- Submit : submits own plan
+S -- Track : views own status
+S -- Withdraw : requests withdrawal
+Submit ..> Validate : <<include>>
+C -- Review : starts review
+C -- Changes : requests changes
+C -- Approve : approves plan
+D -- Confirm : records evidence
+H -- Confirm : supplies evidence
+D -- Cancel : records cancellation
+legend bottom
+  A student requests withdrawal; only an authorized DRI officer
+  records cancellation. The request does not cancel the plan itself.
+endlegend
 @enduml

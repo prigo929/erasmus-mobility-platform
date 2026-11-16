@@ -1,36 +1,52 @@
 @startuml
-title Figure 5. Use Case Diagram - Mobility Preparation (Supporting Subdomain)
+title <color:white>Figure 5. Mobility Preparation — shared actor goals</color>
+!pragma layout smetana
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam ArrowColor #334155
+skinparam noteBackgroundColor #FFF7DB
+skinparam noteBorderColor #B99B41
+skinparam nodesep 22
+skinparam ranksep 30
+skinparam usecaseBackgroundColor #F8FAFC
 left to right direction
-skinparam packageStyle rectangle
-
-actor "Student" as S
-actor "Scheduler\n(Temporal Trigger)" as T
-actor "Erasmus Office\nCoordinator (DRI)" as HC
-
+actor Student as S
+actor "DRI officer" as D
+actor "Learning Agreement\n(publishing module)" as LA
 rectangle "Mobility Preparation" {
-  usecase "View Checklist" as P6
-  usecase "Open Official Form" as P8
-  usecase "Mark Task Done" as P7
-  usecase "Send Deadline Reminder" as P9
-  usecase "Manage Checklist Template" as P3
-  usecase "Confirm Nomination" as P1
-  usecase "Generate Checklist" as P2
-  usecase "Monitor Student Progress" as P4
-  usecase "Flag Overdue Task" as P5
+ usecase "Register\nexisting nomination" as Nominate
+ usecase "Initialize checklist\nfor MobilityId" as Init
+ usecase "View checklist\nand deadlines" as View
+ usecase "Submit administrative\nevidence" as Upload
+ usecase "Review submitted\nevidence" as Verify
+ usecase "Approve evidence" as Approve
+ usecase "Reject evidence\nwith rationale" as Reject
+ usecase "UC03: Apply agreement\nconfirmation or cancellation event" as Sync
+ usecase "UC07: Confirm\ndossier readiness" as Ready
+ usecase "Check all mandatory\nrequirements" as Gate
+ usecase "Request withdrawal\nbefore departure" as Withdraw
+ usecase "Record withdrawal and\ninvalidate dossier" as Cancel
 }
-
-S --> P6
-S --> P7
-T --> P9
-T --> P5
-HC --> P3
-HC --> P1
-HC --> P4
-
-P8 ..> P6 : <<extend>>
-note on link : [task provides link\nto official form]
-P1 ..> P2 : <<include>>
-P5 ..> P4 : <<extend>>
-note on link : [task exceeded\nscheduled deadline]
-
+S -- View : views own progress
+S -- Upload : submits own evidence
+S -- Withdraw : requests withdrawal
+D -- Nominate : records nomination
+D -- Verify : reviews evidence
+D -- Approve : approves evidence
+D -- Reject : rejects evidence
+D -- Ready : confirms readiness
+D -- Cancel : records withdrawal
+LA -- Sync : publishes agreement events
+Nominate ..> Init : <<include>>
+Approve ..> Verify : <<include>>
+Reject ..> Verify : <<include>>
+Ready ..> Gate : <<include>>
+legend bottom
+  Agreement events update an existing checklist.
+  Nomination alone creates the checklist.
+endlegend
+caption Figure 5. Mobility Preparation — shared actor goals
 @enduml

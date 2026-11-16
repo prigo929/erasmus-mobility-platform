@@ -1,0 +1,68 @@
+' Definiții canonice; se includ, nu se copiază în vederi.
+!ifndef EMP_AGREEMENT_ARCHITECTURE
+!define EMP_AGREEMENT_ARCHITECTURE
+!include agreement-domain.puml
+!include commands.puml
+!include outbox.puml
+package "LA\nUI" as AgreementPresentation {
+ class LearningAgreementWebController <<Controller>> {
+  + submitDraft(cmd: SubmitAgreementCommand): void
+  + beginReview(cmd: ReviewCommand): void
+  + requestChanges(cmd: ReviewCommand): void
+  + approveByFaculty(cmd: ReviewCommand): void
+  + confirmHost(cmd: ConfirmHostCommand): void
+  + cancelAgreement(cmd: CancelAgreementCommand): void
+ }
+}
+package "LA\nApplication" as AgreementApplication {
+ class AgreementApplicationService <<ApplicationService>> {
+  - agreements: LearningAgreementRepository
+  - catalog: IEquivalenceCatalogAdapter
+  - outbox: IOutboxRepository
+  + submitDraft(cmd: SubmitAgreementCommand): void
+  + beginReview(cmd: ReviewCommand): void
+  + requestChanges(cmd: ReviewCommand): void
+  + approveByFaculty(cmd: ReviewCommand): void
+  + confirmHost(cmd: ConfirmHostCommand): void
+  + cancelAgreement(cmd: CancelAgreementCommand): void
+ }
+}
+package "Persistence" as AgreementPersistence {
+ class LearningAgreementRepoJPA <<RepositoryImplementation>> {
+  + findById(id: AgreementId): Optional<LearningAgreement>
+  + saveIfVersionMatches(agreement: LearningAgreement, expectedVersion: long): boolean
+ }
+}
+package "REST adapter" as AgreementOutbound {
+ class EquivalenceRestAdapter <<RESTAdapter>> {
+  + checkEquivalence(query: EquivalenceQuery): EquivalenceVerificationResult
+ }
+}
+package "Outbox persistence" as OutboxPersistence {
+ class OutboxRepoJPA <<RepositoryImplementation>> {
+  + append(event: AgreementIntegrationEvent): void
+  + findPending(limit: int): List<OutboxMessage>
+  + markPublished(eventId: UUID): void
+ }
+}
+package "Event delivery" as AgreementDelivery {
+ class OutboxDispatcher <<BackgroundWorker>> {
+  + pollAndDispatch(): void
+ }
+ class MessagePublisherAdapter <<MessagingAdapter>> {
+  + publish(event: AgreementIntegrationEvent): void
+ }
+}
+LearningAgreementRepoJPA ..|> LearningAgreementRepository
+ EquivalenceRestAdapter ..|> IEquivalenceCatalogAdapter
+ OutboxRepoJPA ..|> IOutboxRepository
+MessagePublisherAdapter ..|> IMessagePublisher
+LearningAgreementWebController --> AgreementApplicationService : delegates
+AgreementApplicationService --> LearningAgreementRepository : load / conditional save
+AgreementApplicationService --> LearningAgreement : invokes rules
+AgreementApplicationService --> IEquivalenceCatalogAdapter : synchronous check
+AgreementApplicationService --> IOutboxRepository : appends
+OutboxDispatcher --> IOutboxRepository : poll / mark
+OutboxDispatcher --> IMessagePublisher : publish / confirm
+EquivalenceRestAdapter ..> EquivalenceResponseDTO : maps response
+!endif

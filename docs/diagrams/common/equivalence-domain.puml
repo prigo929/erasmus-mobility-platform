@@ -1,0 +1,40 @@
+' Definiții canonice; se includ, nu se copiază în vederi.
+!ifndef EMP_EQUIVALENCE_DOMAIN
+!define EMP_EQUIVALENCE_DOMAIN
+!include shared.puml
+!include catalog-contract.puml
+package "EQ\nDomain" as EquivalenceDomain {
+ class AcademicEquivalence <<AggregateRoot>> {
+  - id: EquivalenceId
+  - sendCourse: CourseSyllabus
+  - hostCourse: CourseSyllabus
+  - validity: ValidityWindow
+  - status: EquivalenceStatus
+  - similarityScore: int
+  - version: long
+  - decisions: List<DecisionRecord>
+  + beginEvaluation(actorId: UUID): void
+  + approveAndPublish(score: int, rationale: String, actorId: UUID): void
+  + reject(actorId: UUID, reason: String): void
+  + retire(actorId: UUID, reason: String): void
+  + isEligible(period: ValidityWindow): boolean
+ }
+ enum EquivalenceStatus {
+  PROPOSED
+  UNDER_EVALUATION
+  ACTIVE
+  REJECTED
+  RETIRED
+ }
+ interface AcademicEquivalenceRepository <<DomainPort>> {
+  + findById(id: EquivalenceId): Optional<AcademicEquivalence>
+  + hasOverlappingRule(query: EquivalenceQuery): boolean
+  + findEligible(query: EquivalenceQuery): Optional<AcademicEquivalence>
+  + saveIfVersionMatches(equivalence: AcademicEquivalence, expectedVersion: long): boolean
+ }
+ AcademicEquivalence --> EquivalenceStatus : status
+ AcademicEquivalence --> CourseSyllabus : send / host snapshots
+ AcademicEquivalence -down-> ValidityWindow : validity
+ AcademicEquivalence --> "0..*" DecisionRecord : history
+}
+!endif

@@ -1,109 +1,73 @@
 @startuml
-title Figure 25. Sequence Diagram - Idempotent Consumer Flow (Mobility Preparation Context)
-skinparam backgroundColor #FFFFFF
-skinparam defaultFontName "Helvetica", "Arial", sans-serif
-skinparam defaultFontSize 10
-skinparam roundCorner 6
-
-queue "RabbitMQ Queue\nmobility.preparation.agreement.approved" as Broker
-participant "AgreementApprovedMessageReceiver\n(@RabbitListener)" as Receiver
-participant "PreparationApplicationService\n(@Transactional)" as AppService
-participant "IProcessedEventRepository" as ProcessedEventRepo
-participant "MobilityChecklistRepository" as ChecklistRepo
-database "PostgreSQL Relational DB" as DB
-participant "MobilityChecklist\n(AggregateRoot)" as Aggregate
-
-Broker -> Receiver : onMessage(payloadJson, deliveryTag, channel)
-activate Receiver
-
-Receiver -> Receiver : parseToCommand(payloadJson)
-Receiver -> AppService : initializeChecklistFromApprovedAgreement(cmd)
-activate AppService
-
-note over AppService, DB #FEFCBF
-  Beginning of Spring @Transactional Boundary (Idempotency Filter)
-end note
-
-AppService -> ProcessedEventRepo : existsById(cmd.getEventId())
-activate ProcessedEventRepo
-
-ProcessedEventRepo -> DB : SELECT COUNT(*) FROM processed_events WHERE event_id = ?
-activate DB
-DB --> ProcessedEventRepo : 0 (Not yet processed)
-deactivate DB
-
-ProcessedEventRepo --> AppService : false (New Event)
-deactivate ProcessedEventRepo
-
-AppService -> Aggregate : new MobilityChecklist(checklistId, studentId, agreementId)
-activate Aggregate
-AppService -> Aggregate : initializeDefaultPreparationTasks()
-Aggregate --> AppService : checklist initialized with 5 standard tasks
-deactivate Aggregate
-
-AppService -> ChecklistRepo : save(checklist)
-activate ChecklistRepo
-ChecklistRepo -> DB : INSERT INTO mobility_checklists ...; INSERT INTO checklist_tasks ...
-activate DB
-DB --> ChecklistRepo : inserted
-deactivate DB
-ChecklistRepo --> AppService : void
-deactivate ChecklistRepo
-
-AppService -> ProcessedEventRepo : recordEvent(cmd.getEventId(), Instant.now())
-activate ProcessedEventRepo
-ProcessedEventRepo -> DB : INSERT INTO processed_events (event_id, processed_at) VALUES (?, ?)
-activate DB
-DB --> ProcessedEventRepo : inserted
-deactivate DB
-ProcessedEventRepo --> AppService : void
-deactivate ProcessedEventRepo
-
-note over AppService, DB #FEFCBF
-  End of Spring @Transactional Boundary: COMMIT TRANSACTION.
-  Tasks and event record persisted together.
-end note
-
-AppService --> Receiver : void (Success)
-deactivate AppService
-
-Receiver -> Broker : channel.basicAck(deliveryTag, multiple=false)
-activate Broker
-Broker --> Receiver : Message removed from queue
-deactivate Broker
-
-deactivate Receiver
-
-== Subsequent Duplicate Delivery Scenario (Network Re-delivery) ==
-
-Broker -> Receiver : onMessage(duplicatePayloadJson, newDeliveryTag, channel)
-activate Receiver
-Receiver -> AppService : initializeChecklistFromApprovedAgreement(cmd)
-activate AppService
-
-AppService -> ProcessedEventRepo : existsById(cmd.getEventId())
-activate ProcessedEventRepo
-ProcessedEventRepo -> DB : SELECT COUNT(*) FROM processed_events WHERE event_id = ?
-activate DB
-DB --> ProcessedEventRepo : 1 (Already recorded)
-deactivate DB
-ProcessedEventRepo --> AppService : true (Duplicate detected!)
-deactivate ProcessedEventRepo
-
-note over AppService #FEFCBF
-  Idempotency Guard Triggers:
-  Duplicate detected. Service returns immediately.
-  Zero duplicate tasks are inserted.
-end note
-
-AppService --> Receiver : void (No-op)
-deactivate AppService
-
-Receiver -> Broker : channel.basicAck(newDeliveryTag, false)
-activate Broker
-Broker --> Receiver : Redundant message drained cleanly
-deactivate Broker
-deactivate Receiver
-
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 12
+skinparam LegendFontSize 12
+skinparam shadowing false
+skinparam ParticipantPadding 5
+skinparam BoxPadding 4
+skinparam sequenceMessageAlign center
+skinparam maxMessageSize 145
+skinparam sequence {
+ LifeLineBorderColor #64748B
+ ParticipantBackgroundColor #F1F5F9
+ GroupBackgroundColor #FFFFFF
+ GroupBodyBackgroundColor #FFFFFF
+}
+hide footbox
+title Figure 25. Idempotent consumer — update an existing checklist (shared)
+queue "Message\ntransport" as Broker
+participant "receiver\n:Agreement\nMessage\nReceiver" as Receiver
+participant "service\n:Preparation\nApplication\nService" as Service
+participant "ledger\n:Processed\nEventRepoJPA" as Ledger
+participant "repo\n:Mobility\nChecklist\nRepoJPA" as Repo
+participant "checklist\n:Mobility\nChecklist" as Checklist
+Broker ->> Receiver : onMessage(event)
+Receiver -> Service : applyAgreementEvent(event)
+group Local transaction: eventId + effect + audit
+ Service -> Ledger : tryRecord(event.eventId)
+ alt already processed
+  Ledger --> Service : false
+ else eventId inserted uniquely
+  Ledger --> Service : true
+  Service -> Repo : findByMobilityId(event.mobilityId)
+  Repo --> Service : checklist / missing
+  break missing checklist or mismatched agreementId
+   note over Service, Repo : ROLLBACK eventId; do not create a dossier
+   Service --> Receiver : retryable error
+   note over Receiver, Broker : No success ACK
+  end
+!ifdef A4_PANELS
+newpage Consumer continued — apply the event and commit
+  note over Service, Repo : Event ID reserved and dossier found; continue the same local transaction.
+!endif
+  Service -> Checklist : applyAgreementEvent(event)
+  alt stale version or confirmation after cancellation
+   Checklist --> Service : no reactivation
+  else applicable HOST_CONFIRMED
+   Checklist --> Service : academic task COMPLETED
+  else new CANCELLED
+   Checklist --> Service : dossier CANCELLED
+  end
+  Service -> Repo : save(checklist)
+  alt persistence failure / concurrent update conflict
+   Repo --> Service : error
+   note over Service, Repo : ROLLBACK effect + eventId
+   break transaction failed
+    Service --> Receiver : retryable error
+    note over Receiver, Broker : No success ACK
+   end
+  else save succeeded
+   Repo --> Service : void
+   note over Service, Repo : COMMIT effect + eventId
+  end
+ end
+end
+Service --> Receiver : committed success / confirmed duplicate
+Receiver ->> Broker : ACK
+legend bottom
+ eventId uniqueness and checklist serialization protect concurrent processing.
+ sourceVersion orders events from the same agreement; cancellation stays effective.
+ Missing dossiers and save failures roll back the ledger insertion and allow retry.
+ Active tasks are abandoned on cancellation; completed evidence remains historical.
+endlegend
 @enduml
-

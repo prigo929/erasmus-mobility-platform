@@ -1,0 +1,22 @@
+' Definiții canonice; se includ, nu se copiază în vederi.
+!ifndef EMP_OUTBOX
+!define EMP_OUTBOX
+!include shared.puml
+package "Ports" as OutboxContract {
+ interface IOutboxRepository <<ApplicationPort>> {
+  + append(event: AgreementIntegrationEvent): void
+  + findPending(limit: int): List<OutboxMessage>
+  + markPublished(eventId: UUID): void
+ }
+ class OutboxMessage <<ValueObject>> {
+  + event: AgreementIntegrationEvent
+  + published: boolean
+ }
+ interface IMessagePublisher <<ApplicationPort>> {
+  + publish(event: AgreementIntegrationEvent): void
+ }
+ interface IProcessedEventRepository <<ApplicationPort>> {
+  + tryRecord(eventId: UUID): boolean
+ }
+}
+!endif

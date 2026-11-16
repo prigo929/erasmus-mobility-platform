@@ -1,0 +1,85 @@
+' Definiții canonice; se includ, nu se copiază în vederi.
+!ifndef EMP_PREPARATION_DOMAIN
+!define EMP_PREPARATION_DOMAIN
+!include shared.puml
+package "PREP\nDomain" as PreparationDomain {
+ class MobilityChecklist <<AggregateRoot>> {
+  - id: ChecklistId
+  - mobilityId: MobilityId
+  - studentId: StudentId
+  - agreementId: AgreementId
+  - deadline: LocalDate
+  - tasks: List<ChecklistTask>
+  - status: ChecklistStatus
+  - lastAgreementVersion: long
+  - decisions: List<DecisionRecord>
+  + initializeDefaultTasks(): void
+  + submitProof(taskId: TaskId, proof: DocumentProof): void
+  + approveProof(taskId: TaskId, officerId: UUID): void
+  + rejectProof(taskId: TaskId, officerId: UUID, reason: String): void
+  + flagOverdue(asOf: LocalDate): void
+  + applyAgreementEvent(event: AgreementIntegrationEvent): void
+  + areMandatoryTasksComplete(): boolean
+  + confirmReadiness(officerId: UUID, now: Instant): void
+  + tasks(): List<TaskSnapshot>
+ }
+ class ChecklistTask <<ChildEntity>> {
+  - taskId: TaskId
+  - taskType: TaskType
+  - status: TaskStatus
+  - deadline: LocalDate
+  - proof: DocumentProof
+  - rejectionReason: String
+  ~ assignToStudent(): void
+  ~ submitProof(proof: DocumentProof): void
+  ~ approveProof(): void
+  ~ rejectProof(reason: String): void
+  ~ markOverdue(asOf: LocalDate): void
+  ~ completeFromAgreement(): void
+  ~ abandon(): void
+ }
+ class DocumentProof <<ValueObject>> {
+  + uri: String
+  + sha256: String
+  + mediaType: String
+ }
+ class TaskSnapshot <<ValueObject>> {
+  + taskId: TaskId
+  + taskType: TaskType
+  + status: TaskStatus
+  + deadline: LocalDate
+  + proof: DocumentProof
+  + rejectionReason: String
+ }
+ enum TaskStatus {
+  INITIALIZED
+  PENDING_STUDENT_ACTION
+  SUBMITTED_FOR_VERIFICATION
+  COMPLETED
+  OVERDUE
+  ABANDONED
+ }
+ enum TaskType {
+  HEALTH_INSURANCE_PROOF
+  GRANT_AGREEMENT_SIGNATURE
+  HOST_ACCEPTANCE_LETTER
+  LEARNING_AGREEMENT_CONFIRMATION
+ }
+ enum ChecklistStatus {
+  IN_PROGRESS
+  CONFIRMED_READY_FOR_DEPARTURE
+  CANCELLED
+ }
+ interface MobilityChecklistRepository <<DomainPort>> {
+  + findByMobilityId(mobilityId: MobilityId): Optional<MobilityChecklist>
+  + save(checklist: MobilityChecklist): void
+ }
+ MobilityChecklist "1" *-down- "0..*" ChecklistTask : tasks (4 after initialization)
+ MobilityChecklist --> ChecklistStatus : status
+ ChecklistTask --> TaskStatus : status
+ ChecklistTask --> TaskType : type
+ ChecklistTask --> DocumentProof : proof
+ MobilityChecklist ..> TaskSnapshot : immutable snapshots
+ MobilityChecklist --> "0..*" DecisionRecord : history
+}
+!endif

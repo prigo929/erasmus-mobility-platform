@@ -1,79 +1,70 @@
 @startuml
-title Figure 22. Sequence Diagram - Synchronous REST Client Flow (Learning Agreement Context)
-skinparam backgroundColor #FFFFFF
-skinparam defaultFontName "Helvetica", "Arial", sans-serif
-skinparam defaultFontSize 10
-skinparam roundCorner 6
-
-actor "Student" as Student
-boundary "Web Browser UI" as UI
-control "LearningAgreementWebController" as Controller
-participant "AgreementApplicationService" as AppService
-participant "LearningAgreementRepository" as Repo
-participant "LearningAgreement" as Aggregate
-participant "IEquivalenceCatalogAdapter\n(Domain Port)" as Port
-participant "EquivalenceRestAdapter\n(Infrastructure)" as RestAdapter
-boundary "External HTTP Server\n(Equivalence Context)" as RemoteServer
-
-Student -> UI : Click "Verify Equivalences & Submit"
-activate UI
-
-UI -> Controller : POST /api/v1/agreements/{id}/submit
-activate Controller
-
-Controller -> AppService : verifyCourses(agreementId)
-activate AppService
-
-AppService -> Repo : findById(agreementId)
-activate Repo
-Repo --> AppService : Optional<LearningAgreement>
-deactivate Repo
-
-loop for each CourseLine in Table A
-  AppService -> Port : checkEquivalence(sendCode, hostCode)
-  activate Port
-  Port -> RestAdapter : checkEquivalence(sendCode, hostCode)
-  activate RestAdapter
-
-  RestAdapter -> RemoteServer : GET /api/v1/equivalences/verify?sendCode={send}&hostCode={host}
-  activate RemoteServer
-  RemoteServer --> RestAdapter : 200 OK (EquivalenceResponseDTO JSON)
-  deactivate RemoteServer
-
-  RestAdapter -> RestAdapter : mapToDomain(dto)
-  RestAdapter --> Port : EquivalenceVerificationResult
-  deactivate RestAdapter
-
-  Port --> AppService : EquivalenceVerificationResult
-  deactivate Port
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 12
+skinparam LegendFontSize 12
+skinparam shadowing false
+skinparam ParticipantPadding 5
+skinparam BoxPadding 4
+skinparam sequenceMessageAlign center
+skinparam maxMessageSize 145
+skinparam sequence {
+ LifeLineBorderColor #64748B
+ ParticipantBackgroundColor #F1F5F9
+ GroupBackgroundColor #FFFFFF
+ GroupBodyBackgroundColor #FFFFFF
+}
+hide footbox
+title Figure 22. UC01 — submit the Learning Agreement (Alin)
+actor Student
+control "controller\n:Learning\nAgreement\nWebController" as Controller
+participant "service\n:Agreement\nApplication\nService" as Service
+participant "repo\n:Learning\nAgreement\nRepoJPA" as Repo
+participant "agreement\n:Learning\nAgreement" as LA
+participant "catalog\n:Equivalence\nRestAdapter" as Catalog
+boundary "api\n:Equivalence\nApiRest" as API
+Student -> Controller : submitDraft(cmd)
+Controller -> Service : submitDraft(cmd)
+Service -> Repo : findById(agreementId)
+Repo --> Service : agreement / missing
+break missing / unauthorized / expected version mismatch
+ Service --> Controller : reject request
 end
-
-AppService -> Aggregate : hasCreditParity()
-activate Aggregate
-Aggregate --> AppService : true (Credit Parity Invariant Met)
-
-AppService --> Controller : List<EquivalenceVerificationResult>
-deactivate AppService
-
-Controller -> AppService : submitDraft(agreementId)
-activate AppService
-AppService -> Aggregate : submit()
-Aggregate --> AppService : void
-deactivate Aggregate
-
-AppService -> Repo : save(agreement)
-activate Repo
-Repo --> AppService : void
-deactivate Repo
-
-AppService --> Controller : void
-deactivate AppService
-
-Controller --> UI : 200 OK (Agreement Submitted)
-deactivate Controller
-
-UI --> Student : Display "Agreement Successfully Submitted"
-deactivate UI
-
+loop each RecognitionMapping
+ Service -> Catalog : checkEquivalence(query)
+ Catalog -> API : verify(query)
+ API --> Catalog : EquivalenceResponseDTO
+ Catalog --> Service : verification result
+end
+break INELIGIBLE or UNAVAILABLE
+ Service --> Controller : correct mapping or retry
+end
+!ifdef A4_PANELS
+newpage UC01 continued — validate and commit the submission
+!endif
+group Local submission transaction
+ Service -> LA : submit(checks, cmd.actorId)
+ alt invalid credits, mapping or state
+  LA --> Service : validation error
+  Service --> Controller : reject; no changes
+ else rules satisfied
+  LA --> Service : SUBMITTED + decision
+  Service -> Repo : saveIfVersionMatches(agreement, expectedVersion)
+  alt conflict / save failed
+   Repo --> Service : false / error
+   note over Service, Repo : ROLLBACK
+   Service --> Controller : conflict; reload
+  else save succeeded
+   Repo --> Service : true
+   note over Service, Repo : COMMIT agreement + audit
+   Service --> Controller : success
+   Controller --> Student : SUBMITTED; submission receipt
+  end
+ end
+end
+legend bottom
+ Compare cmd.expectedVersion with the loaded version before proceeding.
+ Catalog queries are read-only; the adapter maps the wire DTO to a domain result.
+ submit() requires eligible 1:1 mappings and at least 30 ECTS.
+ No failed request falls through to the successful submission response.
+endlegend
 @enduml
-

@@ -1,45 +1,38 @@
-Feature: Mobility Preparation Checklist and Departure Gate Verification
-  As an institutional mobility officer
-  I want to verify student onboarding document proofs and confirm departure readiness
-  So that outgoing students comply with legal, medical, and grant regulations
+Feature: UC03 apply an agreement event to the existing mobility checklist
+  As the Mobility Preparation message receiver
+  I want to apply ordered agreement events exactly once
+  So that host confirmation completes the academic task and cancellation stays effective
 
   Background:
-    Given an authenticated mobility officer "DRI Mobility Officer" with officerId "off-3003"
-    And an outgoing exchange student "s-1001" with an approved learning agreement "la-9001"
+    Given an existing mobility checklist "mob-1001" for agreement "la-9001"
+    And its academic confirmation task is "PENDING_STUDENT_ACTION"
 
-  Scenario: Successful checklist completion and departure clearance
-    Given an inbound message on "mobility.preparation.agreement.approved" with eventId "evt-8801"
-    When the message receiver processes the event
-    Then a new MobilityChecklist is instantiated for student "s-1001"
-    And the checklist contains the default mandatory tasks:
-      | Task Code | Title                     | Mandatory | Initial Status         |
-      | TASK-01   | Erasmus+ Grant Agreement  | true      | PENDING_STUDENT_ACTION |
-      | TASK-02   | Health Insurance Proof    | true      | PENDING_STUDENT_ACTION |
-      | TASK-03   | Host Acceptance Letter    | true      | PENDING_STUDENT_ACTION |
-    When the student uploads valid PDF proofs for all mandatory tasks
-    And the mobility officer reviews and approves all attached proofs
-    Then all mandatory tasks transition to status "COMPLETED"
-    And the departure gate evaluates "areMandatoryTasksComplete()" as true
-    And the checklist status transitions to "CONFIRMED_READY_FOR_DEPARTURE"
-    And the first grant installment is unlocked for disbursement
+  Scenario: Host confirmation completes the existing academic task
+    Given a valid "HOST_CONFIRMED" event "evt-101" for source version 4
+    When the receiver applies the event
+    Then the academic task transitions to "COMPLETED"
+    And the checklist and processed event are committed in one local transaction
+    And the receiver acknowledges the broker message after commit
+    And departure readiness is not automatically confirmed
 
-  Scenario: Departure gate blocks confirmation when a mandatory task is overdue
-    Given an active MobilityChecklist for student "s-1001" with a deadline of "2026-08-15"
-    And the student uploaded the grant agreement and acceptance letter
-    But the student failed to submit the health insurance proof before "2026-08-15"
-    When the daily compliance scanner runs on "2026-08-16"
-    Then the health insurance task status transitions to "OVERDUE"
-    When the mobility officer attempts to confirm departure readiness
-    Then the platform rejects confirmation with error "MANDATORY_TASKS_INCOMPLETE"
-    And the error message lists "Health Insurance Proof (OVERDUE)" as blocking departure
-    And the checklist status remains "IN_PROGRESS"
-    And grant disbursement remains locked
+  Scenario: Duplicate delivery is acknowledged without applying twice
+    Given event "evt-101" is already in the processed-event ledger
+    When the receiver processes the duplicate delivery
+    Then the checklist is unchanged
+    And the receiver acknowledges the duplicate message
 
-  Scenario: Idempotent message consumption prevents duplicate checklist creation
-    Given that eventId "evt-8801" already exists in the "processed_events" table
-    When a duplicate AMQP message with eventId "evt-8801" is delivered to the receiver
-    Then the platform detects the event identifier in the idempotency ledger
-    And the application service skips checklist instantiation
-    And the receiver acknowledges the message with channel basicAck
-    And exactly one checklist remains associated with student "s-1001"
+  Scenario: Missing checklist causes retry without creating a dossier
+    Given no checklist exists for mobility "mob-1001"
+    And a valid "HOST_CONFIRMED" event "evt-102" is delivered
+    When the receiver applies the event
+    Then the event-ledger insertion is rolled back
+    And no checklist is created
+    And the receiver does not acknowledge the message
 
+  Scenario: Cancellation remains effective against a stale confirmation
+    Given the checklist was cancelled at source version 5
+    And a "HOST_CONFIRMED" event for source version 4 is delivered
+    When the receiver applies the event
+    Then the checklist remains cancelled
+    And the stale event is recorded as handled
+    And the receiver acknowledges the message

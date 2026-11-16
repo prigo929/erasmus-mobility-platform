@@ -1,0 +1,63 @@
+' Definiții canonice; se includ, nu se copiază în vederi.
+!ifndef EMP_COMMANDS
+!define EMP_COMMANDS
+!include shared.puml
+package "Application\ncommands" as Commands {
+ class SubmitAgreementCommand <<Command>> {
+  + agreementId: AgreementId
+  + actorId: UUID
+  + expectedVersion: long
+ }
+ class ReviewCommand <<Command>> {
+  + agreementId: AgreementId
+  + actorId: UUID
+  + expectedVersion: long
+  + reason: String
+ }
+ class ConfirmHostCommand <<Command>> {
+  + agreementId: AgreementId
+  + officerId: UUID
+  + expectedVersion: long
+  + proofRef: String
+  + now: Instant
+ }
+ class CancelAgreementCommand <<Command>> {
+  + agreementId: AgreementId
+  + actorId: UUID
+  + expectedVersion: long
+  + reason: String
+  + now: Instant
+ }
+ class EvaluateEquivalenceCommand <<Command>> {
+  + equivalenceId: EquivalenceId
+  + actorId: UUID
+  + expectedVersion: long
+  + score: int
+  + rationale: String
+ }
+ class RegisterNominationCommand <<Command>> {
+  + checklistId: ChecklistId
+  + mobilityId: MobilityId
+  + studentId: StudentId
+  + agreementId: AgreementId
+  + deadline: LocalDate
+ }
+ class SubmitProofCommand <<Command>> {
+  + mobilityId: MobilityId
+  + actorId: UUID
+  + taskId: TaskId
+  + proof: DocumentProof
+ }
+ class ReviewProofCommand <<Command>> {
+  + mobilityId: MobilityId
+  + officerId: UUID
+  + taskId: TaskId
+  + reason: String
+ }
+ class ConfirmReadinessCommand <<Command>> {
+  + mobilityId: MobilityId
+  + officerId: UUID
+  + now: Instant
+ }
+}
+!endif
