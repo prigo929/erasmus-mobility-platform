@@ -29,9 +29,8 @@ class DomainInvariantsTest {
         assertThrows(IllegalStateException.class, la::submit);
 
         // Add 30 ECTS to Table A and 30 ECTS to Table B
-        UUID mappingId = UUID.randomUUID();
-        la.addTableALine(new CourseLineTableA(mappingId, "CS101", "Advanced Algorithms", new ECTSCredits(30)));
-        la.addTableBLine(new CourseLineTableB(mappingId, "INFO201", "Algoritmi Avansati", new ECTSCredits(30)));
+        la.addTableALine(new CourseLineTableA(UUID.randomUUID(), "CS101", "Advanced Algorithms", new ECTSCredits(30)));
+        la.addTableBLine(new CourseLineTableB(UUID.randomUUID(), "INFO201", "Algoritmi Avansati", new ECTSCredits(30)));
 
         assertTrue(la.hasCreditParity());
         assertEquals(30, la.calculateTotalCreditsTableA().value());
@@ -45,13 +44,12 @@ class DomainInvariantsTest {
         la.assignCoordinator(coordinatorId);
         assertEquals(LearningAgreementStatus.UNDER_REVIEW, la.status());
 
-        // Approval changes the local agreement state; host confirmation emits the cross-context event.
-        la.approve(coordinatorId);
-        assertEquals(LearningAgreementStatus.APPROVED_BY_FACULTY, la.status());
-        var event = la.confirmByHost("host-signature-42");
+        // Approve generates LearningAgreementApprovedEvent
+        LearningAgreementApprovedEvent event = la.approve(coordinatorId);
+        assertNotNull(event);
         assertEquals(aid.value(), event.agreementId());
         assertEquals(sid.value(), event.studentId());
-        assertEquals(LearningAgreementStatus.CONFIRMED_BY_HOST, la.status());
+        assertEquals(LearningAgreementStatus.APPROVED_BY_FACULTY, la.status());
     }
 
     @Test
@@ -69,7 +67,10 @@ class DomainInvariantsTest {
         eq.initiateEvaluation();
         assertEquals(EquivalenceStatus.UNDER_EVALUATION, eq.status());
 
-        eq.evaluateAndPublish(90, "Compatible outcomes", LocalDate.of(2026, 6, 1), LocalDate.of(2027, 1, 31));
+        eq.approve();
+        assertEquals(EquivalenceStatus.APPROVED, eq.status());
+
+        eq.activate();
         assertEquals(EquivalenceStatus.ACTIVE, eq.status());
         assertTrue(eq.isCurrentlyValid(LocalDate.of(2026, 6, 1)));
         assertFalse(eq.isCurrentlyValid(LocalDate.of(2028, 1, 1))); // Out of window
