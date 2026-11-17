@@ -1,5 +1,43 @@
 # Erasmus Mobility Platform (EMP)
 
+## Runnable backend prototype
+
+The repository now includes a small REST backend for the three documented contexts. It runs as one Spring Boot application, stores its prototype data in H2, and exposes JSON request/response DTOs under `/api/v1`. The frontend, institutional sign-on, RabbitMQ transport, and production deployment are intentionally outside this prototype.
+
+### Run locally over HTTPS
+
+Requirements: Java 21 or later and Maven 3.8+. The course model uses Java 23; the build defaults to Java 23 but accepts `JAVA_RELEASE=21` when using the installed Java 21 runtime.
+
+```bash
+./scripts/run-local-https.sh
+```
+
+The script creates a local self-signed certificate at `dev-keystore.p12` (ignored by Git) and starts the API at `https://localhost:8443`. The browser will show a certificate warning because this certificate is for local development only. For a trusted deployment, provide a real keystore using `EMP_KEYSTORE` and `EMP_KEYSTORE_PASSWORD`; never reuse the local development password.
+
+### API outline
+
+* `GET /api/v1/health`
+* `POST /api/v1/equivalences`, `GET /api/v1/equivalences`, `GET /api/v1/equivalences/verify`
+* `POST /api/v1/equivalences/{id}/begin-evaluation`, `/evaluate-and-publish`, `/reject`, and `/retire`
+* `POST /api/v1/agreements`, `GET /api/v1/agreements/{id}`, and state-transition routes `/submit`, `/review`, `/approve`, `/request-changes`, `/host-confirmation`, `/cancel`
+* `POST /api/v1/mobilities` initializes the checklist once; `GET /api/v1/mobilities/{mobilityId}/checklist` reads it
+* `POST /api/v1/mobilities/{mobilityId}/tasks/{taskId}/proof`, `/complete`, and `/reject-proof`
+* `POST /api/v1/internal/outbox/process` manually processes pending agreement events; a local scheduled worker also retries them
+
+Requests that change an existing agreement or equivalence include `expectedVersion`. A stale version returns HTTP 409. Validation errors return HTTP 400, missing records HTTP 404, and business-rule conflicts HTTP 409. The JSON contract is in `src/src/main/java/ro/uaic/feaa/erasmus/api/dto/ApiDtos.java`.
+
+Run the automated tests with:
+
+```bash
+mvn -f src/pom.xml -Dmaven.compiler.release=21 test
+```
+
+The Maven compiler default remains Java 23 to match the course project. The override above is for environments that only have Java 21 installed.
+
+### Prototype boundaries
+
+This is a runnable coursework prototype, not a production mobility service. State is stored as versioned JSON snapshots in a local H2 database file under `data/`; authorization and institutional identity, audit signatures, external course-catalog calls, RabbitMQ, and production-grade certificate management are not implemented. The outbox is persisted and processed locally so host-confirmation and cancellation behavior can be exercised without an external broker. Do not expose this unauthenticated prototype to a public network.
+
 ## Modificări față de originalul din Git
 
 Am comparat fișierele din IDE cu originalul din Git. Auditul cerințelor nu a adăugat modificări. Diferențele existente sunt:

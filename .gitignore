@@ -33,3 +33,6 @@ __pycache__/
 .env
 .env.*
 *.log
+dev-keystore.p12
+/data/
+/src/data/
